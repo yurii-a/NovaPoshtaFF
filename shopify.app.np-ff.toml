@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "574b688c2d2066b9e11512dd3f4d051b"
+name = "np-ff"
+handle = "np-ff"
+application_url = "https://concern-domains-tech-belong.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "skat-checkout-test.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_assigned_fulfillment_orders,read_fulfillments,read_inventory,read_orders,read_products,write_assigned_fulfillment_orders,write_fulfillments,write_inventory,write_orders,write_products"
+
+[auth]
+redirect_urls = [
+  "https://concern-domains-tech-belong.trycloudflare.com/auth/callback",
+  "https://concern-domains-tech-belong.trycloudflare.com/auth/shopify/callback",
+  "https://concern-domains-tech-belong.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false
