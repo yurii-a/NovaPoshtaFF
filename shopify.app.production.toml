@@ -3,7 +3,7 @@
 client_id = "574b688c2d2066b9e11512dd3f4d051b"
 name = "np-ff"
 handle = "np-ff"
-application_url = "https://npff.skatbattery.com"
+application_url = "https://npff.fly.dev"
 embedded = true
 
 [build]
