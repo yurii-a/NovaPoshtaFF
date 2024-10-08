@@ -17,9 +17,9 @@ scopes = "read_assigned_fulfillment_orders,read_fulfillments,read_inventory,read
 
 [auth]
 redirect_urls = [
-  "https://npff.skatbattery.com/auth/callback",
-  "https://npff.skatbattery.com/auth/shopify/callback",
-  "https://npff.skatbattery.com/api/auth/callback"
+  "https://npff.fly.dev/auth/callback",
+  "https://npff.fly.dev/auth/shopify/callback",
+  "https://npff.fly.dev/api/auth/callback"
 ]
 
 [webhooks]
