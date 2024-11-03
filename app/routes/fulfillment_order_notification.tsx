@@ -3,6 +3,7 @@ import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import type { AdminApiContext } from "node_modules/@shopify/shopify-app-remix/dist/ts/server/clients";
 import { initiateNovaPoshtaFulfillment } from "./novaposhta/NovaPoshtaService";
+import { createOrders, fullfill } from "soap/NovaPoshtaService";
 
 export async function action({
   request,
@@ -76,7 +77,8 @@ async function fetchAssignedRequests(admin: AdminApiContext) {
 
       const requestStatus = await acceptFulfillmentRequest(admin, edge.node.id);
       if(requestStatus === "ACCEPTED") {
-        // initiateNovaPoshtaFulfillment(edge.node);
+        const orderResponse = fullfill(edge.node);
+        console.log(orderResponse);
       }
 
       // Expand and log destination
@@ -133,10 +135,10 @@ async function acceptFulfillmentRequest(admin: AdminApiContext, id: string){
 //   return json({ message: "Cancellation request processed" }, { status: 200 });
 // }
 
-// // Optional loader function for GET requests
-// export const loader = async () => {
-//   return json({
-//     message:
-//       "This endpoint handles POST requests for fulfillment and cancellations.",
-//   });
-// };
+// Optional loader function for GET requests
+export const loader = async () => {
+  return json({
+    message:
+      "This endpoint handles POST requests for fulfillment and cancellations.",
+  });
+};

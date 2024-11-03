@@ -1,0 +1,50 @@
+<soap:Envelope
+	xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+	xmlns:wms="http://npl-dev.omnic.solutions/wms">
+	<soap:Header/>
+	<soap:Body>
+		<wms:CreateUpdateOrders>
+			<wms:Organization>NPL_A1</wms:Organization>
+			<wms:Orders>
+				<wms:MessageOrders>
+					<wms:HeadOrder>
+						<wms:ExternalNumber>240999MO0F4FA261111232</wms:ExternalNumber>
+						<wms:ExternalDate>20240116044543</wms:ExternalDate>
+						<wms:DestWarehouse/>
+						<wms:Adress>
+							<wms:Region>Харківська область</wms:Region>
+							<wms:City>Харків</wms:City>
+							<wms:Street/>
+							<wms:House/>
+							<wms:Flat/>
+							<wms:Phone>+380677777777</wms:Phone>
+							<wms:NPWarehouse>1</wms:NPWarehouse>
+							<wms:District/>
+						</wms:Adress>
+						<wms:PayType>1</wms:PayType>
+						<wms:payer>1</wms:payer>
+						<wms:Contactor>
+							<wms:rcptName>Петров Петро Петрович</wms:rcptName>
+							<wms:rcptContact>Петров Петро Петрович</wms:rcptContact>
+							<wms:RecipientType>PrivatePerson</wms:RecipientType>
+						</wms:Contactor>
+						<wms:Description>Картка для виплат GOLD</wms:Description>
+						<wms:Cost>300</wms:Cost>
+						<wms:DeliveryType>0</wms:DeliveryType>
+						<wms:AdditionalParams/>
+						<wms:OrderType>0</wms:OrderType>
+					</wms:HeadOrder>
+					<wms:Items>
+						<wms:Item>
+							<wms:Sku>LU-01480</wms:Sku>
+							<wms:Qty>1</wms:Qty>
+							<wms:Price>300</wms:Price>
+							<wms:Sum>300</wms:Sum>
+							<wms:MeasureUnit>шт.</wms:MeasureUnit>
+						</wms:Item>
+					</wms:Items>
+				</wms:MessageOrders>
+			</wms:Orders>
+		</wms:CreateUpdateOrders>
+	</soap:Body>
+</soap:Envelope>

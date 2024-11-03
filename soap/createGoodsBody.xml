@@ -1,0 +1,25 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:wms="http://npl-dev.omnic.solutions/wms">
+   <soap:Header/>
+   <soap:Body>
+      <wms:CreateUpdateGoods>
+         <wms:Organization>NPL_A1</wms:Organization>
+         <wms:Goods>
+            <wms:MessageGoods>
+               <wms:Sku>LU-01480</wms:Sku>
+               <wms:GoodsUnitName>1,5*4,0*1,2 сталь/ сепаратор Torlon</wms:GoodsUnitName>
+               <wms:GoodsUnitFullName>1,5*4,0*1,2 сталь/ сепаратор Torlon</wms:GoodsUnitFullName>
+               <wms:BaseMeasureUnit>
+                  <wms:BarCode>00452</wms:BarCode>
+                  <wms:MeasureUnitName>шт.</wms:MeasureUnitName>
+                  <wms:Weight>0.01</wms:Weight>
+                  <wms:Length>1</wms:Length>
+                  <wms:Height>1</wms:Height>
+                  <wms:Width>1</wms:Width>
+               </wms:BaseMeasureUnit>
+               <wms:ExpirationDateSign>0</wms:ExpirationDateSign>
+               <wms:Price>9</wms:Price>
+            </wms:MessageGoods>
+         </wms:Goods>
+      </wms:CreateUpdateGoods>
+   </soap:Body>
+</soap:Envelope>
