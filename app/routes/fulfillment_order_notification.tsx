@@ -2,8 +2,7 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import type { AdminApiContext } from "node_modules/@shopify/shopify-app-remix/dist/ts/server/clients";
-import { initiateNovaPoshtaFulfillment } from "./novaposhta/NovaPoshtaService";
-import { createOrders, fullfill } from "soap/NovaPoshtaService";
+import { fullfill } from "soap/NovaPoshtaService";
 
 export async function action({
   request,

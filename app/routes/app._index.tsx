@@ -115,8 +115,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }`,
     {
       variables: {
-          name: "Nova Poshta FFF",
-          callbackUrl: "https://centres-exist-install-enforcement.trycloudflare.com/api/fulfillment"
+          name: "Nova Poshta Fullfillment",
+          callbackUrl: "https://np-ff.fly.dev"
       },
     }
   );

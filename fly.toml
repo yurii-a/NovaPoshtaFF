@@ -13,7 +13,7 @@ primary_region = 'ams'
   NODE_ENV = "production"
   SCOPES = 'read_assigned_fulfillment_orders,read_fulfillments,read_inventory,read_orders,read_products,write_assigned_fulfillment_orders,write_fulfillments,write_inventory,write_orders,write_products'
   SHOPIFY_API_KEY = 'c6b25c68afcae95124a8d30598fba535'
-  SHOPIFY_APP_URL = 'https://npff.fly.dev'
+  SHOPIFY_APP_URL = 'https://np-ff.fly.dev'
 
 [http_service]
   internal_port = 3000

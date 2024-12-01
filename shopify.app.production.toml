@@ -3,7 +3,7 @@
 client_id = "574b688c2d2066b9e11512dd3f4d051b"
 name = "np-ff"
 handle = "np-ff"
-application_url = "https://npff.fly.dev"
+application_url = "https://np-ff.fly.dev"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_assigned_fulfillment_orders,read_fulfillments,read_inventory,read
 
 [auth]
 redirect_urls = [
-  "https://npff.fly.dev/auth/callback",
-  "https://npff.fly.dev/auth/shopify/callback",
-  "https://npff.fly.dev/api/auth/callback"
+  "https://np-ff.fly.dev/auth/callback",
+  "https://np-ff.fly.dev/auth/shopify/callback",
+  "https://np-ff.fly.dev/api/auth/callback"
 ]
 
 [webhooks]
