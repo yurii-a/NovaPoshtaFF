@@ -2,7 +2,8 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import type { AdminApiContext } from "node_modules/@shopify/shopify-app-remix/dist/ts/server/clients";
-import { fullfill } from "soap/NovaPoshtaService";
+import { fullfillWithNovaPoshta } from "soap/NovaPoshtaService";
+import type { FulfillmentOrder, FulfillmentOrderEdge} from "~/types/admin.types";
 
 export async function action({
   request,
@@ -13,7 +14,7 @@ export async function action({
 
   // Step 3: Process the request based on the 'kind'
   if (kind === "FULFILLMENT_REQUEST") {
-    await fetchAssignedRequests(admin);
+    await processAssignedRequests(admin);
   } else if (kind === "CANCELLATION_REQUEST") {
     // await submitCancellationRequest();
   } else {
@@ -22,7 +23,15 @@ export async function action({
   return json({ message: "Unknown request kind" }, { status: 200 });
 }
 
-async function fetchAssignedRequests(admin: AdminApiContext) {
+async function processAssignedRequests(admin: AdminApiContext) {
+  const assignedRequests = await fetchAssignedRequests(admin);
+  assignedRequests.forEach(assignedRequest => {
+    const fulfillmentOrder = assignedRequest.node;
+    fulfill(admin, fulfillmentOrder);
+  });
+}
+
+async function fetchAssignedRequests(admin: AdminApiContext) : Promise<[FulfillmentOrderEdge]> {
   // If you don't include the `assignmentStatus` argument, then you receive all assigned fulfillment orders.
 
   const response = await admin.graphql(
@@ -52,6 +61,12 @@ async function fetchAssignedRequests(admin: AdminApiContext) {
                   }
                 }
               }
+              order {
+                customAttributes {
+                  key
+                  value
+                }
+              }
               merchantRequests(first: 10, kind: FULFILLMENT_REQUEST) {
                 edges {
                   node {
@@ -62,38 +77,54 @@ async function fetchAssignedRequests(admin: AdminApiContext) {
             }
           }
         }
-    }`,
+      }
+    `,
   );
+  
   // Destructure the response
   const body = await response.json();
   const { assignedFulfillmentOrders } = body.data;
+  return assignedFulfillmentOrders.edges;
+}
 
+async function logFulfillmentOrder(admin: AdminApiContext, fulfillmentOrder: FulfillmentOrderEdge) {
   // Log the structured data
-  console.log("Assigned Fulfillment Orders:", assignedFulfillmentOrders.edges);
-  assignedFulfillmentOrders.edges.forEach(
-    async (edge: { node: { id: any; destination: any; lineItems: { edges: any[] } } }) => {
-      console.log("Fulfillment Order Node:", edge.node);
+      console.log("Fulfillment Order Node:", fulfillmentOrder.node);
 
-      const requestStatus = await acceptFulfillmentRequest(admin, edge.node.id);
+      const requestStatus = await acceptFulfillmentRequest(admin, fulfillmentOrder.node.id);
       if(requestStatus === "ACCEPTED") {
-        const orderResponse = fullfill(edge.node);
+        const orderResponse = fullfillWithNovaPoshta(fulfillmentOrder.node);
         console.log(orderResponse);
       }
 
       // Expand and log destination
-      if (edge.node.destination) {
-        console.log("Destination:", edge.node.destination);
+      if (fulfillmentOrder.node.destination) {
+        console.log("Destination:", fulfillmentOrder.node.destination);
       }
 
       // Expand and log line items
-      if (edge.node.lineItems && edge.node.lineItems.edges) {
-        edge.node.lineItems.edges.forEach((lineItemEdge) => {
+      if (fulfillmentOrder.node.lineItems && fulfillmentOrder.node.lineItems.edges) {
+        fulfillmentOrder.node.lineItems.edges.forEach((lineItemEdge) => {
           console.log("Line Item Node:", lineItemEdge.node);
         });
       }
-    },
-  );
+
+      if (fulfillmentOrder.node.order.customAttributes)  {
+        fulfillmentOrder.node.order.customAttributes.forEach(element => {
+          console.log("Attributes for order %{edge.node.id}: $" );
+        });
+      }
 }
+
+async function fulfill(admin: AdminApiContext, fulfillmentOrder: FulfillmentOrder) {
+  // Create a fulfillment request to Nova Poshta SOAP
+  // If Nova Poshta accepts the request, then mark the fulfillment as accepted or rejected otherwise
+  const response = await fullfillWithNovaPoshta(fulfillmentOrder);
+
+  console.log(response.json());
+
+}
+
 
 async function acceptFulfillmentRequest(admin: AdminApiContext, id: string){
   const message = 'OK';
@@ -141,3 +172,11 @@ export const loader = async () => {
       "This endpoint handles POST requests for fulfillment and cancellations.",
   });
 };
+
+function notifyFulfillmentError() {
+  throw new Error("Function not implemented.");
+}
+function markFulfilmentAccepted() {
+  console.log("Fulfillment has been accepted and marked as such.");
+}
+

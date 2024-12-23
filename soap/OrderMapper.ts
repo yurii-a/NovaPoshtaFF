@@ -1,3 +1,4 @@
+import type { FulfillmentOrder} from "~/types/admin.types";
 import type { ICreateUpdateOrdersRequest } from "./types";
 
 /**
@@ -5,14 +6,14 @@ import type { ICreateUpdateOrdersRequest } from "./types";
  * @param order Shopify order
  * @returns SOAP request compatible with NovaPoshta in json
  */
-export function mapCreateOrdersRequest(order): ICreateUpdateOrdersRequest {
+export function mapCreateOrdersRequest(order: FulfillmentOrder): ICreateUpdateOrdersRequest {
     const organization = process.env.NP_ORGANIZATION!;
     const orderData: ICreateUpdateOrdersRequest = {
         Organization: organization,
         Orders: {
           MessageOrders: {
             HeadOrder: {
-              ExternalNumber: "240999MO0F4FA261111232",
+              ExternalNumber: order.orderName,
               ExternalDate: "20240116044543",
               DestWarehouse: "",
               Adress: {

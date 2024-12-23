@@ -33,16 +33,65 @@ export type AbandonedCheckout = Navigable & Node & {
   __typename?: 'AbandonedCheckout';
   /** The URL for the buyer to recover their checkout. */
   abandonedCheckoutUrl: Scalars['URL']['output'];
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /**
+   * The billing address provided by the buyer.
+   * Null if the user did not provide a billing address.
+   */
+  billingAddress?: Maybe<MailingAddress>;
+  /**
+   * The date and time when the buyer completed the checkout.
+   * Null if the checkout has not been completed.
+   */
+  completedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The date and time when the checkout was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** A list of extra information that has been added to the checkout. */
+  customAttributes: Array<Attribute>;
+  /**
+   * The customer who created this checkout.
+   * May be null if the checkout was created from a draft order or via an app.
+   */
+  customer?: Maybe<Customer>;
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
+  /** The discount codes entered by the buyer at checkout. */
+  discountCodes: Array<Scalars['String']['output']>;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
   /** A list of the line items in this checkout. */
   lineItems: AbandonedCheckoutLineItemConnection;
-  /** The number of products in the checkout. */
+  /**
+   * The number of products in the checkout.
+   * @deprecated Use [AbandonedCheckoutLineItem.quantity](https://shopify.dev/api/admin-graphql/unstable/objects/AbandonedCheckoutLineItem#field-quantity) instead.
+   */
   lineItemsQuantity: Scalars['Int']['output'];
+  /** Unique merchant-facing identifier for the checkout. */
+  name: Scalars['String']['output'];
+  /** A merchant-facing note added to the checkout. Not visible to the buyer. */
+  note: Scalars['String']['output'];
+  /**
+   * The shipping address to where the line items will be shipped.
+   * Null if the user did not provide a shipping address.
+   */
+  shippingAddress?: Maybe<MailingAddress>;
+  /** The sum of all items in the checkout, including discounts but excluding shipping, taxes and tips. */
+  subtotalPriceSet: MoneyBag;
+  /** Individual taxes charged on the checkout. */
+  taxLines: Array<TaxLine>;
+  /** Whether taxes are included in line item and shipping line prices. */
+  taxesIncluded: Scalars['Boolean']['output'];
+  /** The total amount of discounts to be applied. */
+  totalDiscountSet: MoneyBag;
+  /** The total duties applied to the checkout. */
+  totalDutiesSet?: Maybe<MoneyBag>;
+  /** The sum of the prices of all line items in the checkout. */
+  totalLineItemsPriceSet: MoneyBag;
   /** The sum of all items in the checkout, including discounts, shipping, taxes, and tips. */
   totalPriceSet: MoneyBag;
+  /** The total tax applied to the checkout. */
+  totalTaxSet?: Maybe<MoneyBag>;
+  /** The date and time when the checkout was most recently updated. */
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -55,11 +104,33 @@ export type AbandonedCheckoutLineItemsArgs = {
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** An auto-generated type for paginating through multiple AbandonedCheckouts. */
+export type AbandonedCheckoutConnection = {
+  __typename?: 'AbandonedCheckoutConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<AbandonedCheckoutEdge>;
+  /** A list of nodes that are contained in AbandonedCheckoutEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<AbandonedCheckout>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** An auto-generated type which holds one AbandonedCheckout and a cursor during pagination. */
+export type AbandonedCheckoutEdge = {
+  __typename?: 'AbandonedCheckoutEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of AbandonedCheckoutEdge. */
+  node: AbandonedCheckout;
+};
+
 /** A single line item in an abandoned checkout. */
 export type AbandonedCheckoutLineItem = Node & {
   __typename?: 'AbandonedCheckoutLineItem';
   /** A list of extra information that has been added to the line item. */
   customAttributes: Array<Attribute>;
+  /** Discount allocations that have been applied on the line item. */
+  discountAllocations: DiscountAllocationConnection;
   /** Final total price for the entire quantity of this line item, including discounts. */
   discountedTotalPriceSet: MoneyBag;
   /** The total price for the entire quantity of this line item, after all discounts are applied, at both the line item and code-based line item level. */
@@ -102,25 +173,54 @@ export type AbandonedCheckoutLineItem = Node & {
   variantTitle?: Maybe<Scalars['String']['output']>;
 };
 
+
+/** A single line item in an abandoned checkout. */
+export type AbandonedCheckoutLineItemDiscountAllocationsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 /** An auto-generated type for paginating through multiple AbandonedCheckoutLineItems. */
 export type AbandonedCheckoutLineItemConnection = {
   __typename?: 'AbandonedCheckoutLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AbandonedCheckoutLineItemEdge>;
-  /** A list of the nodes contained in AbandonedCheckoutLineItemEdge. */
+  /** A list of nodes that are contained in AbandonedCheckoutLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AbandonedCheckoutLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one AbandonedCheckoutLineItem and a cursor during pagination. */
 export type AbandonedCheckoutLineItemEdge = {
   __typename?: 'AbandonedCheckoutLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AbandonedCheckoutLineItemEdge. */
   node: AbandonedCheckoutLineItem;
 };
+
+/** The set of valid sort keys for the AbandonedCartGraphQL query. */
+export enum AbandonedCheckoutSortKeys {
+  /** Sort by the `checkout_id` value. */
+  CheckoutId = 'CHECKOUT_ID',
+  /** Sort by the `created_at` value. */
+  CreatedAt = 'CREATED_AT',
+  /** Sort by the `customer_name` value. */
+  CustomerName = 'CUSTOMER_NAME',
+  /** Sort by the `id` value. */
+  Id = 'ID',
+  /**
+   * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
+   * Don't use this sort key when no search query is specified.
+   */
+  Relevance = 'RELEVANCE',
+  /** Sort by the `total_price` value. */
+  TotalPrice = 'TOTAL_PRICE'
+}
 
 /** A browse, cart, or checkout that was abandoned by a customer. */
 export type Abandonment = Node & {
@@ -293,6 +393,26 @@ export type AccessScope = {
   /** A readable string that represents the access scope. The string usually follows the format `{action}_{resource}`. `{action}` is `read` or `write`, and `{resource}` is the resource that the action can be performed on. `{action}` and `{resource}` are separated by an underscore. For example, `read_orders` or `write_products`. */
   handle: Scalars['String']['output'];
 };
+
+/** Possible account types that a staff member can have. */
+export enum AccountType {
+  /** The account of a partner who collaborates with the merchant. */
+  Collaborator = 'COLLABORATOR',
+  /** The account of a partner collaborator team member. */
+  CollaboratorTeamMember = 'COLLABORATOR_TEAM_MEMBER',
+  /** The user has not yet accepted the invitation to create an account. */
+  Invited = 'INVITED',
+  /** The user has not yet accepted the invitation to become the store owner. */
+  InvitedStoreOwner = 'INVITED_STORE_OWNER',
+  /** The account can access the Shopify admin. */
+  Regular = 'REGULAR',
+  /** The admin has not yet accepted the request to create a collaborator account. */
+  Requested = 'REQUESTED',
+  /** The account cannot access the Shopify admin. */
+  Restricted = 'RESTRICTED',
+  /** The account can be signed into via a SAML provider. */
+  Saml = 'SAML'
+}
 
 /** Represents an operation publishing all products to a publication. */
 export type AddAllProductsOperation = Node & ResourceOperation & {
@@ -472,6 +592,8 @@ export type App = Node & {
    * @deprecated Use AppInstallation.navigationItems instead
    */
   navigationItems: Array<NavigationItem>;
+  /** The optional scopes requested by the app. Lists the optional access scopes the app has declared in its configuration. These scopes are optionally requested by the app after installation. */
+  optionalAccessScopes: Array<AccessScope>;
   /** Whether the app was previously installed on the current shop. */
   previouslyInstalled: Scalars['Boolean']['output'];
   /** Detailed information about the app pricing. */
@@ -538,11 +660,11 @@ export type AppCatalogAppsArgs = {
 /** An auto-generated type for paginating through multiple Apps. */
 export type AppConnection = {
   __typename?: 'AppConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppEdge>;
-  /** A list of the nodes contained in AppEdge. */
+  /** A list of nodes that are contained in AppEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<App>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -564,18 +686,18 @@ export type AppCredit = Node & {
 /** An auto-generated type for paginating through multiple AppCredits. */
 export type AppCreditConnection = {
   __typename?: 'AppCreditConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppCreditEdge>;
-  /** A list of the nodes contained in AppCreditEdge. */
+  /** A list of nodes that are contained in AppCreditEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AppCredit>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one AppCredit and a cursor during pagination. */
 export type AppCreditEdge = {
   __typename?: 'AppCreditEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppCreditEdge. */
   node: AppCredit;
@@ -617,7 +739,7 @@ export type AppDiscountType = {
 /** An auto-generated type which holds one App and a cursor during pagination. */
 export type AppEdge = {
   __typename?: 'AppEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppEdge. */
   node: App;
@@ -632,10 +754,14 @@ export type AppFeedback = {
   __typename?: 'AppFeedback';
   /** The application associated to the feedback. */
   app: App;
+  /** The date and time when the app feedback was generated. */
+  feedbackGeneratedAt: Scalars['DateTime']['output'];
   /** A link to where merchants can resolve errors. */
   link?: Maybe<Link>;
   /** The feedback message presented to the merchant. */
   messages: Array<UserError>;
+  /** Conveys the state of the feedback and whether it requires merchant action or not. */
+  state: ResourceFeedbackState;
 };
 
 /** Represents an installed application on a shop. */
@@ -660,9 +786,16 @@ export type AppInstallation = HasMetafields & Node & {
   id: Scalars['ID']['output'];
   /** The URL to launch the application. */
   launchUrl: Scalars['URL']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** One-time purchases to a shop. */
   oneTimePurchases: AppPurchaseOneTimeConnection;
@@ -788,18 +921,18 @@ export enum AppInstallationCategory {
 /** An auto-generated type for paginating through multiple AppInstallations. */
 export type AppInstallationConnection = {
   __typename?: 'AppInstallationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppInstallationEdge>;
-  /** A list of the nodes contained in AppInstallationEdge. */
+  /** A list of nodes that are contained in AppInstallationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AppInstallation>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one AppInstallation and a cursor during pagination. */
 export type AppInstallationEdge = {
   __typename?: 'AppInstallationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppInstallationEdge. */
   node: AppInstallation;
@@ -904,11 +1037,11 @@ export type AppPurchaseOneTime = AppPurchase & Node & {
 /** An auto-generated type for paginating through multiple AppPurchaseOneTimes. */
 export type AppPurchaseOneTimeConnection = {
   __typename?: 'AppPurchaseOneTimeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppPurchaseOneTimeEdge>;
-  /** A list of the nodes contained in AppPurchaseOneTimeEdge. */
+  /** A list of nodes that are contained in AppPurchaseOneTimeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AppPurchaseOneTime>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -933,7 +1066,7 @@ export type AppPurchaseOneTimeCreatePayload = {
 /** An auto-generated type which holds one AppPurchaseOneTime and a cursor during pagination. */
 export type AppPurchaseOneTimeEdge = {
   __typename?: 'AppPurchaseOneTimeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppPurchaseOneTimeEdge. */
   node: AppPurchaseOneTime;
@@ -1015,18 +1148,18 @@ export type AppRevenueAttributionRecord = Node & {
 /** An auto-generated type for paginating through multiple AppRevenueAttributionRecords. */
 export type AppRevenueAttributionRecordConnection = {
   __typename?: 'AppRevenueAttributionRecordConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppRevenueAttributionRecordEdge>;
-  /** A list of the nodes contained in AppRevenueAttributionRecordEdge. */
+  /** A list of nodes that are contained in AppRevenueAttributionRecordEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AppRevenueAttributionRecord>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one AppRevenueAttributionRecord and a cursor during pagination. */
 export type AppRevenueAttributionRecordEdge = {
   __typename?: 'AppRevenueAttributionRecordEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppRevenueAttributionRecordEdge. */
   node: AppRevenueAttributionRecord;
@@ -1056,6 +1189,44 @@ export enum AppRevenueAttributionType {
   /** Other app revenue collection type. */
   Other = 'OTHER'
 }
+
+/** Represents an error that happens while revoking a granted scope. */
+export type AppRevokeAccessScopesAppRevokeScopeError = DisplayableError & {
+  __typename?: 'AppRevokeAccessScopesAppRevokeScopeError';
+  /** The error code. */
+  code?: Maybe<AppRevokeAccessScopesAppRevokeScopeErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `AppRevokeAccessScopesAppRevokeScopeError`. */
+export enum AppRevokeAccessScopesAppRevokeScopeErrorCode {
+  /** The application cannot be found. */
+  ApplicationCannotBeFound = 'APPLICATION_CANNOT_BE_FOUND',
+  /** App is not installed on shop. */
+  AppNotInstalled = 'APP_NOT_INSTALLED',
+  /** Already granted implied scopes cannot be revoked. */
+  CannotRevokeImpliedScopes = 'CANNOT_REVOKE_IMPLIED_SCOPES',
+  /** Required scopes cannot be revoked. */
+  CannotRevokeRequiredScopes = 'CANNOT_REVOKE_REQUIRED_SCOPES',
+  /** Cannot revoke optional scopes that haven't been declared. */
+  CannotRevokeUndeclaredScopes = 'CANNOT_REVOKE_UNDECLARED_SCOPES',
+  /** No app found on the access token. */
+  MissingSourceApp = 'MISSING_SOURCE_APP',
+  /** The requested list of scopes to revoke includes invalid handles. */
+  UnknownScopes = 'UNKNOWN_SCOPES'
+}
+
+/** Return type for `appRevokeAccessScopes` mutation. */
+export type AppRevokeAccessScopesPayload = {
+  __typename?: 'AppRevokeAccessScopesPayload';
+  /** The list of scope handles that have been revoked. */
+  revoked?: Maybe<Array<AccessScope>>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<AppRevokeAccessScopesAppRevokeScopeError>;
+};
 
 /** Provides users access to services and/or features for a duration of time. */
 export type AppSubscription = Node & {
@@ -1092,11 +1263,11 @@ export type AppSubscriptionCancelPayload = {
 /** An auto-generated type for paginating through multiple AppSubscriptions. */
 export type AppSubscriptionConnection = {
   __typename?: 'AppSubscriptionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppSubscriptionEdge>;
-  /** A list of the nodes contained in AppSubscriptionEdge. */
+  /** A list of nodes that are contained in AppSubscriptionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AppSubscription>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -1166,7 +1337,7 @@ export type AppSubscriptionDiscountValueInput = {
 /** An auto-generated type which holds one AppSubscription and a cursor during pagination. */
 export type AppSubscriptionEdge = {
   __typename?: 'AppSubscriptionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppSubscriptionEdge. */
   node: AppSubscription;
@@ -1356,11 +1527,11 @@ export type AppUsageRecord = Node & {
 /** An auto-generated type for paginating through multiple AppUsageRecords. */
 export type AppUsageRecordConnection = {
   __typename?: 'AppUsageRecordConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<AppUsageRecordEdge>;
-  /** A list of the nodes contained in AppUsageRecordEdge. */
+  /** A list of nodes that are contained in AppUsageRecordEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<AppUsageRecord>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -1376,7 +1547,7 @@ export type AppUsageRecordCreatePayload = {
 /** An auto-generated type which holds one AppUsageRecord and a cursor during pagination. */
 export type AppUsageRecordEdge = {
   __typename?: 'AppUsageRecordEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of AppUsageRecordEdge. */
   node: AppUsageRecord;
@@ -1412,6 +1583,452 @@ export type AppleApplication = {
   universalLinksEnabled: Scalars['Boolean']['output'];
 };
 
+/** An article in the blogging system. */
+export type Article = HasEvents & HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Navigable & Node & {
+  __typename?: 'Article';
+  /** The name of the author of the article. */
+  author?: Maybe<ArticleAuthor>;
+  /** The blog containing the article. */
+  blog: Blog;
+  /** The text of the article's body, complete with HTML markup. */
+  body: Scalars['HTML']['output'];
+  /** List of the article's comments. */
+  comments: CommentConnection;
+  /** Count of comments. */
+  commentsCount?: Maybe<Count>;
+  /** The date and time (ISO 8601 format) when the article was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
+  defaultCursor: Scalars['String']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
+  /**
+   * A unique, human-friendly string for the article that's automatically generated from the article's title.
+   * The handle is used in the article's URL.
+   */
+  handle: Scalars['String']['output'];
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** The image associated with the article. */
+  image?: Maybe<Image>;
+  /** Whether or not the article is visible. */
+  isPublished: Scalars['Boolean']['output'];
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
+  metafield?: Maybe<Metafield>;
+  /**
+   * List of metafield definitions.
+   * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
+   */
+  metafieldDefinitions: MetafieldDefinitionConnection;
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
+  metafields: MetafieldConnection;
+  /**
+   * Returns a private metafield by namespace and key that belongs to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafield?: Maybe<PrivateMetafield>;
+  /**
+   * List of private metafields that belong to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafields: PrivateMetafieldConnection;
+  /**
+   * The date and time (ISO 8601 format) when the article became or will become visible.
+   * Returns null when the article isn't visible.
+   */
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * A summary of the article, which can include HTML markup.
+   * The summary is used by the online store theme to display the article on other pages, such as the home page or the main blog page.
+   */
+  summary?: Maybe<Scalars['HTML']['output']>;
+  /**
+   * A comma-separated list of tags.
+   * Tags are additional short descriptors formatted as a string of comma-separated values.
+   */
+  tags: Array<Scalars['String']['output']>;
+  /**
+   * The name of the template an article is using if it's using an alternate template.
+   * If an article is using the default `article.liquid` template, then the value returned is `null`.
+   */
+  templateSuffix?: Maybe<Scalars['String']['output']>;
+  /** The title of the article. */
+  title: Scalars['String']['output'];
+  /** The published translations associated with the resource. */
+  translations: Array<Translation>;
+  /** The date and time (ISO 8601 format) when the article was last updated. */
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleCommentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleCommentsCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleMetafieldDefinitionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  pinnedStatus?: InputMaybe<MetafieldDefinitionPinnedStatus>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<MetafieldDefinitionSortKeys>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticlePrivateMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace: Scalars['String']['input'];
+};
+
+
+/** An article in the blogging system. */
+export type ArticlePrivateMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** An article in the blogging system. */
+export type ArticleTranslationsArgs = {
+  locale: Scalars['String']['input'];
+  marketId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** Represents an article author in an Article. */
+export type ArticleAuthor = {
+  __typename?: 'ArticleAuthor';
+  /** The author's full name. */
+  name: Scalars['String']['output'];
+};
+
+/** The input fields of a blog when an article is created or updated. */
+export type ArticleBlogInput = {
+  /** The title of the blog. */
+  title: Scalars['String']['input'];
+};
+
+/** An auto-generated type for paginating through multiple Articles. */
+export type ArticleConnection = {
+  __typename?: 'ArticleConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<ArticleEdge>;
+  /** A list of nodes that are contained in ArticleEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<Article>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** The input fields to create an article. */
+export type ArticleCreateInput = {
+  /** The name of the author of the article. */
+  author: AuthorInput;
+  /** The ID of the blog containing the article. */
+  blogId?: InputMaybe<Scalars['ID']['input']>;
+  /** The text of the article's body, complete with HTML markup. */
+  body?: InputMaybe<Scalars['HTML']['input']>;
+  /**
+   * A unique, human-friendly string for the article that's automatically generated from the article's title.
+   * The handle is used in the article's URL.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** The image associated with the article. */
+  image?: InputMaybe<ArticleImageInput>;
+  /** Whether or not the article should be visible. */
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The input fields to create or update a metafield. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** The date and time (ISO 8601 format) when the article should become visible. */
+  publishDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /**
+   * A summary of the article, which can include HTML markup.
+   * The summary is used by the online store theme to display the article on other pages, such as the home page or the main blog page.
+   */
+  summary?: InputMaybe<Scalars['HTML']['input']>;
+  /**
+   * A comma-separated list of tags.
+   * Tags are additional short descriptors formatted as a string of comma-separated values.
+   */
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  /**
+   * The suffix of the template that's used to render the page.
+   * If the value is an empty string or `null`, then the default article template is used.
+   */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /** The title of the article. */
+  title: Scalars['String']['input'];
+};
+
+/** Return type for `articleCreate` mutation. */
+export type ArticleCreatePayload = {
+  __typename?: 'ArticleCreatePayload';
+  /** The article that was created. */
+  article?: Maybe<Article>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ArticleCreateUserError>;
+};
+
+/** An error that occurs during the execution of `ArticleCreate`. */
+export type ArticleCreateUserError = DisplayableError & {
+  __typename?: 'ArticleCreateUserError';
+  /** The error code. */
+  code?: Maybe<ArticleCreateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ArticleCreateUserError`. */
+export enum ArticleCreateUserErrorCode {
+  /** Can't create an article author if both author name and user ID are supplied. */
+  AmbiguousAuthor = 'AMBIGUOUS_AUTHOR',
+  /** Can't create a blog from input if a blog ID is supplied. */
+  AmbiguousBlog = 'AMBIGUOUS_BLOG',
+  /** Can't create an article if both author name and user ID are blank. */
+  AuthorFieldRequired = 'AUTHOR_FIELD_REQUIRED',
+  /** User must exist if a user ID is supplied. */
+  AuthorMustExist = 'AUTHOR_MUST_EXIST',
+  /** Must reference or create a blog when creating an article. */
+  BlogReferenceRequired = 'BLOG_REFERENCE_REQUIRED',
+  /** Can’t set isPublished to true and also set a future publish date. */
+  InvalidPublishDate = 'INVALID_PUBLISH_DATE',
+  /** The metafield type is invalid. */
+  InvalidType = 'INVALID_TYPE',
+  /** The value is invalid for the metafield type or for the definition options. */
+  InvalidValue = 'INVALID_VALUE',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** The input value is already taken. */
+  Taken = 'TAKEN',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG',
+  /** Image upload failed. */
+  UploadFailed = 'UPLOAD_FAILED'
+}
+
+/** Return type for `articleDelete` mutation. */
+export type ArticleDeletePayload = {
+  __typename?: 'ArticleDeletePayload';
+  /** The ID of the deleted article. */
+  deletedArticleId?: Maybe<Scalars['ID']['output']>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ArticleDeleteUserError>;
+};
+
+/** An error that occurs during the execution of `ArticleDelete`. */
+export type ArticleDeleteUserError = DisplayableError & {
+  __typename?: 'ArticleDeleteUserError';
+  /** The error code. */
+  code?: Maybe<ArticleDeleteUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ArticleDeleteUserError`. */
+export enum ArticleDeleteUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** An auto-generated type which holds one Article and a cursor during pagination. */
+export type ArticleEdge = {
+  __typename?: 'ArticleEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of ArticleEdge. */
+  node: Article;
+};
+
+/** The input fields for an image associated with an article. */
+export type ArticleImageInput = {
+  /** A word or phrase to share the nature or contents of an image. */
+  altText?: InputMaybe<Scalars['String']['input']>;
+  /** The URL of the image. */
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The set of valid sort keys for the Article query. */
+export enum ArticleSortKeys {
+  /** Sort by the `author` value. */
+  Author = 'AUTHOR',
+  /** Sort by the `blog_title` value. */
+  BlogTitle = 'BLOG_TITLE',
+  /** Sort by the `id` value. */
+  Id = 'ID',
+  /** Sort by the `published_at` value. */
+  PublishedAt = 'PUBLISHED_AT',
+  /**
+   * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
+   * Don't use this sort key when no search query is specified.
+   */
+  Relevance = 'RELEVANCE',
+  /** Sort by the `title` value. */
+  Title = 'TITLE',
+  /** Sort by the `updated_at` value. */
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Possible sort of tags. */
+export enum ArticleTagSort {
+  /** Sort alphabetically.. */
+  Alphabetical = 'ALPHABETICAL',
+  /** Sort by popularity, starting with the most popular tag. */
+  Popular = 'POPULAR'
+}
+
+/** The input fields to update an article. */
+export type ArticleUpdateInput = {
+  /** The name of the author of the article. */
+  author?: InputMaybe<AuthorInput>;
+  /** The ID of the blog containing the article. */
+  blogId?: InputMaybe<Scalars['ID']['input']>;
+  /** The text of the article's body, complete with HTML markup. */
+  body?: InputMaybe<Scalars['HTML']['input']>;
+  /**
+   * A unique, human-friendly string for the article that's automatically generated from the article's title.
+   * The handle is used in the article's URL.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** The image associated with the article. */
+  image?: InputMaybe<ArticleImageInput>;
+  /** Whether or not the article should be visible. */
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The input fields to create or update a metafield. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** The date and time (ISO 8601 format) when the article should become visible. */
+  publishDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /**
+   * Whether a redirect is required after a new handle has been provided.
+   * If `true`, then the old handle is redirected to the new one automatically.
+   */
+  redirectNewHandle?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * A summary of the article, which can include HTML markup.
+   * The summary is used by the online store theme to display the article on other pages, such as the home page or the main blog page.
+   */
+  summary?: InputMaybe<Scalars['HTML']['input']>;
+  /**
+   * A comma-separated list of tags.
+   * Tags are additional short descriptors formatted as a string of comma-separated values.
+   */
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  /**
+   * The suffix of the template that's used to render the page.
+   * If the value is an empty string or `null`, then the default article template is used.
+   */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /** The title of the article. */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Return type for `articleUpdate` mutation. */
+export type ArticleUpdatePayload = {
+  __typename?: 'ArticleUpdatePayload';
+  /** The article that was updated. */
+  article?: Maybe<Article>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ArticleUpdateUserError>;
+};
+
+/** An error that occurs during the execution of `ArticleUpdate`. */
+export type ArticleUpdateUserError = DisplayableError & {
+  __typename?: 'ArticleUpdateUserError';
+  /** The error code. */
+  code?: Maybe<ArticleUpdateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ArticleUpdateUserError`. */
+export enum ArticleUpdateUserErrorCode {
+  /** Can't update an article author if both author name and user ID are supplied. */
+  AmbiguousAuthor = 'AMBIGUOUS_AUTHOR',
+  /** Can't create a blog from input if a blog ID is supplied. */
+  AmbiguousBlog = 'AMBIGUOUS_BLOG',
+  /** User must exist if a user ID is supplied. */
+  AuthorMustExist = 'AUTHOR_MUST_EXIST',
+  /** The input value is blank. */
+  Blank = 'BLANK',
+  /** Can’t set isPublished to true and also set a future publish date. */
+  InvalidPublishDate = 'INVALID_PUBLISH_DATE',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** The input value is already taken. */
+  Taken = 'TAKEN',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG',
+  /** Image upload failed. */
+  UploadFailed = 'UPLOAD_FAILED'
+}
+
 /** Represents a generic custom attribute, such as whether an order is a customer's first. */
 export type Attribute = {
   __typename?: 'Attribute';
@@ -1427,6 +2044,14 @@ export type AttributeInput = {
   key: Scalars['String']['input'];
   /** Value of the attribute. */
   value: Scalars['String']['input'];
+};
+
+/** The input fields for an author. Either the `name` or `user_id` fields can be supplied, but never both. */
+export type AuthorInput = {
+  /** The author's full name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of a staff member's account. */
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 /** Automatic discount applications capture the intentions of a discount that was automatically applied. */
@@ -1523,11 +2148,71 @@ export type BasePaymentDetails = {
 /**
  * Basic events chronicle resource activities such as the creation of an article, the fulfillment of an order, or
  * the addition of a product.
+ *
+ * ### General events
+ *
+ * | Action | Description  |
+ * |---|---|
+ * | `create` | The item was created. |
+ * | `destroy` | The item was destroyed. |
+ * | `published` | The item was published. |
+ * | `unpublished` | The item was unpublished. |
+ * | `update` | The item was updated.  |
+ *
+ * ### Order events
+ *
+ * Order events can be divided into the following categories:
+ *
+ * - *Authorization*: Includes whether the authorization succeeded, failed, or is pending.
+ * - *Capture*: Includes whether the capture succeeded, failed, or is pending.
+ * - *Email*: Includes confirmation or cancellation of the order, as well as shipping.
+ * - *Fulfillment*: Includes whether the fulfillment succeeded, failed, or is pending. Also includes cancellation, restocking, and fulfillment updates.
+ * - *Order*: Includess the placement, confirmation, closing, re-opening, and cancellation of the order.
+ * - *Refund*: Includes whether the refund succeeded, failed, or is pending.
+ * - *Sale*: Includes whether the sale succeeded, failed, or is pending.
+ * - *Void*: Includes whether the void succeeded, failed, or is pending.
+ *
+ * | Action  | Message  | Description  |
+ * |---|---|---|
+ * | `authorization_failure` | The customer, unsuccessfully, tried to authorize: `{money_amount}`. | Authorization failed. The funds cannot be captured. |
+ * | `authorization_pending` | Authorization for `{money_amount}` is pending. | Authorization pending. |
+ * | `authorization_success` | The customer successfully authorized us to capture: `{money_amount}`. | Authorization was successful and the funds are available for capture. |
+ * | `cancelled` | Order was cancelled by `{shop_staff_name}`. | The order was cancelled. |
+ * | `capture_failure` | We failed to capture: `{money_amount}`. | The capture failed. The funds cannot be transferred to the shop. |
+ * | `capture_pending` | Capture for `{money_amount}` is pending. | The capture is in process. The funds are not yet available to the shop. |
+ * | `capture_success` | We successfully captured: `{money_amount}` | The capture was successful and the funds are now available to the shop. |
+ * | `closed` | Order was closed. | The order was closed. |
+ * | `confirmed` | Received a new order: `{order_number}` by `{customer_name}`. | The order was confirmed. |
+ * | `fulfillment_cancelled` | We cancelled `{number_of_line_items}` from being fulfilled by the third party fulfillment service. | Fulfillment for one or more of the line_items failed. |
+ * | `fulfillment_pending` | We submitted `{number_of_line_items}` to the third party service. | One or more of the line_items has been assigned to a third party service for fulfillment. |
+ * | `fulfillment_success` | We successfully fulfilled line_items. | Fulfillment was successful for one or more line_items. |
+ * | `mail_sent` | `{message_type}` email was sent to the customer. | An email was sent to the customer. |
+ * | `placed` | Order was placed. | An order was placed by the customer. |
+ * | `re_opened` | Order was re-opened. | An order was re-opened. |
+ * | `refund_failure` | We failed to refund `{money_amount}`. | The refund failed. The funds are still with the shop. |
+ * | `refund_pending` | Refund of `{money_amount}` is still pending. | The refund is in process. The funds are still with shop. |
+ * | `refund_success` | We successfully refunded `{money_amount}`. | The refund was successful. The funds have been transferred to the customer. |
+ * | `restock_line_items` | We restocked `{number_of_line_items}`. |	One or more of the order's line items have been restocked. |
+ * | `sale_failure` | The customer failed to pay `{money_amount}`. | The sale failed. The funds are not available to the shop. |
+ * | `sale_pending` | The `{money_amount}` is pending. | The sale is in process. The funds are not yet available to the shop. |
+ * | `sale_success` | We successfully captured `{money_amount}`. | The sale was successful. The funds are now with the shop. |
+ * | `update` | `{order_number}` was updated. | The order was updated. |
+ * | `void_failure` | We failed to void the authorization. | Voiding the authorization failed. The authorization is still valid. |
+ * | `void_pending` | Authorization void is pending. | Voiding the authorization is in process. The authorization is still valid. |
+ * | `void_success` | We successfully voided the authorization. | Voiding the authorization was successful. The authorization is no longer valid. |
  */
 export type BasicEvent = Event & Node & {
   __typename?: 'BasicEvent';
+  /** The action that occured. */
+  action: Scalars['String']['output'];
+  /** Provides additional content for collapsible timeline events. */
+  additionalContent?: Maybe<Scalars['JSON']['output']>;
+  /** Provides additional data for event consumers. */
+  additionalData?: Maybe<Scalars['JSON']['output']>;
   /** The name of the app that created the event. */
   appTitle?: Maybe<Scalars['String']['output']>;
+  /** Refers to a certain event and its resources. */
+  arguments?: Maybe<Scalars['JSON']['output']>;
   /** Whether the event was created by an app. */
   attributeToApp: Scalars['Boolean']['output'];
   /** Whether the event was caused by an admin user. */
@@ -1536,10 +2221,23 @@ export type BasicEvent = Event & Node & {
   createdAt: Scalars['DateTime']['output'];
   /** Whether the event is critical. */
   criticalAlert: Scalars['Boolean']['output'];
+  /** Whether this event has additional content. */
+  hasAdditionalContent: Scalars['Boolean']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
   /** Human readable text that describes the event. */
   message: Scalars['FormattedString']['output'];
+  /** Human readable text that supports the event message. */
+  secondaryMessage?: Maybe<Scalars['FormattedString']['output']>;
+  /**
+   * The resource that generated the event. To see a list of possible types,
+   * refer to [HasEvents](https://shopify.dev/docs/api/admin-graphql/unstable/interfaces/HasEvents#implemented-in).
+   */
+  subject?: Maybe<HasEvents>;
+  /** The ID of the resource that generated the event. */
+  subjectId: Scalars['ID']['output'];
+  /** The type of the resource that generated the event. */
+  subjectType: EventSubjectType;
 };
 
 /** Represents an error that happens during the execution of a billing attempt mutation. */
@@ -1581,6 +2279,365 @@ export enum BillingAttemptUserErrorCode {
   OriginTimeOutOfRange = 'ORIGIN_TIME_OUT_OF_RANGE',
   /** Billing cycle selector cannot select upcoming billing cycle past limit. */
   UpcomingCycleLimitExceeded = 'UPCOMING_CYCLE_LIMIT_EXCEEDED'
+}
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type Blog = HasEvents & HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Node & {
+  __typename?: 'Blog';
+  /** List of the blog's articles. */
+  articles: ArticleConnection;
+  /** Count of articles. */
+  articlesCount?: Maybe<Count>;
+  /** Indicates whether readers can post comments to the blog and if comments are moderated or not. */
+  commentPolicy: CommentPolicy;
+  /** The date and time when the blog was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
+  /** FeedBurner provider details. Any blogs that aren't already integrated with FeedBurner can't use the service. */
+  feed?: Maybe<BlogFeed>;
+  /**
+   * A unique, human-friendly string for the blog. If no handle is specified, a handle will be generated automatically from the blog title.
+   * The handle is customizable and is used by the Liquid templating language to refer to the blog.
+   */
+  handle: Scalars['String']['output'];
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
+  metafield?: Maybe<Metafield>;
+  /**
+   * List of metafield definitions.
+   * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
+   */
+  metafieldDefinitions: MetafieldDefinitionConnection;
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
+  metafields: MetafieldConnection;
+  /**
+   * Returns a private metafield by namespace and key that belongs to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafield?: Maybe<PrivateMetafield>;
+  /**
+   * List of private metafields that belong to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafields: PrivateMetafieldConnection;
+  /** A list of tags associated with the 200 most recent blog articles. */
+  tags: Array<Scalars['String']['output']>;
+  /**
+   * The name of the template a blog is using if it's using an alternate template.
+   * Returns `null` if a blog is using the default blog.liquid template.
+   */
+  templateSuffix?: Maybe<Scalars['String']['output']>;
+  /** The title of the blog. */
+  title: Scalars['String']['output'];
+  /** The published translations associated with the resource. */
+  translations: Array<Translation>;
+  /** The date and time when the blog was update. */
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogArticlesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogMetafieldDefinitionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  pinnedStatus?: InputMaybe<MetafieldDefinitionPinnedStatus>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<MetafieldDefinitionSortKeys>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogPrivateMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace: Scalars['String']['input'];
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogPrivateMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/**
+ * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
+ * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
+ */
+export type BlogTranslationsArgs = {
+  locale: Scalars['String']['input'];
+  marketId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** An auto-generated type for paginating through multiple Blogs. */
+export type BlogConnection = {
+  __typename?: 'BlogConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<BlogEdge>;
+  /** A list of nodes that are contained in BlogEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<Blog>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** The input fields to create a blog. */
+export type BlogCreateInput = {
+  /** Indicates whether readers can post comments to the blog and whether comments are moderated. */
+  commentPolicy?: InputMaybe<CommentPolicy>;
+  /**
+   * A unique, human-friendly string for the blog. If no handle is specified, a handle will be generated automatically from the blog title.
+   * The handle is customizable and is used by the Liquid templating language to refer to the blog.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** Attaches additional metadata to a store's resources. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /**
+   * The name of the template a blog is using if it's using an alternate template.
+   * Returns `null` if a blog is using the default blog.liquid template.
+   */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /** The title of the blog. */
+  title: Scalars['String']['input'];
+};
+
+/** Return type for `blogCreate` mutation. */
+export type BlogCreatePayload = {
+  __typename?: 'BlogCreatePayload';
+  /** The blog that was created. */
+  blog?: Maybe<Blog>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<BlogCreateUserError>;
+};
+
+/** An error that occurs during the execution of `BlogCreate`. */
+export type BlogCreateUserError = DisplayableError & {
+  __typename?: 'BlogCreateUserError';
+  /** The error code. */
+  code?: Maybe<BlogCreateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `BlogCreateUserError`. */
+export enum BlogCreateUserErrorCode {
+  /** The input value isn't included in the list. */
+  Inclusion = 'INCLUSION',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
+  /** The metafield type is invalid. */
+  InvalidType = 'INVALID_TYPE',
+  /** The value is invalid for the metafield type or for the definition options. */
+  InvalidValue = 'INVALID_VALUE',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG'
+}
+
+/** Return type for `blogDelete` mutation. */
+export type BlogDeletePayload = {
+  __typename?: 'BlogDeletePayload';
+  /** The ID of the deleted blog. */
+  deletedBlogId?: Maybe<Scalars['ID']['output']>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<BlogDeleteUserError>;
+};
+
+/** An error that occurs during the execution of `BlogDelete`. */
+export type BlogDeleteUserError = DisplayableError & {
+  __typename?: 'BlogDeleteUserError';
+  /** The error code. */
+  code?: Maybe<BlogDeleteUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `BlogDeleteUserError`. */
+export enum BlogDeleteUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** An auto-generated type which holds one Blog and a cursor during pagination. */
+export type BlogEdge = {
+  __typename?: 'BlogEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of BlogEdge. */
+  node: Blog;
+};
+
+/** FeedBurner provider details. Any blogs that aren't already integrated with FeedBurner can't use the service. */
+export type BlogFeed = {
+  __typename?: 'BlogFeed';
+  /** Blog feed provider url. */
+  location: Scalars['URL']['output'];
+  /** Blog feed provider path. */
+  path: Scalars['String']['output'];
+};
+
+/** The set of valid sort keys for the Blog query. */
+export enum BlogSortKeys {
+  /** Sort by the `handle` value. */
+  Handle = 'HANDLE',
+  /** Sort by the `id` value. */
+  Id = 'ID',
+  /**
+   * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
+   * Don't use this sort key when no search query is specified.
+   */
+  Relevance = 'RELEVANCE',
+  /** Sort by the `title` value. */
+  Title = 'TITLE'
+}
+
+/** The input fields to update a blog. */
+export type BlogUpdateInput = {
+  /** Indicates whether readers can post comments to the blog and whether comments are moderated. */
+  commentPolicy?: InputMaybe<CommentPolicy>;
+  /**
+   * A unique, human-friendly string for the blog. If no handle is specified, a handle will be generated automatically from the blog title.
+   * The handle is customizable and is used by the Liquid templating language to refer to the blog.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** Attaches additional metadata to a store's resources. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** Whether to redirect blog posts automatically. */
+  redirectArticles?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * Whether a redirect is required after a new handle has been provided.
+   * If `true`, then the old handle is redirected to the new one automatically.
+   */
+  redirectNewHandle?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * The name of the template a blog is using if it's using an alternate template.
+   * Returns `null` if a blog is using the default blog.liquid template.
+   */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /** The title of the blog. */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Return type for `blogUpdate` mutation. */
+export type BlogUpdatePayload = {
+  __typename?: 'BlogUpdatePayload';
+  /** The blog that was updated. */
+  blog?: Maybe<Blog>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<BlogUpdateUserError>;
+};
+
+/** An error that occurs during the execution of `BlogUpdate`. */
+export type BlogUpdateUserError = DisplayableError & {
+  __typename?: 'BlogUpdateUserError';
+  /** The error code. */
+  code?: Maybe<BlogUpdateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `BlogUpdateUserError`. */
+export enum BlogUpdateUserErrorCode {
+  /** The input value is blank. */
+  Blank = 'BLANK',
+  /** The input value isn't included in the list. */
+  Inclusion = 'INCLUSION',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG'
 }
 
 /** Possible error codes that can be returned by `BulkMutationUserError`. */
@@ -1839,16 +2896,53 @@ export type BusinessCustomerUserError = DisplayableError & {
   message: Scalars['String']['output'];
 };
 
+/** Represents a merchant's Business Entity. */
+export type BusinessEntity = Node & {
+  __typename?: 'BusinessEntity';
+  /** The address of the merchant's Business Entity. */
+  address: BusinessEntityAddress;
+  /** The name of the company associated with the merchant's Business Entity. */
+  companyName?: Maybe<Scalars['String']['output']>;
+  /** The display name of the merchant's Business Entity. */
+  displayName: Scalars['String']['output'];
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** Whether it's the merchant's primary Business Entity. */
+  primary: Scalars['Boolean']['output'];
+  /** Shopify Payments account information, including balances and payouts. */
+  shopifyPaymentsAccount?: Maybe<ShopifyPaymentsAccount>;
+};
+
+/** Represents the address of a merchant's Business Entity. */
+export type BusinessEntityAddress = {
+  __typename?: 'BusinessEntityAddress';
+  /** The first line of the address. Typically the street address or PO Box number. */
+  address1?: Maybe<Scalars['String']['output']>;
+  /** The second line of the address. Typically the number of the apartment, suite, or unit. */
+  address2?: Maybe<Scalars['String']['output']>;
+  /** The name of the city, district, village, or town. */
+  city?: Maybe<Scalars['String']['output']>;
+  /** The country code of the merchant's Business Entity. */
+  countryCode: CountryCode;
+  /** The region of the address, such as the province, state, or district. */
+  province?: Maybe<Scalars['String']['output']>;
+  /** The zip or postal code of the address. */
+  zip?: Maybe<Scalars['String']['output']>;
+};
+
 /** Settings describing the behavior of checkout for a B2B buyer. */
 export type BuyerExperienceConfiguration = {
   __typename?: 'BuyerExperienceConfiguration';
   /** Whether to checkout to draft order for merchant review. */
   checkoutToDraft: Scalars['Boolean']['output'];
+  /** The portion required to be paid at checkout. */
+  deposit?: Maybe<DepositConfiguration>;
   /** Whether to allow customers to use editable shipping addresses. */
   editableShippingAddress: Scalars['Boolean']['output'];
   /**
    * Whether a buyer must pay at checkout or they can also choose to pay
    * later using net terms.
+   * @deprecated Please use `checkoutToDraft`(must be false) and `paymentTermsTemplate`(must be nil) to derive this instead.
    */
   payNowOnly: Scalars['Boolean']['output'];
   /** Represents the merchant configured payment terms. */
@@ -1859,6 +2953,8 @@ export type BuyerExperienceConfiguration = {
 export type BuyerExperienceConfigurationInput = {
   /** Whether to checkout to draft order for merchant review. */
   checkoutToDraft?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The input fields configuring the deposit a B2B buyer. */
+  deposit?: InputMaybe<DepositInput>;
   /** Whether to allow customers to edit their shipping address at checkout. */
   editableShippingAddress?: InputMaybe<Scalars['Boolean']['input']>;
   /** Represents the merchant configured payment terms. */
@@ -1946,18 +3042,18 @@ export type CalculatedDiscountApplication = {
 /** An auto-generated type for paginating through multiple CalculatedDiscountApplications. */
 export type CalculatedDiscountApplicationConnection = {
   __typename?: 'CalculatedDiscountApplicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CalculatedDiscountApplicationEdge>;
-  /** A list of the nodes contained in CalculatedDiscountApplicationEdge. */
+  /** A list of nodes that are contained in CalculatedDiscountApplicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CalculatedDiscountApplication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CalculatedDiscountApplication and a cursor during pagination. */
 export type CalculatedDiscountApplicationEdge = {
   __typename?: 'CalculatedDiscountApplicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CalculatedDiscountApplicationEdge. */
   node: CalculatedDiscountApplication;
@@ -2019,7 +3115,10 @@ export type CalculatedDraftOrder = {
   lineItemsSubtotalPrice: MoneyBag;
   /** The name of the selected market. */
   marketName: Scalars['String']['output'];
-  /** The selected country code that determines the pricing. */
+  /**
+   * The selected country code that determines the pricing.
+   * @deprecated This field is now incompatible with Markets.
+   */
   marketRegionCountryCode: CountryCode;
   /** The assigned phone number. */
   phone?: Maybe<Scalars['String']['output']>;
@@ -2249,18 +3348,18 @@ export type CalculatedLineItem = {
 /** An auto-generated type for paginating through multiple CalculatedLineItems. */
 export type CalculatedLineItemConnection = {
   __typename?: 'CalculatedLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CalculatedLineItemEdge>;
-  /** A list of the nodes contained in CalculatedLineItemEdge. */
+  /** A list of nodes that are contained in CalculatedLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CalculatedLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CalculatedLineItem and a cursor during pagination. */
 export type CalculatedLineItemEdge = {
   __typename?: 'CalculatedLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CalculatedLineItemEdge. */
   node: CalculatedLineItem;
@@ -2603,9 +3702,16 @@ export type CartTransform = HasMetafields & Node & {
   functionId: Scalars['String']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -2663,11 +3769,11 @@ export type CartTransformPrivateMetafieldsArgs = {
 /** An auto-generated type for paginating through multiple CartTransforms. */
 export type CartTransformConnection = {
   __typename?: 'CartTransformConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CartTransformEdge>;
-  /** A list of the nodes contained in CartTransformEdge. */
+  /** A list of nodes that are contained in CartTransformEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CartTransform>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -2700,7 +3806,9 @@ export enum CartTransformCreateUserErrorCode {
   /** No Shopify Function found for provided function_id. */
   FunctionNotFound = 'FUNCTION_NOT_FOUND',
   /** Failed to create cart transform due to invalid input. */
-  InputInvalid = 'INPUT_INVALID'
+  InputInvalid = 'INPUT_INVALID',
+  /** Could not create or update metafields. */
+  InvalidMetafields = 'INVALID_METAFIELDS'
 }
 
 /** Return type for `cartTransformDelete` mutation. */
@@ -2734,7 +3842,7 @@ export enum CartTransformDeleteUserErrorCode {
 /** An auto-generated type which holds one CartTransform and a cursor during pagination. */
 export type CartTransformEdge = {
   __typename?: 'CartTransformEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CartTransformEdge. */
   node: CartTransform;
@@ -2758,6 +3866,15 @@ export type CartTransformFeature = {
   eligibleOperations: CartTransformEligibleOperations;
 };
 
+/** The rounding adjustment applied to total payment or refund received for an Order involving cash payments. */
+export type CashRoundingAdjustment = {
+  __typename?: 'CashRoundingAdjustment';
+  /** The rounding adjustment that can be applied to totalReceived for an Order involving cash payments in shop and presentment currencies. Could be a positive or negative value. Value is 0 if there's no rounding, or for non-cash payments. */
+  paymentSet: MoneyBag;
+  /** The rounding adjustment that can be applied to totalRefunded for an Order involving cash payments in shop and presentment currencies. Could be a positive or negative value. Value is 0 if there's no rounding, or for non-cash refunds. */
+  refundSet: MoneyBag;
+};
+
 /** Tracks an adjustment to the cash in a cash tracking session for a point of sale device over the course of a shift. */
 export type CashTrackingAdjustment = Node & {
   __typename?: 'CashTrackingAdjustment';
@@ -2776,18 +3893,18 @@ export type CashTrackingAdjustment = Node & {
 /** An auto-generated type for paginating through multiple CashTrackingAdjustments. */
 export type CashTrackingAdjustmentConnection = {
   __typename?: 'CashTrackingAdjustmentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CashTrackingAdjustmentEdge>;
-  /** A list of the nodes contained in CashTrackingAdjustmentEdge. */
+  /** A list of nodes that are contained in CashTrackingAdjustmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CashTrackingAdjustment>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CashTrackingAdjustment and a cursor during pagination. */
 export type CashTrackingAdjustmentEdge = {
   __typename?: 'CashTrackingAdjustmentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CashTrackingAdjustmentEdge. */
   node: CashTrackingAdjustment;
@@ -2868,18 +3985,18 @@ export type CashTrackingSessionCashTransactionsArgs = {
 /** An auto-generated type for paginating through multiple CashTrackingSessions. */
 export type CashTrackingSessionConnection = {
   __typename?: 'CashTrackingSessionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CashTrackingSessionEdge>;
-  /** A list of the nodes contained in CashTrackingSessionEdge. */
+  /** A list of nodes that are contained in CashTrackingSessionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CashTrackingSession>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CashTrackingSession and a cursor during pagination. */
 export type CashTrackingSessionEdge = {
   __typename?: 'CashTrackingSessionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CashTrackingSessionEdge. */
   node: CashTrackingSession;
@@ -2943,11 +4060,11 @@ export type Catalog = {
 /** An auto-generated type for paginating through multiple Catalogs. */
 export type CatalogConnection = {
   __typename?: 'CatalogConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CatalogEdge>;
-  /** A list of the nodes contained in CatalogEdge. */
+  /** A list of nodes that are contained in CatalogEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Catalog>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -3014,7 +4131,7 @@ export type CatalogDeletePayload = {
 /** An auto-generated type which holds one Catalog and a cursor during pagination. */
 export type CatalogEdge = {
   __typename?: 'CatalogEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CatalogEdge. */
   node: Catalog;
@@ -3301,11 +4418,11 @@ export type ChannelProductsCountArgs = {
 /** An auto-generated type for paginating through multiple Channels. */
 export type ChannelConnection = {
   __typename?: 'ChannelConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ChannelEdge>;
-  /** A list of the nodes contained in ChannelEdge. */
+  /** A list of nodes that are contained in ChannelEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Channel>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -3332,7 +4449,7 @@ export type ChannelDefinition = Node & {
 /** An auto-generated type which holds one Channel and a cursor during pagination. */
 export type ChannelEdge = {
   __typename?: 'ChannelEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ChannelEdge. */
   node: Channel;
@@ -4852,18 +5969,18 @@ export type CheckoutProfile = Node & {
 /** An auto-generated type for paginating through multiple CheckoutProfiles. */
 export type CheckoutProfileConnection = {
   __typename?: 'CheckoutProfileConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CheckoutProfileEdge>;
-  /** A list of the nodes contained in CheckoutProfileEdge. */
+  /** A list of nodes that are contained in CheckoutProfileEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CheckoutProfile>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CheckoutProfile and a cursor during pagination. */
 export type CheckoutProfileEdge = {
   __typename?: 'CheckoutProfileEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CheckoutProfileEdge. */
   node: CheckoutProfile;
@@ -4924,14 +6041,21 @@ export enum CodeDiscountSortKeys {
  *
  * Collections can also be created for a custom group of products. These are called custom or manual collections.
  */
-export type Collection = HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Node & Publishable & {
+export type Collection = HasEvents & HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Node & Publishable & {
   __typename?: 'Collection';
-  /** The number of publications a resource is published to without feedback errors. */
+  /**
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
+   */
   availablePublicationsCount?: Maybe<Count>;
   /** A single-line, text-only description of the collection, stripped of any HTML tags and formatting that were included in the description. */
   description: Scalars['String']['output'];
   /** The description of the collection, including any HTML tags and formatting. This content is typically displayed to customers, such as on an online store, depending on the theme. */
   descriptionHtml: Scalars['HTML']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
   /** Information about the collection that's provided through resource feedback. */
   feedback?: Maybe<ResourceFeedback>;
   /**
@@ -4950,14 +6074,21 @@ export type Collection = HasMetafieldDefinitions & HasMetafields & HasPublishedT
   image?: Maybe<Image>;
   /** The ID of the corresponding resource in the REST Admin API. */
   legacyResourceId: Scalars['UnsignedInt64']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -4978,7 +6109,10 @@ export type Collection = HasMetafieldDefinitions & HasMetafields & HasPublishedT
   /** The number of products in the collection. */
   productsCount?: Maybe<Count>;
   /**
-   * The number of publications a resource is published on.
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
    * @deprecated Use `resourcePublicationsCount` instead.
    */
   publicationCount: Scalars['Int']['output'];
@@ -4988,24 +6122,44 @@ export type Collection = HasMetafieldDefinitions & HasMetafields & HasPublishedT
    */
   publications: CollectionPublicationConnection;
   /**
-   * Check to see whether the resource is published to a given channel.
+   * Whether the resource is published to a specific channel.
    * @deprecated Use `publishedOnPublication` instead.
    */
   publishedOnChannel: Scalars['Boolean']['output'];
   /**
-   * Check to see whether the resource is published to the calling app's channel.
+   * Whether the resource is published to a
+   * [channel](https://shopify.dev/docs/api/admin-graphql/latest/objects/Channel).
+   * For example, the resource might be published to the online store channel.
    * @deprecated Use `publishedOnCurrentPublication` instead.
    */
   publishedOnCurrentChannel: Scalars['Boolean']['output'];
-  /** Check to see whether the resource is published to the calling app's publication. */
+  /**
+   * Whether the resource is published to the app's
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   * For example, the resource might be published to the app's online store channel.
+   */
   publishedOnCurrentPublication: Scalars['Boolean']['output'];
-  /** Check to see whether the resource is published to a given publication. */
+  /**
+   * Whether the resource is published to a specified
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   publishedOnPublication: Scalars['Boolean']['output'];
-  /** The list of resources that are published to a publication. */
+  /**
+   * The list of resources that are published to a
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublications: ResourcePublicationConnection;
-  /** The number of publications a resource is published on. */
+  /**
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
+   */
   resourcePublicationsCount?: Maybe<Count>;
-  /** The list of resources that are either published or staged to be published to a publication. */
+  /**
+   * The list of resources that are either published or staged to be published to a
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublicationsV2: ResourcePublicationV2Connection;
   /** For a smart (automated) collection, specifies the rules that determine whether a product is included. */
   ruleSet?: Maybe<CollectionRuleSet>;
@@ -5024,14 +6178,17 @@ export type Collection = HasMetafieldDefinitions & HasMetafields & HasPublishedT
   templateSuffix?: Maybe<Scalars['String']['output']>;
   /** The name of the collection. It's displayed in the Shopify admin and is typically displayed in sales channels, such as an online store. */
   title: Scalars['String']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
   /**
    * The list of channels that the resource is not published to.
    * @deprecated Use `unpublishedPublications` instead.
    */
   unpublishedChannels: ChannelConnection;
-  /** The list of publications that the resource is not published to. */
+  /**
+   * The list of [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that the resource isn't published to.
+   */
   unpublishedPublications: PublicationConnection;
   /** The date and time ([ISO 8601 format](http://en.wikipedia.org/wiki/ISO_8601)) when the collection was last modified. */
   updatedAt: Scalars['DateTime']['output'];
@@ -5047,6 +6204,24 @@ export type Collection = HasMetafieldDefinitions & HasMetafields & HasPublishedT
  */
 export type CollectionDescriptionArgs = {
   truncateAt?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/**
+ * Represents a group of products that can be displayed in online stores and other sales channels in categories, which makes it easy for customers to find them. For example, an athletics store might create different collections for running attire, shoes, and accessories.
+ *
+ * Collections can be defined by conditions, such as whether they match certain product tags. These are called smart or automated collections.
+ *
+ * Collections can also be created for a custom group of products. These are called custom or manual collections.
+ */
+export type CollectionEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
 };
 
 
@@ -5344,11 +6519,11 @@ export enum CollectionAddProductsV2UserErrorCode {
 /** An auto-generated type for paginating through multiple Collections. */
 export type CollectionConnection = {
   __typename?: 'CollectionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CollectionEdge>;
-  /** A list of the nodes contained in CollectionEdge. */
+  /** A list of nodes that are contained in CollectionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Collection>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -5381,7 +6556,7 @@ export type CollectionDeletePayload = {
 /** An auto-generated type which holds one Collection and a cursor during pagination. */
 export type CollectionEdge = {
   __typename?: 'CollectionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CollectionEdge. */
   node: Collection;
@@ -5439,18 +6614,18 @@ export type CollectionPublication = {
 /** An auto-generated type for paginating through multiple CollectionPublications. */
 export type CollectionPublicationConnection = {
   __typename?: 'CollectionPublicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CollectionPublicationEdge>;
-  /** A list of the nodes contained in CollectionPublicationEdge. */
+  /** A list of nodes that are contained in CollectionPublicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CollectionPublication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CollectionPublication and a cursor during pagination. */
 export type CollectionPublicationEdge = {
   __typename?: 'CollectionPublicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CollectionPublicationEdge. */
   node: CollectionPublication;
@@ -5514,6 +6689,13 @@ export type CollectionRule = {
   relation: CollectionRuleRelation;
 };
 
+/** Specifies the taxonomy category to used for the condition. */
+export type CollectionRuleCategoryCondition = {
+  __typename?: 'CollectionRuleCategoryCondition';
+  /** The taxonomy category used as condition. */
+  value: TaxonomyCategory;
+};
+
 /** Specifies the attribute of a product being used to populate the smart collection. */
 export enum CollectionRuleColumn {
   /**
@@ -5522,6 +6704,8 @@ export enum CollectionRuleColumn {
    * With `is_not_set` relation, the rule matches matches products with at least one variant with `compare_at_price` not set.
    */
   IsPriceReduced = 'IS_PRICE_REDUCED',
+  /** The [`product_category_id`](https://shopify.dev/api/admin-graphql/latest/objects/Product#field-category) attribute. */
+  ProductCategoryId = 'PRODUCT_CATEGORY_ID',
   /** This category includes metafield definitions that have the `useAsCollectionCondition` flag set to true. */
   ProductMetafieldDefinition = 'PRODUCT_METAFIELD_DEFINITION',
   /** The [`product_taxonomy_node_id`](https://shopify.dev/api/admin-graphql/latest/objects/Product#field-product-productcategory) attribute. */
@@ -5549,7 +6733,7 @@ export enum CollectionRuleColumn {
 }
 
 /** Specifies object for the condition of the rule. */
-export type CollectionRuleConditionObject = CollectionRuleMetafieldCondition | CollectionRuleProductCategoryCondition | CollectionRuleTextCondition;
+export type CollectionRuleConditionObject = CollectionRuleCategoryCondition | CollectionRuleMetafieldCondition | CollectionRuleProductCategoryCondition | CollectionRuleTextCondition;
 
 /** This object defines all columns and allowed relations that can be used in rules for smart collections to automatically include the matching products. */
 export type CollectionRuleConditions = {
@@ -5748,18 +6932,18 @@ export type CombinedListingChild = {
 /** An auto-generated type for paginating through multiple CombinedListingChildren. */
 export type CombinedListingChildConnection = {
   __typename?: 'CombinedListingChildConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CombinedListingChildEdge>;
-  /** A list of the nodes contained in CombinedListingChildEdge. */
+  /** A list of nodes that are contained in CombinedListingChildEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CombinedListingChild>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CombinedListingChild and a cursor during pagination. */
 export type CombinedListingChildEdge = {
   __typename?: 'CombinedListingChildEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CombinedListingChildEdge. */
   node: CombinedListingChild;
@@ -5817,7 +7001,7 @@ export enum CombinedListingUpdateUserErrorCode {
   LinkedOptionsNotSupportedForShop = 'LINKED_OPTIONS_NOT_SUPPORTED_FOR_SHOP',
   /** Selected option values cannot be empty. */
   MustHaveSelectedOptionValues = 'MUST_HAVE_SELECTED_OPTION_VALUES',
-  /** Unable to add products with different options. */
+  /** All child products must include the same options. */
   OptionsMustBeEqualToTheOtherComponents = 'OPTIONS_MUST_BE_EQUAL_TO_THE_OTHER_COMPONENTS',
   /** Unable to add products with blank option names. */
   OptionNameCannotBeBlank = 'OPTION_NAME_CANNOT_BE_BLANK',
@@ -5853,12 +7037,138 @@ export enum CombinedListingsRole {
   Parent = 'PARENT'
 }
 
+/** A comment on an article. */
+export type Comment = HasEvents & Node & {
+  __typename?: 'Comment';
+  /** The article associated with the comment. */
+  article?: Maybe<Article>;
+  /** The comment’s author. */
+  author: CommentAuthor;
+  /** The content of the comment. */
+  body: Scalars['String']['output'];
+  /** The content of the comment, complete with HTML formatting. */
+  bodyHtml: Scalars['HTML']['output'];
+  /** The date and time when the comment was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** The IP address of the commenter. */
+  ip?: Maybe<Scalars['String']['output']>;
+  /** Whether or not the comment is published. */
+  isPublished: Scalars['Boolean']['output'];
+  /** The date and time when the comment was published. */
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The status of the comment. */
+  status: CommentStatus;
+  /** The date and time when the comment was last updated. */
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The user agent of the commenter. */
+  userAgent?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** A comment on an article. */
+export type CommentEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
+};
+
+/** Return type for `commentApprove` mutation. */
+export type CommentApprovePayload = {
+  __typename?: 'CommentApprovePayload';
+  /** The comment that was approved. */
+  comment?: Maybe<Comment>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<CommentApproveUserError>;
+};
+
+/** An error that occurs during the execution of `CommentApprove`. */
+export type CommentApproveUserError = DisplayableError & {
+  __typename?: 'CommentApproveUserError';
+  /** The error code. */
+  code?: Maybe<CommentApproveUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `CommentApproveUserError`. */
+export enum CommentApproveUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** The author of a comment. */
+export type CommentAuthor = {
+  __typename?: 'CommentAuthor';
+  /** The author's email. */
+  email: Scalars['String']['output'];
+  /** The author’s name. */
+  name: Scalars['String']['output'];
+};
+
+/** An auto-generated type for paginating through multiple Comments. */
+export type CommentConnection = {
+  __typename?: 'CommentConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<CommentEdge>;
+  /** A list of nodes that are contained in CommentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<Comment>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** Return type for `commentDelete` mutation. */
+export type CommentDeletePayload = {
+  __typename?: 'CommentDeletePayload';
+  /** The ID of the comment that was deleted. */
+  deletedCommentId?: Maybe<Scalars['ID']['output']>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<CommentDeleteUserError>;
+};
+
+/** An error that occurs during the execution of `CommentDelete`. */
+export type CommentDeleteUserError = DisplayableError & {
+  __typename?: 'CommentDeleteUserError';
+  /** The error code. */
+  code?: Maybe<CommentDeleteUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `CommentDeleteUserError`. */
+export enum CommentDeleteUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** An auto-generated type which holds one Comment and a cursor during pagination. */
+export type CommentEdge = {
+  __typename?: 'CommentEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of CommentEdge. */
+  node: Comment;
+};
+
 /**
  * Comment events are generated by staff members of a shop.
  * They are created when a staff member adds a comment to the timeline of an order, draft order, customer, or transfer.
  */
 export type CommentEvent = Event & Node & {
   __typename?: 'CommentEvent';
+  /** The action that occured. */
+  action: Scalars['String']['output'];
   /** The name of the app that created the event. */
   appTitle?: Maybe<Scalars['String']['output']>;
   /** The attachments associated with the comment event. */
@@ -5888,7 +7198,7 @@ export type CommentEvent = Event & Node & {
   /** The raw body of the comment event. */
   rawMessage: Scalars['String']['output'];
   /** The parent subject to which the comment event belongs. */
-  subject: CommentEventSubject;
+  subject?: Maybe<CommentEventSubject>;
 };
 
 /** A file attachment associated to a comment event. */
@@ -5919,6 +7229,95 @@ export type CommentEventSubject = {
   id: Scalars['ID']['output'];
 };
 
+/** Return type for `commentNotSpam` mutation. */
+export type CommentNotSpamPayload = {
+  __typename?: 'CommentNotSpamPayload';
+  /** The comment that was marked as not spam. */
+  comment?: Maybe<Comment>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<CommentNotSpamUserError>;
+};
+
+/** An error that occurs during the execution of `CommentNotSpam`. */
+export type CommentNotSpamUserError = DisplayableError & {
+  __typename?: 'CommentNotSpamUserError';
+  /** The error code. */
+  code?: Maybe<CommentNotSpamUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `CommentNotSpamUserError`. */
+export enum CommentNotSpamUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** Possible comment policies for a blog. */
+export enum CommentPolicy {
+  /** Readers can post comments to blog articles without moderation. */
+  AutoPublished = 'AUTO_PUBLISHED',
+  /** Readers cannot post comments to blog articles. */
+  Closed = 'CLOSED',
+  /** Readers can post comments to blog articles, but comments must be moderated before they appear. */
+  Moderated = 'MODERATED'
+}
+
+/** The set of valid sort keys for the Comment query. */
+export enum CommentSortKeys {
+  /** Sort by the `created_at` value. */
+  CreatedAt = 'CREATED_AT',
+  /** Sort by the `id` value. */
+  Id = 'ID',
+  /**
+   * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
+   * Don't use this sort key when no search query is specified.
+   */
+  Relevance = 'RELEVANCE'
+}
+
+/** Return type for `commentSpam` mutation. */
+export type CommentSpamPayload = {
+  __typename?: 'CommentSpamPayload';
+  /** The comment that was marked as spam. */
+  comment?: Maybe<Comment>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<CommentSpamUserError>;
+};
+
+/** An error that occurs during the execution of `CommentSpam`. */
+export type CommentSpamUserError = DisplayableError & {
+  __typename?: 'CommentSpamUserError';
+  /** The error code. */
+  code?: Maybe<CommentSpamUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `CommentSpamUserError`. */
+export enum CommentSpamUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** The status of a comment. */
+export enum CommentStatus {
+  /** The comment is pending approval. */
+  Pending = 'PENDING',
+  /** The comment is published. */
+  Published = 'PUBLISHED',
+  /** The comment has been removed. */
+  Removed = 'REMOVED',
+  /** The comment is marked as spam. */
+  Spam = 'SPAM',
+  /** The comment is unapproved. */
+  Unapproved = 'UNAPPROVED'
+}
+
 /** Return type for `companiesDelete` mutation. */
 export type CompaniesDeletePayload = {
   __typename?: 'CompaniesDeletePayload';
@@ -5946,7 +7345,7 @@ export type Company = CommentEventSubject & HasEvents & HasMetafieldDefinitions 
   createdAt: Scalars['DateTime']['output'];
   /** The date and time ([ISO 8601 format](http://en.wikipedia.org/wiki/ISO_8601)) at which the company became the customer. */
   customerSince: Scalars['DateTime']['output'];
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
   /** The role proposed by default for a contact at the company. */
   defaultRole?: Maybe<CompanyContactRole>;
@@ -5968,14 +7367,21 @@ export type Company = CommentEventSubject & HasEvents & HasMetafieldDefinitions 
   locationsCount?: Maybe<Count>;
   /** The main contact for the company. */
   mainContact?: Maybe<CompanyContact>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The name of the company. */
   name: Scalars['String']['output'];
@@ -6245,11 +7651,11 @@ export type CompanyAssignMainContactPayload = {
 /** An auto-generated type for paginating through multiple Companies. */
 export type CompanyConnection = {
   __typename?: 'CompanyConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CompanyEdge>;
-  /** A list of the nodes contained in CompanyEdge. */
+  /** A list of nodes that are contained in CompanyEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Company>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -6338,11 +7744,11 @@ export type CompanyContactAssignRolesPayload = {
 /** An auto-generated type for paginating through multiple CompanyContacts. */
 export type CompanyContactConnection = {
   __typename?: 'CompanyContactConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CompanyContactEdge>;
-  /** A list of the nodes contained in CompanyContactEdge. */
+  /** A list of nodes that are contained in CompanyContactEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CompanyContact>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -6367,7 +7773,7 @@ export type CompanyContactDeletePayload = {
 /** An auto-generated type which holds one CompanyContact and a cursor during pagination. */
 export type CompanyContactEdge = {
   __typename?: 'CompanyContactEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CompanyContactEdge. */
   node: CompanyContact;
@@ -6460,18 +7866,18 @@ export type CompanyContactRoleAssignment = Node & {
 /** An auto-generated type for paginating through multiple CompanyContactRoleAssignments. */
 export type CompanyContactRoleAssignmentConnection = {
   __typename?: 'CompanyContactRoleAssignmentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CompanyContactRoleAssignmentEdge>;
-  /** A list of the nodes contained in CompanyContactRoleAssignmentEdge. */
+  /** A list of nodes that are contained in CompanyContactRoleAssignmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CompanyContactRoleAssignment>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CompanyContactRoleAssignment and a cursor during pagination. */
 export type CompanyContactRoleAssignmentEdge = {
   __typename?: 'CompanyContactRoleAssignmentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CompanyContactRoleAssignmentEdge. */
   node: CompanyContactRoleAssignment;
@@ -6497,18 +7903,18 @@ export enum CompanyContactRoleAssignmentSortKeys {
 /** An auto-generated type for paginating through multiple CompanyContactRoles. */
 export type CompanyContactRoleConnection = {
   __typename?: 'CompanyContactRoleConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CompanyContactRoleEdge>;
-  /** A list of the nodes contained in CompanyContactRoleEdge. */
+  /** A list of nodes that are contained in CompanyContactRoleEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CompanyContactRole>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CompanyContactRole and a cursor during pagination. */
 export type CompanyContactRoleEdge = {
   __typename?: 'CompanyContactRoleEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CompanyContactRoleEdge. */
   node: CompanyContactRole;
@@ -6612,7 +8018,7 @@ export type CompanyDeletePayload = {
 /** An auto-generated type which holds one Company and a cursor during pagination. */
 export type CompanyEdge = {
   __typename?: 'CompanyEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CompanyEdge. */
   node: Company;
@@ -6642,7 +8048,7 @@ export type CompanyLocation = CommentEventSubject & HasEvents & HasMetafieldDefi
   buyerExperienceConfiguration?: Maybe<BuyerExperienceConfiguration>;
   /** The list of catalogs associated with the company location. */
   catalogs: CatalogConnection;
-  /** The number of catalogs associated with the company location. */
+  /** The number of catalogs associated with the company location. Limited to a maximum of 10000. */
   catalogsCount?: Maybe<Count>;
   /** The company that the company location belongs to. */
   company: Company;
@@ -6650,7 +8056,7 @@ export type CompanyLocation = CommentEventSubject & HasEvents & HasMetafieldDefi
   createdAt: Scalars['DateTime']['output'];
   /** The location's currency based on the shipping address. If the shipping address is empty, then the value is the shop's primary market. */
   currency: CurrencyCode;
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
   /** The list of draft orders for the company location. */
   draftOrders: DraftOrderConnection;
@@ -6668,14 +8074,21 @@ export type CompanyLocation = CommentEventSubject & HasEvents & HasMetafieldDefi
   locale?: Maybe<Scalars['String']['output']>;
   /** The market that includes the location's shipping address. If the shipping address is empty, then the value is the shop's primary market. */
   market: Market;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The name of the company location. */
   name: Scalars['String']['output'];
@@ -6710,6 +8123,8 @@ export type CompanyLocation = CommentEventSubject & HasEvents & HasMetafieldDefi
   roleAssignments: CompanyContactRoleAssignmentConnection;
   /** The address used as shipping address for the location. */
   shippingAddress?: Maybe<CompanyAddress>;
+  /** The list of staff members assigned to the company location. */
+  staffMemberAssignments: CompanyLocationStaffMemberAssignmentConnection;
   /** The list of tax exemptions applied to the location. */
   taxExemptions: Array<TaxExemption>;
   /** The tax registration ID for the company location. */
@@ -6834,6 +8249,18 @@ export type CompanyLocationRoleAssignmentsArgs = {
   sortKey?: InputMaybe<CompanyContactRoleAssignmentSortKeys>;
 };
 
+
+/** A location or branch of a [company that's a customer](https://shopify.dev/api/admin-graphql/latest/objects/company) of the shop. Configuration of B2B relationship, for example prices lists and checkout settings, may be done for a location. */
+export type CompanyLocationStaffMemberAssignmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<CompanyLocationStaffMemberAssignmentSortKeys>;
+};
+
 /** Return type for `companyLocationAssignAddress` mutation. */
 export type CompanyLocationAssignAddressPayload = {
   __typename?: 'CompanyLocationAssignAddressPayload';
@@ -6848,6 +8275,15 @@ export type CompanyLocationAssignRolesPayload = {
   __typename?: 'CompanyLocationAssignRolesPayload';
   /** A list of newly created assignments of company contacts to a company location. */
   roleAssignments?: Maybe<Array<CompanyContactRoleAssignment>>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<BusinessCustomerUserError>;
+};
+
+/** Return type for `companyLocationAssignStaffMembers` mutation. */
+export type CompanyLocationAssignStaffMembersPayload = {
+  __typename?: 'CompanyLocationAssignStaffMembersPayload';
+  /** The list of created staff member assignments. */
+  companyLocationStaffMemberAssignments?: Maybe<Array<CompanyLocationStaffMemberAssignment>>;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<BusinessCustomerUserError>;
 };
@@ -6897,11 +8333,11 @@ export type CompanyLocationCatalogCompanyLocationsArgs = {
 /** An auto-generated type for paginating through multiple CompanyLocations. */
 export type CompanyLocationConnection = {
   __typename?: 'CompanyLocationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CompanyLocationEdge>;
-  /** A list of the nodes contained in CompanyLocationEdge. */
+  /** A list of nodes that are contained in CompanyLocationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CompanyLocation>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -6935,7 +8371,7 @@ export type CompanyLocationDeletePayload = {
 /** An auto-generated type which holds one CompanyLocation and a cursor during pagination. */
 export type CompanyLocationEdge = {
   __typename?: 'CompanyLocationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CompanyLocationEdge. */
   node: CompanyLocation;
@@ -6965,6 +8401,15 @@ export type CompanyLocationInput = {
   taxExemptions?: InputMaybe<Array<TaxExemption>>;
   /** The tax registration ID of the company location. */
   taxRegistrationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Return type for `companyLocationRemoveStaffMembers` mutation. */
+export type CompanyLocationRemoveStaffMembersPayload = {
+  __typename?: 'CompanyLocationRemoveStaffMembersPayload';
+  /** The list of IDs of the deleted staff member assignment. */
+  deletedCompanyLocationStaffMemberAssignmentIds?: Maybe<Array<Scalars['ID']['output']>>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<BusinessCustomerUserError>;
 };
 
 /** Return type for `companyLocationRevokeRoles` mutation. */
@@ -7014,6 +8459,52 @@ export enum CompanyLocationSortKeys {
   Id = 'ID',
   /** Sort by the `name` value. */
   Name = 'NAME',
+  /**
+   * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
+   * Don't use this sort key when no search query is specified.
+   */
+  Relevance = 'RELEVANCE',
+  /** Sort by the `updated_at` value. */
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** A representation of store's staff member who is assigned to a [company location](https://shopify.dev/api/admin-graphql/latest/objects/CompanyLocation) of the shop. The staff member's actions will be limited to objects associated with the assigned company location. */
+export type CompanyLocationStaffMemberAssignment = Node & {
+  __typename?: 'CompanyLocationStaffMemberAssignment';
+  /** The company location the staff member is assigned to. */
+  companyLocation: CompanyLocation;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** Represents the data of a staff member who's assigned to a company location. */
+  staffMember: StaffMember;
+};
+
+/** An auto-generated type for paginating through multiple CompanyLocationStaffMemberAssignments. */
+export type CompanyLocationStaffMemberAssignmentConnection = {
+  __typename?: 'CompanyLocationStaffMemberAssignmentConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<CompanyLocationStaffMemberAssignmentEdge>;
+  /** A list of nodes that are contained in CompanyLocationStaffMemberAssignmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<CompanyLocationStaffMemberAssignment>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** An auto-generated type which holds one CompanyLocationStaffMemberAssignment and a cursor during pagination. */
+export type CompanyLocationStaffMemberAssignmentEdge = {
+  __typename?: 'CompanyLocationStaffMemberAssignmentEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of CompanyLocationStaffMemberAssignmentEdge. */
+  node: CompanyLocationStaffMemberAssignment;
+};
+
+/** The set of valid sort keys for the CompanyLocationStaffMemberAssignment query. */
+export enum CompanyLocationStaffMemberAssignmentSortKeys {
+  /** Sort by the `created_at` value. */
+  CreatedAt = 'CREATED_AT',
+  /** Sort by the `id` value. */
+  Id = 'ID',
   /**
    * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
    * Don't use this sort key when no search query is specified.
@@ -7119,7 +8610,7 @@ export type Count = {
   __typename?: 'Count';
   /** The count of elements. */
   count: Scalars['Int']['output'];
-  /** The count's precision, or how exact the value is. */
+  /** The count's precision, or the exactness of the value. */
   precision: CountPrecision;
 };
 
@@ -7651,18 +9142,18 @@ export type CountryHarmonizedSystemCode = {
 /** An auto-generated type for paginating through multiple CountryHarmonizedSystemCodes. */
 export type CountryHarmonizedSystemCodeConnection = {
   __typename?: 'CountryHarmonizedSystemCodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CountryHarmonizedSystemCodeEdge>;
-  /** A list of the nodes contained in CountryHarmonizedSystemCodeEdge. */
+  /** A list of nodes that are contained in CountryHarmonizedSystemCodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CountryHarmonizedSystemCode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CountryHarmonizedSystemCode and a cursor during pagination. */
 export type CountryHarmonizedSystemCodeEdge = {
   __typename?: 'CountryHarmonizedSystemCodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CountryHarmonizedSystemCodeEdge. */
   node: CountryHarmonizedSystemCode;
@@ -8067,18 +9558,18 @@ export type CurrencySetting = {
 /** An auto-generated type for paginating through multiple CurrencySettings. */
 export type CurrencySettingConnection = {
   __typename?: 'CurrencySettingConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CurrencySettingEdge>;
-  /** A list of the nodes contained in CurrencySettingEdge. */
+  /** A list of nodes that are contained in CurrencySettingEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CurrencySetting>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CurrencySetting and a cursor during pagination. */
 export type CurrencySettingEdge = {
   __typename?: 'CurrencySettingEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CurrencySettingEdge. */
   node: CurrencySetting;
@@ -8108,6 +9599,8 @@ export type Customer = CommentEventSubject & HasEvents & HasMetafieldDefinitions
   __typename?: 'Customer';
   /** A list of addresses associated with the customer. */
   addresses: Array<MailingAddress>;
+  /** The addresses associated with the customer. */
+  addressesV2: MailingAddressConnection;
   /** The total amount that the customer has spent on orders in their lifetime. */
   amountSpent: MoneyV2;
   /**
@@ -8168,14 +9661,21 @@ export type Customer = CommentEventSubject & HasEvents & HasMetafieldDefinitions
   market?: Maybe<Market>;
   /** Whether the customer can be merged with another customer. */
   mergeable: CustomerMergeable;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** A unique identifier for the customer that's used with Multipass login. */
   multipassIdentifier?: Maybe<Scalars['String']['output']>;
@@ -8254,6 +9754,21 @@ export type Customer = CommentEventSubject & HasEvents & HasMetafieldDefinitions
  */
 export type CustomerAddressesArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/**
+ * Represents information about a customer of the shop, such as the customer's contact details, their order
+ * history, and whether they've agreed to receive marketing material by email.
+ *
+ * **Caution:** Only use this data if it's required for your app's functionality. Shopify will restrict [access to scopes](https://shopify.dev/api/usage/access-scopes) for apps that don't have a legitimate use for the associated data.
+ */
+export type CustomerAddressesV2Args = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -8412,6 +9927,80 @@ export type CustomerSubscriptionContractsArgs = {
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** An app extension page for the customer account navigation menu. */
+export type CustomerAccountAppExtensionPage = CustomerAccountPage & Navigable & Node & {
+  __typename?: 'CustomerAccountAppExtensionPage';
+  /** The UUID of the app extension. */
+  appExtensionUuid?: Maybe<Scalars['String']['output']>;
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
+  defaultCursor: Scalars['String']['output'];
+  /** A unique, human-friendly string for the customer account page. */
+  handle: Scalars['String']['output'];
+  /** The unique ID for the customer account page. */
+  id: Scalars['ID']['output'];
+  /** The title of the customer account page. */
+  title: Scalars['String']['output'];
+};
+
+/** A native page for the customer account navigation menu. */
+export type CustomerAccountNativePage = CustomerAccountPage & Navigable & Node & {
+  __typename?: 'CustomerAccountNativePage';
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
+  defaultCursor: Scalars['String']['output'];
+  /** A unique, human-friendly string for the customer account page. */
+  handle: Scalars['String']['output'];
+  /** The unique ID for the customer account page. */
+  id: Scalars['ID']['output'];
+  /** The type of customer account native page. */
+  pageType: CustomerAccountNativePagePageType;
+  /** The title of the customer account page. */
+  title: Scalars['String']['output'];
+};
+
+/** The type of customer account native page. */
+export enum CustomerAccountNativePagePageType {
+  /** An orders page type. */
+  NativeOrders = 'NATIVE_ORDERS',
+  /** A profile page type. */
+  NativeProfile = 'NATIVE_PROFILE',
+  /** A settings page type. */
+  NativeSettings = 'NATIVE_SETTINGS',
+  /** An unknown page type. Represents new page types that may be added in future versions. */
+  Unknown = 'UNKNOWN'
+}
+
+/** A customer account page. */
+export type CustomerAccountPage = {
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
+  defaultCursor: Scalars['String']['output'];
+  /** A unique, human-friendly string for the customer account page. */
+  handle: Scalars['String']['output'];
+  /** The unique ID for the customer account page. */
+  id: Scalars['ID']['output'];
+  /** The title of the customer account page. */
+  title: Scalars['String']['output'];
+};
+
+/** An auto-generated type for paginating through multiple CustomerAccountPages. */
+export type CustomerAccountPageConnection = {
+  __typename?: 'CustomerAccountPageConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<CustomerAccountPageEdge>;
+  /** A list of nodes that are contained in CustomerAccountPageEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<CustomerAccountPage>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** An auto-generated type which holds one CustomerAccountPage and a cursor during pagination. */
+export type CustomerAccountPageEdge = {
+  __typename?: 'CustomerAccountPageEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of CustomerAccountPageEdge. */
+  node: CustomerAccountPage;
+};
+
 /** Information about the shop's customer accounts. */
 export type CustomerAccountsV2 = {
   __typename?: 'CustomerAccountsV2';
@@ -8475,11 +10064,11 @@ export type CustomerCancelDataErasureUserError = DisplayableError & {
 /** An auto-generated type for paginating through multiple Customers. */
 export type CustomerConnection = {
   __typename?: 'CustomerConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CustomerEdge>;
-  /** A list of the nodes contained in CustomerEdge. */
+  /** A list of nodes that are contained in CustomerEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Customer>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -8578,7 +10167,7 @@ export type CustomerDeletePayload = {
 /** An auto-generated type which holds one Customer and a cursor during pagination. */
 export type CustomerEdge = {
   __typename?: 'CustomerEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CustomerEdge. */
   node: Customer;
@@ -9106,18 +10695,18 @@ export type CustomerMoment = {
 /** An auto-generated type for paginating through multiple CustomerMoments. */
 export type CustomerMomentConnection = {
   __typename?: 'CustomerMomentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CustomerMomentEdge>;
-  /** A list of the nodes contained in CustomerMomentEdge. */
+  /** A list of nodes that are contained in CustomerMomentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CustomerMoment>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CustomerMoment and a cursor during pagination. */
 export type CustomerMomentEdge = {
   __typename?: 'CustomerMomentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CustomerMomentEdge. */
   node: CustomerMoment;
@@ -9183,11 +10772,11 @@ export type CustomerPaymentMethodSubscriptionContractsArgs = {
 /** An auto-generated type for paginating through multiple CustomerPaymentMethods. */
 export type CustomerPaymentMethodConnection = {
   __typename?: 'CustomerPaymentMethodConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CustomerPaymentMethodEdge>;
-  /** A list of the nodes contained in CustomerPaymentMethodEdge. */
+  /** A list of nodes that are contained in CustomerPaymentMethodEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CustomerPaymentMethod>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -9246,7 +10835,7 @@ export type CustomerPaymentMethodCreditCardUpdatePayload = {
 /** An auto-generated type which holds one CustomerPaymentMethod and a cursor during pagination. */
 export type CustomerPaymentMethodEdge = {
   __typename?: 'CustomerPaymentMethodEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CustomerPaymentMethodEdge. */
   node: CustomerPaymentMethod;
@@ -9407,6 +10996,8 @@ export enum CustomerPaymentMethodRevocationReason {
   BraintreePaymentMethodNotCard = 'BRAINTREE_PAYMENT_METHOD_NOT_CARD',
   /** Braintree returned no payment methods. Make sure the correct Braintree account is linked. */
   BraintreeReturnedNoPaymentMethod = 'BRAINTREE_RETURNED_NO_PAYMENT_METHOD',
+  /** The billing address failed to retrieve. */
+  FailedToRetrieveBillingAddress = 'FAILED_TO_RETRIEVE_BILLING_ADDRESS',
   /** The credit card failed to update. */
   FailedToUpdateCreditCard = 'FAILED_TO_UPDATE_CREDIT_CARD',
   /** The payment method was manually revoked. */
@@ -9606,9 +11197,16 @@ export type CustomerSegmentMember = HasMetafields & {
   lastOrderId?: Maybe<Scalars['ID']['output']>;
   /** Whether the customer can be merged with another customer. */
   mergeable: CustomerMergeable;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** A note about the member. */
   note?: Maybe<Scalars['String']['output']>;
@@ -9672,7 +11270,7 @@ export type CustomerSegmentMemberConnection = {
   __typename?: 'CustomerSegmentMemberConnection';
   /** A list of edges. */
   edges: Array<CustomerSegmentMemberEdge>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
   /** The statistics for a given segment. */
   statistics: SegmentStatistics;
@@ -9683,7 +11281,7 @@ export type CustomerSegmentMemberConnection = {
 /** An auto-generated type which holds one CustomerSegmentMember and a cursor during pagination. */
 export type CustomerSegmentMemberEdge = {
   __typename?: 'CustomerSegmentMemberEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CustomerSegmentMemberEdge. */
   node: CustomerSegmentMember;
@@ -9734,6 +11332,32 @@ export type CustomerSegmentMembersQueryUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `CustomerSegmentMembersQueryUserError`. */
 export enum CustomerSegmentMembersQueryUserErrorCode {
+  /** The input value is invalid. */
+  Invalid = 'INVALID'
+}
+
+/** Return type for `customerSendAccountInviteEmail` mutation. */
+export type CustomerSendAccountInviteEmailPayload = {
+  __typename?: 'CustomerSendAccountInviteEmailPayload';
+  /** The customer to whom an account invite email was sent. */
+  customer?: Maybe<Customer>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<CustomerSendAccountInviteEmailUserError>;
+};
+
+/** Defines errors for customerSendAccountInviteEmail mutation. */
+export type CustomerSendAccountInviteEmailUserError = DisplayableError & {
+  __typename?: 'CustomerSendAccountInviteEmailUserError';
+  /** The error code. */
+  code?: Maybe<CustomerSendAccountInviteEmailUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `CustomerSendAccountInviteEmailUserError`. */
+export enum CustomerSendAccountInviteEmailUserErrorCode {
   /** The input value is invalid. */
   Invalid = 'INVALID'
 }
@@ -9963,18 +11587,18 @@ export type CustomerVisitProductInfo = {
 /** An auto-generated type for paginating through multiple CustomerVisitProductInfos. */
 export type CustomerVisitProductInfoConnection = {
   __typename?: 'CustomerVisitProductInfoConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<CustomerVisitProductInfoEdge>;
-  /** A list of the nodes contained in CustomerVisitProductInfoEdge. */
+  /** A list of nodes that are contained in CustomerVisitProductInfoEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<CustomerVisitProductInfo>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one CustomerVisitProductInfo and a cursor during pagination. */
 export type CustomerVisitProductInfoEdge = {
   __typename?: 'CustomerVisitProductInfoEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of CustomerVisitProductInfoEdge. */
   node: CustomerVisitProductInfo;
@@ -10028,8 +11652,7 @@ export enum DayOfTheWeek {
  * A token that delegates a set of scopes from the original permission.
  *
  * To learn more about creating delegate access tokens, refer to
- * [Delegate OAuth access tokens to subsystems]
- * (https://shopify.dev/apps/auth/oauth/delegate-access-tokens).
+ * [Delegate OAuth access tokens to subsystems](https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/use-delegate-tokens).
  */
 export type DelegateAccessToken = {
   __typename?: 'DelegateAccessToken';
@@ -10141,18 +11764,18 @@ export type DeletionEvent = {
 /** An auto-generated type for paginating through multiple DeletionEvents. */
 export type DeletionEventConnection = {
   __typename?: 'DeletionEventConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeletionEventEdge>;
-  /** A list of the nodes contained in DeletionEventEdge. */
+  /** A list of nodes that are contained in DeletionEventEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeletionEvent>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DeletionEvent and a cursor during pagination. */
 export type DeletionEventEdge = {
   __typename?: 'DeletionEventEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeletionEventEdge. */
   node: DeletionEvent;
@@ -10562,11 +12185,11 @@ export type DeliveryCarrierServiceAndLocations = {
 /** An auto-generated type for paginating through multiple DeliveryCarrierServices. */
 export type DeliveryCarrierServiceConnection = {
   __typename?: 'DeliveryCarrierServiceConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeliveryCarrierServiceEdge>;
-  /** A list of the nodes contained in DeliveryCarrierServiceEdge. */
+  /** A list of nodes that are contained in DeliveryCarrierServiceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeliveryCarrierService>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -10585,7 +12208,7 @@ export type DeliveryCarrierServiceCreateInput = {
 /** An auto-generated type which holds one DeliveryCarrierService and a cursor during pagination. */
 export type DeliveryCarrierServiceEdge = {
   __typename?: 'DeliveryCarrierServiceEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeliveryCarrierServiceEdge. */
   node: DeliveryCarrierService;
@@ -10709,14 +12332,21 @@ export type DeliveryCustomization = HasMetafieldDefinitions & HasMetafields & No
   functionId: Scalars['String']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -10801,11 +12431,11 @@ export type DeliveryCustomizationActivationPayload = {
 /** An auto-generated type for paginating through multiple DeliveryCustomizations. */
 export type DeliveryCustomizationConnection = {
   __typename?: 'DeliveryCustomizationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeliveryCustomizationEdge>;
-  /** A list of the nodes contained in DeliveryCustomizationEdge. */
+  /** A list of nodes that are contained in DeliveryCustomizationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeliveryCustomization>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -10830,7 +12460,7 @@ export type DeliveryCustomizationDeletePayload = {
 /** An auto-generated type which holds one DeliveryCustomization and a cursor during pagination. */
 export type DeliveryCustomizationEdge = {
   __typename?: 'DeliveryCustomizationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeliveryCustomizationEdge. */
   node: DeliveryCustomization;
@@ -10999,18 +12629,18 @@ export type DeliveryLocationGroupZoneMethodDefinitionsArgs = {
 /** An auto-generated type for paginating through multiple DeliveryLocationGroupZones. */
 export type DeliveryLocationGroupZoneConnection = {
   __typename?: 'DeliveryLocationGroupZoneConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeliveryLocationGroupZoneEdge>;
-  /** A list of the nodes contained in DeliveryLocationGroupZoneEdge. */
+  /** A list of nodes that are contained in DeliveryLocationGroupZoneEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeliveryLocationGroupZone>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DeliveryLocationGroupZone and a cursor during pagination. */
 export type DeliveryLocationGroupZoneEdge = {
   __typename?: 'DeliveryLocationGroupZoneEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeliveryLocationGroupZoneEdge. */
   node: DeliveryLocationGroupZone;
@@ -11074,6 +12704,8 @@ export type DeliveryMethod = Node & {
   methodType: DeliveryMethodType;
   /** The earliest delivery date and time when the fulfillment is expected to arrive at the buyer's location. */
   minDeliveryDateTime?: Maybe<Scalars['DateTime']['output']>;
+  /** The name of the delivery option that was presented to the buyer during checkout. */
+  presentedName?: Maybe<Scalars['String']['output']>;
   /** A reference to the shipping method. */
   serviceCode?: Maybe<Scalars['String']['output']>;
   /** Source reference is promise provider specific data associated with delivery promise. */
@@ -11112,11 +12744,11 @@ export type DeliveryMethodDefinition = Node & {
 /** An auto-generated type for paginating through multiple DeliveryMethodDefinitions. */
 export type DeliveryMethodDefinitionConnection = {
   __typename?: 'DeliveryMethodDefinitionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeliveryMethodDefinitionEdge>;
-  /** A list of the nodes contained in DeliveryMethodDefinitionEdge. */
+  /** A list of nodes that are contained in DeliveryMethodDefinitionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeliveryMethodDefinition>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -11132,7 +12764,7 @@ export type DeliveryMethodDefinitionCounts = {
 /** An auto-generated type which holds one DeliveryMethodDefinition and a cursor during pagination. */
 export type DeliveryMethodDefinitionEdge = {
   __typename?: 'DeliveryMethodDefinitionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeliveryMethodDefinitionEdge. */
   node: DeliveryMethodDefinition;
@@ -11254,7 +12886,7 @@ export type DeliveryProductVariantsCount = {
   count: Scalars['Int']['output'];
 };
 
-/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. */
+/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. Learn more about [building with delivery profiles](https://shopify.dev/apps/build/purchase-options/deferred/delivery-and-deferment/build-delivery-profiles). */
 export type DeliveryProfile = Node & {
   __typename?: 'DeliveryProfile';
   /** The number of active shipping rates for the profile. */
@@ -11293,7 +12925,7 @@ export type DeliveryProfile = Node & {
 };
 
 
-/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. */
+/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. Learn more about [building with delivery profiles](https://shopify.dev/apps/build/purchase-options/deferred/delivery-and-deferment/build-delivery-profiles). */
 export type DeliveryProfileProfileItemsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -11303,13 +12935,13 @@ export type DeliveryProfileProfileItemsArgs = {
 };
 
 
-/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. */
+/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. Learn more about [building with delivery profiles](https://shopify.dev/apps/build/purchase-options/deferred/delivery-and-deferment/build-delivery-profiles). */
 export type DeliveryProfileProfileLocationGroupsArgs = {
   locationGroupId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
-/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. */
+/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. Learn more about [building with delivery profiles](https://shopify.dev/apps/build/purchase-options/deferred/delivery-and-deferment/build-delivery-profiles). */
 export type DeliveryProfileSellingPlanGroupsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -11319,7 +12951,7 @@ export type DeliveryProfileSellingPlanGroupsArgs = {
 };
 
 
-/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. */
+/** A shipping profile. In Shopify, a shipping profile is a set of shipping rates scoped to a set of products or variants that can be shipped from selected locations to zones. Learn more about [building with delivery profiles](https://shopify.dev/apps/build/purchase-options/deferred/delivery-and-deferment/build-delivery-profiles). */
 export type DeliveryProfileUnassignedLocationsPaginatedArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -11331,11 +12963,11 @@ export type DeliveryProfileUnassignedLocationsPaginatedArgs = {
 /** An auto-generated type for paginating through multiple DeliveryProfiles. */
 export type DeliveryProfileConnection = {
   __typename?: 'DeliveryProfileConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeliveryProfileEdge>;
-  /** A list of the nodes contained in DeliveryProfileEdge. */
+  /** A list of nodes that are contained in DeliveryProfileEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeliveryProfile>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -11351,7 +12983,7 @@ export type DeliveryProfileCreatePayload = {
 /** An auto-generated type which holds one DeliveryProfile and a cursor during pagination. */
 export type DeliveryProfileEdge = {
   __typename?: 'DeliveryProfileEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeliveryProfileEdge. */
   node: DeliveryProfile;
@@ -11420,18 +13052,18 @@ export type DeliveryProfileItemVariantsArgs = {
 /** An auto-generated type for paginating through multiple DeliveryProfileItems. */
 export type DeliveryProfileItemConnection = {
   __typename?: 'DeliveryProfileItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DeliveryProfileItemEdge>;
-  /** A list of the nodes contained in DeliveryProfileItemEdge. */
+  /** A list of nodes that are contained in DeliveryProfileItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DeliveryProfileItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DeliveryProfileItem and a cursor during pagination. */
 export type DeliveryProfileItemEdge = {
   __typename?: 'DeliveryProfileItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DeliveryProfileItemEdge. */
   node: DeliveryProfileItem;
@@ -11662,6 +13294,22 @@ export type DeliveryZone = Node & {
   name: Scalars['String']['output'];
 };
 
+/** Configuration of the deposit. */
+export type DepositConfiguration = DepositPercentage;
+
+/** The input fields configuring the deposit for a B2B buyer. */
+export type DepositInput = {
+  /** The percentage of the order total that should be paid as a deposit. */
+  percentage: Scalars['Float']['input'];
+};
+
+/** A percentage deposit. */
+export type DepositPercentage = {
+  __typename?: 'DepositPercentage';
+  /** The percentage value of the deposit. */
+  percentage: Scalars['Float']['output'];
+};
+
 /** Digital wallet, such as Apple Pay, which can be used for accelerated checkouts. */
 export enum DigitalWallet {
   /** Android Pay. */
@@ -11689,6 +13337,26 @@ export type DiscountAllocation = {
   allocatedAmountSet: MoneyBag;
   /** The discount application that the allocated amount originated from. */
   discountApplication: DiscountApplication;
+};
+
+/** An auto-generated type for paginating through multiple DiscountAllocations. */
+export type DiscountAllocationConnection = {
+  __typename?: 'DiscountAllocationConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<DiscountAllocationEdge>;
+  /** A list of nodes that are contained in DiscountAllocationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<DiscountAllocation>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** An auto-generated type which holds one DiscountAllocation and a cursor during pagination. */
+export type DiscountAllocationEdge = {
+  __typename?: 'DiscountAllocationEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of DiscountAllocationEdge. */
+  node: DiscountAllocation;
 };
 
 /** The fixed amount value of a discount, and whether the amount is applied to each entitled item or spread evenly across the entitled items. */
@@ -11746,18 +13414,18 @@ export enum DiscountApplicationAllocationMethod {
 /** An auto-generated type for paginating through multiple DiscountApplications. */
 export type DiscountApplicationConnection = {
   __typename?: 'DiscountApplicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountApplicationEdge>;
-  /** A list of the nodes contained in DiscountApplicationEdge. */
+  /** A list of nodes that are contained in DiscountApplicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountApplication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DiscountApplication and a cursor during pagination. */
 export type DiscountApplicationEdge = {
   __typename?: 'DiscountApplicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountApplicationEdge. */
   node: DiscountApplication;
@@ -11817,6 +13485,8 @@ export type DiscountAutomaticApp = {
   __typename?: 'DiscountAutomaticApp';
   /** The app discount type providing the discount type. */
   appDiscountType: AppDiscountType;
+  /** Whether the discount applies on subscription items. */
+  appliesOnSubscription: Scalars['Boolean']['output'];
   /** The number of times the discount has been used. This value is updated asynchronously and can be different than the actual usage count. */
   asyncUsageCount: Scalars['Int']['output'];
   /** Determines which discount classes the discount can combine with. */
@@ -11831,6 +13501,8 @@ export type DiscountAutomaticApp = {
   endsAt?: Maybe<Scalars['DateTime']['output']>;
   /** The error history on the most recent version of the app discount. */
   errorHistory?: Maybe<FunctionsErrorHistory>;
+  /** The number of times a discount applies on recurring purchases (subscriptions).        0 will apply infinitely whereas 1 will only apply to the first checkout. */
+  recurringCycleLimit: Scalars['Int']['output'];
   /** The date and time when the discount starts. */
   startsAt: Scalars['DateTime']['output'];
   /** The status of the discount. */
@@ -11852,6 +13524,8 @@ export type DiscountAutomaticAppCreatePayload = {
 
 /** The input fields to create an app discount. */
 export type DiscountAutomaticAppInput = {
+  /** Whether the discount applies on subscription items. */
+  appliesOnSubscription?: InputMaybe<Scalars['Boolean']['input']>;
   /** Determines which discount classes the discount can combine with. */
   combinesWith?: InputMaybe<DiscountCombinesWithInput>;
   /** The date and time when the discount ends. For open-ended discounts, use `null`. */
@@ -11860,6 +13534,8 @@ export type DiscountAutomaticAppInput = {
   functionId?: InputMaybe<Scalars['String']['input']>;
   /** Additional metafields to associate to the discount. */
   metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** The number of times a discount applies on recurring purchases (subscriptions).         0 will apply infinitely whereas 1 will only apply to the first checkout. */
+  recurringCycleLimit?: InputMaybe<Scalars['Int']['input']>;
   /** The date and time when the discount starts. */
   startsAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The title of the discount. */
@@ -12052,11 +13728,11 @@ export type DiscountAutomaticBxgyUpdatePayload = {
 /** An auto-generated type for paginating through multiple DiscountAutomatics. */
 export type DiscountAutomaticConnection = {
   __typename?: 'DiscountAutomaticConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountAutomaticEdge>;
-  /** A list of the nodes contained in DiscountAutomaticEdge. */
+  /** A list of nodes that are contained in DiscountAutomaticEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountAutomatic>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -12081,7 +13757,7 @@ export type DiscountAutomaticDeletePayload = {
 /** An auto-generated type which holds one DiscountAutomatic and a cursor during pagination. */
 export type DiscountAutomaticEdge = {
   __typename?: 'DiscountAutomaticEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountAutomaticEdge. */
   node: DiscountAutomatic;
@@ -12181,14 +13857,21 @@ export type DiscountAutomaticNode = HasEvents & HasMetafieldDefinitions & HasMet
   events: EventConnection;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -12272,18 +13955,18 @@ export type DiscountAutomaticNodePrivateMetafieldsArgs = {
 /** An auto-generated type for paginating through multiple DiscountAutomaticNodes. */
 export type DiscountAutomaticNodeConnection = {
   __typename?: 'DiscountAutomaticNodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountAutomaticNodeEdge>;
-  /** A list of the nodes contained in DiscountAutomaticNodeEdge. */
+  /** A list of nodes that are contained in DiscountAutomaticNodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountAutomaticNode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DiscountAutomaticNode and a cursor during pagination. */
 export type DiscountAutomaticNodeEdge = {
   __typename?: 'DiscountAutomaticNodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountAutomaticNodeEdge. */
   node: DiscountAutomaticNode;
@@ -12820,14 +14503,21 @@ export type DiscountCodeNode = HasEvents & HasMetafieldDefinitions & HasMetafiel
   events: EventConnection;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -12911,18 +14601,18 @@ export type DiscountCodeNodePrivateMetafieldsArgs = {
 /** An auto-generated type for paginating through multiple DiscountCodeNodes. */
 export type DiscountCodeNodeConnection = {
   __typename?: 'DiscountCodeNodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountCodeNodeEdge>;
-  /** A list of the nodes contained in DiscountCodeNodeEdge. */
+  /** A list of nodes that are contained in DiscountCodeNodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountCodeNode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DiscountCodeNode and a cursor during pagination. */
 export type DiscountCodeNodeEdge = {
   __typename?: 'DiscountCodeNodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountCodeNodeEdge. */
   node: DiscountCodeNode;
@@ -13264,14 +14954,21 @@ export type DiscountNode = HasEvents & HasMetafieldDefinitions & HasMetafields &
   events: EventConnection;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -13355,18 +15052,18 @@ export type DiscountNodePrivateMetafieldsArgs = {
 /** An auto-generated type for paginating through multiple DiscountNodes. */
 export type DiscountNodeConnection = {
   __typename?: 'DiscountNodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountNodeEdge>;
-  /** A list of the nodes contained in DiscountNodeEdge. */
+  /** A list of nodes that are contained in DiscountNodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountNode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DiscountNode and a cursor during pagination. */
 export type DiscountNodeEdge = {
   __typename?: 'DiscountNodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountNodeEdge. */
   node: DiscountNode;
@@ -13522,18 +15219,18 @@ export type DiscountRedeemCodeBulkCreationCode = {
 /** An auto-generated type for paginating through multiple DiscountRedeemCodeBulkCreationCodes. */
 export type DiscountRedeemCodeBulkCreationCodeConnection = {
   __typename?: 'DiscountRedeemCodeBulkCreationCodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountRedeemCodeBulkCreationCodeEdge>;
-  /** A list of the nodes contained in DiscountRedeemCodeBulkCreationCodeEdge. */
+  /** A list of nodes that are contained in DiscountRedeemCodeBulkCreationCodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountRedeemCodeBulkCreationCode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DiscountRedeemCodeBulkCreationCode and a cursor during pagination. */
 export type DiscountRedeemCodeBulkCreationCodeEdge = {
   __typename?: 'DiscountRedeemCodeBulkCreationCodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountRedeemCodeBulkCreationCodeEdge. */
   node: DiscountRedeemCodeBulkCreationCode;
@@ -13542,18 +15239,18 @@ export type DiscountRedeemCodeBulkCreationCodeEdge = {
 /** An auto-generated type for paginating through multiple DiscountRedeemCodes. */
 export type DiscountRedeemCodeConnection = {
   __typename?: 'DiscountRedeemCodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DiscountRedeemCodeEdge>;
-  /** A list of the nodes contained in DiscountRedeemCodeEdge. */
+  /** A list of nodes that are contained in DiscountRedeemCodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DiscountRedeemCode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DiscountRedeemCode and a cursor during pagination. */
 export type DiscountRedeemCodeEdge = {
   __typename?: 'DiscountRedeemCodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DiscountRedeemCodeEdge. */
   node: DiscountRedeemCode;
@@ -13799,7 +15496,7 @@ export type DraftOrder = CommentEventSubject & HasEvents & HasLocalizationExtens
   customAttributes: Array<Attribute>;
   /** The customer who will be sent an invoice. */
   customer?: Maybe<Customer>;
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
   /** All discount codes applied. */
   discountCodes: Array<Scalars['String']['output']>;
@@ -13830,11 +15527,21 @@ export type DraftOrder = CommentEventSubject & HasEvents & HasLocalizationExtens
   localizationExtensions: LocalizationExtensionConnection;
   /** The name of the selected market. */
   marketName: Scalars['String']['output'];
-  /** The selected country code that determines the pricing. */
+  /**
+   * The selected country code that determines the pricing.
+   * @deprecated This field is now incompatible with Markets.
+   */
   marketRegionCountryCode: CountryCode;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The identifier for the draft order, which is unique within the store. For example, _#D1223_. */
   name: Scalars['String']['output'];
@@ -14231,11 +15938,11 @@ export type DraftOrderCompletePayload = {
 /** An auto-generated type for paginating through multiple DraftOrders. */
 export type DraftOrderConnection = {
   __typename?: 'DraftOrderConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DraftOrderEdge>;
-  /** A list of the nodes contained in DraftOrderEdge. */
+  /** A list of nodes that are contained in DraftOrderEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DraftOrder>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -14308,7 +16015,7 @@ export type DraftOrderDuplicatePayload = {
 /** An auto-generated type which holds one DraftOrder and a cursor during pagination. */
 export type DraftOrderEdge = {
   __typename?: 'DraftOrderEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DraftOrderEdge. */
   node: DraftOrder;
@@ -14349,8 +16056,6 @@ export type DraftOrderInput = {
   lineItems?: InputMaybe<Array<DraftOrderLineItemInput>>;
   /** The localization extensions attached to the draft order. For example, Tax IDs. */
   localizationExtensions?: InputMaybe<Array<LocalizationExtensionInput>>;
-  /** The selected country code that determines the pricing of the draft order. */
-  marketRegionCountryCode?: InputMaybe<CountryCode>;
   /** The list of metafields attached to the draft order. An existing metafield can not be used when creating a draft order. */
   metafields?: InputMaybe<Array<MetafieldInput>>;
   /** The text of an optional note that a shop owner can attach to the draft order. */
@@ -14536,18 +16241,18 @@ export type DraftOrderLineItem = Node & {
 /** An auto-generated type for paginating through multiple DraftOrderLineItems. */
 export type DraftOrderLineItemConnection = {
   __typename?: 'DraftOrderLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<DraftOrderLineItemEdge>;
-  /** A list of the nodes contained in DraftOrderLineItemEdge. */
+  /** A list of nodes that are contained in DraftOrderLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<DraftOrderLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one DraftOrderLineItem and a cursor during pagination. */
 export type DraftOrderLineItemEdge = {
   __typename?: 'DraftOrderLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of DraftOrderLineItemEdge. */
   node: DraftOrderLineItem;
@@ -14563,20 +16268,20 @@ export type DraftOrderLineItemInput = {
   customAttributes?: InputMaybe<Array<AttributeInput>>;
   /**
    * The price in presentment currency, without any discounts applied, for a custom line item.
-   * If this value is provided, `original_unit_price` will be ignored. This field is ignored when `variantId` is provided..
+   * If this value is provided, `original_unit_price` will be ignored. This field is ignored when `variantId` is provided.
    * Note: All presentment currencies for a single draft should be the same and match the
    * presentment currency of the draft order.
    */
   originalUnitPriceWithCurrency?: InputMaybe<MoneyInput>;
   /** The line item quantity. */
   quantity: Scalars['Int']['input'];
-  /** Whether physical shipping is required for a custom line item. This field is ignored when `variantId` is provided.. */
+  /** Whether physical shipping is required for a custom line item. This field is ignored when `variantId` is provided. */
   requiresShipping?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The SKU number for custom line items only. This field is ignored when `variantId` is provided.. */
+  /** The SKU number for custom line items only. This field is ignored when `variantId` is provided. */
   sku?: InputMaybe<Scalars['String']['input']>;
-  /** Whether the custom line item is taxable. This field is ignored when `variantId` is provided.. */
+  /** Whether the custom line item is taxable. This field is ignored when `variantId` is provided. */
   taxable?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Title of the line item. This field is ignored when `variantId` is provided.. */
+  /** Title of the line item. This field is ignored when `variantId` is provided. */
   title?: InputMaybe<Scalars['String']['input']>;
   /**
    * The UUID of the draft order line item. Must be unique and consistent across requests.
@@ -14590,7 +16295,7 @@ export type DraftOrderLineItemInput = {
   variantId?: InputMaybe<Scalars['ID']['input']>;
   /**
    * The weight unit and value inputs for custom line items only.
-   * This field is ignored when `variantId` is provided..
+   * This field is ignored when `variantId` is provided.
    */
   weight?: InputMaybe<WeightInput>;
 };
@@ -14826,6 +16531,8 @@ export enum ErrorsWebPixelUserErrorCode {
  * addition of a product.
  */
 export type Event = {
+  /** The action that occured. */
+  action: Scalars['String']['output'];
   /** The name of the app that created the event. */
   appTitle?: Maybe<Scalars['String']['output']>;
   /** Whether the event was created by an app. */
@@ -14864,7 +16571,7 @@ export type EventBridgeWebhookSubscriptionCreatePayload = {
 export type EventBridgeWebhookSubscriptionInput = {
   /** The ARN of the EventBridge partner event source. */
   arn?: InputMaybe<Scalars['ARN']['input']>;
-  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. */
+  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. See our [guide on filters](https://shopify.dev/docs/apps/build/webhooks/customize/filters) for more details. */
   filter?: InputMaybe<Scalars['String']['input']>;
   /** The format in which the webhook subscription should send the data. */
   format?: InputMaybe<WebhookSubscriptionFormat>;
@@ -14886,18 +16593,18 @@ export type EventBridgeWebhookSubscriptionUpdatePayload = {
 /** An auto-generated type for paginating through multiple Events. */
 export type EventConnection = {
   __typename?: 'EventConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<EventEdge>;
-  /** A list of the nodes contained in EventEdge. */
+  /** A list of nodes that are contained in EventEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Event>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one Event and a cursor during pagination. */
 export type EventEdge = {
   __typename?: 'EventEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of EventEdge. */
   node: Event;
@@ -14914,6 +16621,49 @@ export enum EventSortKeys {
    * Don't use this sort key when no search query is specified.
    */
   Relevance = 'RELEVANCE'
+}
+
+/** The type of the resource that generated the event. */
+export enum EventSubjectType {
+  /** A Article resource generated the event. */
+  Article = 'ARTICLE',
+  /** A Blog resource generated the event. */
+  Blog = 'BLOG',
+  /** A Collection resource generated the event. */
+  Collection = 'COLLECTION',
+  /** A Comment resource generated the event. */
+  Comment = 'COMMENT',
+  /** A Company resource generated the event. */
+  Company = 'COMPANY',
+  /** A CompanyLocation resource generated the event. */
+  CompanyLocation = 'COMPANY_LOCATION',
+  /** A Customer resource generated the event. */
+  Customer = 'CUSTOMER',
+  /** A DiscountAutomaticBxgy resource generated the event. */
+  DiscountAutomaticBxgy = 'DISCOUNT_AUTOMATIC_BXGY',
+  /** A DiscountAutomaticNode resource generated the event. */
+  DiscountAutomaticNode = 'DISCOUNT_AUTOMATIC_NODE',
+  /** A DiscountCodeNode resource generated the event. */
+  DiscountCodeNode = 'DISCOUNT_CODE_NODE',
+  /** A DiscountNode resource generated the event. */
+  DiscountNode = 'DISCOUNT_NODE',
+  /** A DraftOrder resource generated the event. */
+  DraftOrder = 'DRAFT_ORDER',
+  /** A Order resource generated the event. */
+  Order = 'ORDER',
+  /** A Page resource generated the event. */
+  Page = 'PAGE',
+  /** A PriceRule resource generated the event. */
+  PriceRule = 'PRICE_RULE',
+  /** A Product resource generated the event. */
+  Product = 'PRODUCT',
+  /** A ProductVariant resource generated the event. */
+  ProductVariant = 'PRODUCT_VARIANT',
+  /**
+   * Subject type is not available. This usually means that the subject isn't available in the current
+   *         version of the API, using a newer API version may resolve this.
+   */
+  Unknown = 'UNKNOWN'
 }
 
 /** An item for exchange. */
@@ -14947,18 +16697,18 @@ export type ExchangeLineItemAppliedDiscountValueInput = {
 /** An auto-generated type for paginating through multiple ExchangeLineItems. */
 export type ExchangeLineItemConnection = {
   __typename?: 'ExchangeLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ExchangeLineItemEdge>;
-  /** A list of the nodes contained in ExchangeLineItemEdge. */
+  /** A list of nodes that are contained in ExchangeLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ExchangeLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ExchangeLineItem and a cursor during pagination. */
 export type ExchangeLineItemEdge = {
   __typename?: 'ExchangeLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ExchangeLineItemEdge. */
   node: ExchangeLineItem;
@@ -15021,18 +16771,18 @@ export type ExchangeV2Additions = {
 /** An auto-generated type for paginating through multiple ExchangeV2s. */
 export type ExchangeV2Connection = {
   __typename?: 'ExchangeV2Connection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ExchangeV2Edge>;
-  /** A list of the nodes contained in ExchangeV2Edge. */
+  /** A list of nodes that are contained in ExchangeV2Edge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ExchangeV2>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ExchangeV2 and a cursor during pagination. */
 export type ExchangeV2Edge = {
   __typename?: 'ExchangeV2Edge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ExchangeV2Edge. */
   node: ExchangeV2;
@@ -15226,11 +16976,11 @@ export type FileAcknowledgeUpdateFailedPayload = {
 /** An auto-generated type for paginating through multiple Files. */
 export type FileConnection = {
   __typename?: 'FileConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FileEdge>;
-  /** A list of the nodes contained in FileEdge. */
+  /** A list of nodes that are contained in FileEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<File>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -15299,7 +17049,7 @@ export type FileDeletePayload = {
 /** An auto-generated type which holds one File and a cursor during pagination. */
 export type FileEdge = {
   __typename?: 'FileEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FileEdge. */
   node: File;
@@ -15388,6 +17138,28 @@ export enum FileErrorCode {
   /** Video failed validation. */
   VideoValidationError = 'VIDEO_VALIDATION_ERROR'
 }
+
+/** The input fields required to create or update a file object. */
+export type FileSetInput = {
+  /** The alternative text description of the file. */
+  alt?: InputMaybe<Scalars['String']['input']>;
+  /** The file content type. If omitted, then Shopify will attempt to determine the content type during file processing. */
+  contentType?: InputMaybe<FileContentType>;
+  /** How to handle if filename is already in use. */
+  duplicateResolutionMode?: InputMaybe<FileCreateInputDuplicateResolutionMode>;
+  /**
+   * When provided, the file will be created with the given filename,
+   * otherwise the filename in the originalSource will be used.
+   */
+  filename?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of an existing file. */
+  id?: InputMaybe<Scalars['ID']['input']>;
+  /**
+   * An external URL (for images only) or a
+   * [staged upload URL](https://shopify.dev/api/admin-graphql/latest/mutations/stageduploadscreate).
+   */
+  originalSource?: InputMaybe<Scalars['String']['input']>;
+};
 
 /** The set of valid sort keys for the File query. */
 export enum FileSortKeys {
@@ -15697,24 +17469,33 @@ export type FulfillmentCancelPayload = {
 /** An auto-generated type for paginating through multiple Fulfillments. */
 export type FulfillmentConnection = {
   __typename?: 'FulfillmentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentEdge>;
-  /** A list of the nodes contained in FulfillmentEdge. */
+  /** A list of nodes that are contained in FulfillmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Fulfillment>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** A fulfillment constraint rule. */
 export type FulfillmentConstraintRule = HasMetafields & Node & {
   __typename?: 'FulfillmentConstraintRule';
+  /** Delivery method types that the function is associated with. */
+  deliveryMethodTypes: Array<DeliveryMethodType>;
   /** The ID for the fulfillment constraint function. */
   function: ShopifyFunction;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -15835,6 +17616,43 @@ export enum FulfillmentConstraintRuleDeleteUserErrorCode {
   UnauthorizedAppScope = 'UNAUTHORIZED_APP_SCOPE'
 }
 
+/** Return type for `fulfillmentConstraintRuleUpdate` mutation. */
+export type FulfillmentConstraintRuleUpdatePayload = {
+  __typename?: 'FulfillmentConstraintRuleUpdatePayload';
+  /** The updated fulfillment constraint rule. */
+  fulfillmentConstraintRule?: Maybe<FulfillmentConstraintRule>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<FulfillmentConstraintRuleUpdateUserError>;
+};
+
+/** An error that occurs during the execution of `FulfillmentConstraintRuleUpdate`. */
+export type FulfillmentConstraintRuleUpdateUserError = DisplayableError & {
+  __typename?: 'FulfillmentConstraintRuleUpdateUserError';
+  /** The error code. */
+  code?: Maybe<FulfillmentConstraintRuleUpdateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `FulfillmentConstraintRuleUpdateUserError`. */
+export enum FulfillmentConstraintRuleUpdateUserErrorCode {
+  /** Could not find fulfillment constraint rule for provided id. */
+  NotFound = 'NOT_FOUND',
+  /** Unauthorized app scope. */
+  UnauthorizedAppScope = 'UNAUTHORIZED_APP_SCOPE'
+}
+
+/** Return type for `fulfillmentCreate` mutation. */
+export type FulfillmentCreatePayload = {
+  __typename?: 'FulfillmentCreatePayload';
+  /** The created fulfillment. */
+  fulfillment?: Maybe<Fulfillment>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<UserError>;
+};
+
 /** Return type for `fulfillmentCreateV2` mutation. */
 export type FulfillmentCreateV2Payload = {
   __typename?: 'FulfillmentCreateV2Payload';
@@ -15883,7 +17701,7 @@ export enum FulfillmentDisplayStatus {
 /** An auto-generated type which holds one Fulfillment and a cursor during pagination. */
 export type FulfillmentEdge = {
   __typename?: 'FulfillmentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentEdge. */
   node: Fulfillment;
@@ -15923,11 +17741,11 @@ export type FulfillmentEvent = Node & {
 /** An auto-generated type for paginating through multiple FulfillmentEvents. */
 export type FulfillmentEventConnection = {
   __typename?: 'FulfillmentEventConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentEventEdge>;
-  /** A list of the nodes contained in FulfillmentEventEdge. */
+  /** A list of nodes that are contained in FulfillmentEventEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<FulfillmentEvent>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -15943,7 +17761,7 @@ export type FulfillmentEventCreatePayload = {
 /** An auto-generated type which holds one FulfillmentEvent and a cursor during pagination. */
 export type FulfillmentEventEdge = {
   __typename?: 'FulfillmentEventEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentEventEdge. */
   node: FulfillmentEvent;
@@ -16013,10 +17831,16 @@ export enum FulfillmentEventStatus {
 }
 
 /** A fulfillment hold currently applied on a fulfillment order. */
-export type FulfillmentHold = {
+export type FulfillmentHold = Node & {
   __typename?: 'FulfillmentHold';
+  /** The localized reason for the fulfillment hold for display purposes. */
+  displayReason: Scalars['String']['output'];
   /** The name of the app or service that applied the fulfillment hold. */
   heldBy?: Maybe<Scalars['String']['output']>;
+  /** A boolean value that indicates whether the requesting app created the fulfillment hold. */
+  heldByRequestingApp: Scalars['Boolean']['output'];
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
   /** The reason for the fulfillment hold. */
   reason: FulfillmentHoldReason;
   /** Additional information about the fulfillment hold reason. */
@@ -16042,6 +17866,29 @@ export enum FulfillmentHoldReason {
   /** The fulfillment hold is applied because of an unknown delivery date. */
   UnknownDeliveryDate = 'UNKNOWN_DELIVERY_DATE'
 }
+
+/** The input fields used to create a fulfillment from fulfillment orders. */
+export type FulfillmentInput = {
+  /**
+   * Pairs of `fulfillment_order_id` and `fulfillment_order_line_items` that represent the fulfillment
+   * order line items that have to be fulfilled for each fulfillment order.  For any given pair, if the
+   * fulfillment order line items are left blank then all the fulfillment order line items of the
+   * associated fulfillment order ID will be fulfilled.
+   */
+  lineItemsByFulfillmentOrder: Array<FulfillmentOrderLineItemsInput>;
+  /**
+   * Whether the customer is notified.
+   * If `true`, then a notification is sent when the fulfillment is created. The default value is `false`.
+   */
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Address information about the location from which the order was fulfilled. */
+  originAddress?: InputMaybe<FulfillmentOriginAddressInput>;
+  /**
+   * The fulfillment's tracking information, including a tracking URL, a tracking number,
+   * and the company associated with the fulfillment.
+   */
+  trackingInfo?: InputMaybe<FulfillmentTrackingInput>;
+};
 
 /** Represents a line item from an order that's included in a fulfillment. */
 export type FulfillmentLineItem = Node & {
@@ -16071,18 +17918,18 @@ export type FulfillmentLineItem = Node & {
 /** An auto-generated type for paginating through multiple FulfillmentLineItems. */
 export type FulfillmentLineItemConnection = {
   __typename?: 'FulfillmentLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentLineItemEdge>;
-  /** A list of the nodes contained in FulfillmentLineItemEdge. */
+  /** A list of nodes that are contained in FulfillmentLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<FulfillmentLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one FulfillmentLineItem and a cursor during pagination. */
 export type FulfillmentLineItemEdge = {
   __typename?: 'FulfillmentLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentLineItemEdge. */
   node: FulfillmentLineItem;
@@ -17213,7 +19060,7 @@ export enum FulfillmentOrderAction {
   CreateFulfillment = 'CREATE_FULFILLMENT',
   /** Opens an external URL to initiate the fulfillment process outside Shopify. This action should be paired with `FulfillmentOrderSupportedAction.externalUrl`. */
   External = 'EXTERNAL',
-  /** Applies a fulfillment hold on an open fulfillment order. The corresponding mutation for this action is `fulfillmentOrderHold`. */
+  /** Applies a fulfillment hold on the fulfillment order. The corresponding mutation for this action is `fulfillmentOrderHold`. */
   Hold = 'HOLD',
   /** Marks the fulfillment order as open. The corresponding mutation for this action is `fulfillmentOrderOpen`. */
   MarkAsOpen = 'MARK_AS_OPEN',
@@ -17335,11 +19182,11 @@ export type FulfillmentOrderClosePayload = {
 /** An auto-generated type for paginating through multiple FulfillmentOrders. */
 export type FulfillmentOrderConnection = {
   __typename?: 'FulfillmentOrderConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentOrderEdge>;
-  /** A list of the nodes contained in FulfillmentOrderEdge. */
+  /** A list of nodes that are contained in FulfillmentOrderEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<FulfillmentOrder>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -17364,6 +19211,8 @@ export type FulfillmentOrderDestination = Node & {
   id: Scalars['ID']['output'];
   /** The last name of the customer at the destination. */
   lastName?: Maybe<Scalars['String']['output']>;
+  /** The location designated for the pick-up of the fulfillment order. */
+  location?: Maybe<Location>;
   /** The phone number of the customer at the destination. */
   phone?: Maybe<Scalars['String']['output']>;
   /** The province of the destination. */
@@ -17375,7 +19224,7 @@ export type FulfillmentOrderDestination = Node & {
 /** An auto-generated type which holds one FulfillmentOrder and a cursor during pagination. */
 export type FulfillmentOrderEdge = {
   __typename?: 'FulfillmentOrderEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentOrderEdge. */
   node: FulfillmentOrder;
@@ -17401,6 +19250,8 @@ export type FulfillmentOrderHoldInput = {
 /** Return type for `fulfillmentOrderHold` mutation. */
 export type FulfillmentOrderHoldPayload = {
   __typename?: 'FulfillmentOrderHoldPayload';
+  /** The fulfillment hold created for the fulfillment order. Null if no hold was created. */
+  fulfillmentHold?: Maybe<FulfillmentHold>;
   /** The fulfillment order on which a fulfillment hold was applied. */
   fulfillmentOrder?: Maybe<FulfillmentOrder>;
   /**
@@ -17453,13 +19304,7 @@ export type FulfillmentOrderLineItem = Node & {
   image?: Maybe<Image>;
   /** The ID of the inventory item. */
   inventoryItemId?: Maybe<Scalars['ID']['output']>;
-  /**
-   * The associated order line item.
-   * @deprecated           As of API version 2023-01, this field has been deprecated. The order line item associated with a `FulfillmentOrderLineItem`
-   *           shouldn't be used to determine what to fulfill. Use the `FulfillmentOrderLineItem` and `FulfillmentOrder` objects
-   *           instead. An order `LineItem` represents a single line item on an order, but it doesn't represent what should be fulfilled.
-   *
-   */
+  /** The associated order line item. */
   lineItem: LineItem;
   /**
    * The variant unit price without discounts applied, in shop and presentment currencies.
@@ -17491,18 +19336,18 @@ export type FulfillmentOrderLineItem = Node & {
 /** An auto-generated type for paginating through multiple FulfillmentOrderLineItems. */
 export type FulfillmentOrderLineItemConnection = {
   __typename?: 'FulfillmentOrderLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentOrderLineItemEdge>;
-  /** A list of the nodes contained in FulfillmentOrderLineItemEdge. */
+  /** A list of nodes that are contained in FulfillmentOrderLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<FulfillmentOrderLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one FulfillmentOrderLineItem and a cursor during pagination. */
 export type FulfillmentOrderLineItemEdge = {
   __typename?: 'FulfillmentOrderLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentOrderLineItemEdge. */
   node: FulfillmentOrderLineItem;
@@ -17634,18 +19479,18 @@ export type FulfillmentOrderLocationForMoveUnavailableLineItemsArgs = {
 /** An auto-generated type for paginating through multiple FulfillmentOrderLocationForMoves. */
 export type FulfillmentOrderLocationForMoveConnection = {
   __typename?: 'FulfillmentOrderLocationForMoveConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentOrderLocationForMoveEdge>;
-  /** A list of the nodes contained in FulfillmentOrderLocationForMoveEdge. */
+  /** A list of nodes that are contained in FulfillmentOrderLocationForMoveEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<FulfillmentOrderLocationForMove>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one FulfillmentOrderLocationForMove and a cursor during pagination. */
 export type FulfillmentOrderLocationForMoveEdge = {
   __typename?: 'FulfillmentOrderLocationForMoveEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentOrderLocationForMoveEdge. */
   node: FulfillmentOrderLocationForMove;
@@ -17681,18 +19526,18 @@ export type FulfillmentOrderMerchantRequest = Node & {
 /** An auto-generated type for paginating through multiple FulfillmentOrderMerchantRequests. */
 export type FulfillmentOrderMerchantRequestConnection = {
   __typename?: 'FulfillmentOrderMerchantRequestConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<FulfillmentOrderMerchantRequestEdge>;
-  /** A list of the nodes contained in FulfillmentOrderMerchantRequestEdge. */
+  /** A list of nodes that are contained in FulfillmentOrderMerchantRequestEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<FulfillmentOrderMerchantRequest>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one FulfillmentOrderMerchantRequest and a cursor during pagination. */
 export type FulfillmentOrderMerchantRequestEdge = {
   __typename?: 'FulfillmentOrderMerchantRequestEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of FulfillmentOrderMerchantRequestEdge. */
   node: FulfillmentOrderMerchantRequest;
@@ -17845,10 +19690,8 @@ export type FulfillmentOrderReleaseHoldUserError = DisplayableError & {
 export enum FulfillmentOrderReleaseHoldUserErrorCode {
   /** The fulfillment order wasn't found. */
   FulfillmentOrderNotFound = 'FULFILLMENT_ORDER_NOT_FOUND',
-  /** The fulfillment order line item quantity must be greater than 0. */
-  GreaterThanZero = 'GREATER_THAN_ZERO',
-  /** The fulfillment order line item quantity is invalid. */
-  InvalidLineItemQuantity = 'INVALID_LINE_ITEM_QUANTITY'
+  /** The app doesn't have access to release the fulfillment hold. */
+  InvalidAccess = 'INVALID_ACCESS'
 }
 
 /** The request status of a fulfillment order. */
@@ -18030,32 +19873,6 @@ export type FulfillmentOrderSupportedAction = {
   externalUrl?: Maybe<Scalars['URL']['output']>;
 };
 
-/** Return type for `fulfillmentOrdersReleaseHolds` mutation. */
-export type FulfillmentOrdersReleaseHoldsPayload = {
-  __typename?: 'FulfillmentOrdersReleaseHoldsPayload';
-  /** The asynchronous job that will release the fulfillment holds. */
-  job?: Maybe<Job>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<FulfillmentOrdersReleaseHoldsUserError>;
-};
-
-/** An error that occurs during the execution of `FulfillmentOrdersReleaseHolds`. */
-export type FulfillmentOrdersReleaseHoldsUserError = DisplayableError & {
-  __typename?: 'FulfillmentOrdersReleaseHoldsUserError';
-  /** The error code. */
-  code?: Maybe<FulfillmentOrdersReleaseHoldsUserErrorCode>;
-  /** The path to the input field that caused the error. */
-  field?: Maybe<Array<Scalars['String']['output']>>;
-  /** The error message. */
-  message: Scalars['String']['output'];
-};
-
-/** Possible error codes that can be returned by `FulfillmentOrdersReleaseHoldsUserError`. */
-export enum FulfillmentOrdersReleaseHoldsUserErrorCode {
-  /** Failed to create release fulfillment order holds job. */
-  FailedToCreateJob = 'FAILED_TO_CREATE_JOB'
-}
-
 /** Return type for `fulfillmentOrdersSetFulfillmentDeadline` mutation. */
 export type FulfillmentOrdersSetFulfillmentDeadlinePayload = {
   __typename?: 'FulfillmentOrdersSetFulfillmentDeadlinePayload';
@@ -18143,13 +19960,7 @@ export type FulfillmentOriginAddressInput = {
  * mutation.
  *
  * - Shopify sends POST requests to the `<callbackUrl>/fulfillment_order_notification` endpoint
- *   to notify the fulfillment service about fulfillment requests and fulfillment cancellation requests,
- *   if `fulfillment_orders_opt_in` is set to `true`.
- *
- *   [As of the 2022-07 API version](https://shopify.dev/changelog/legacy-fulfillment-api-deprecation),
- *   it's mandatory for a fulfillment service to follow a fulfillment order based workflow by
- *   having `fulfillment_orders_opt_in` set to `true`,
- *   hosting the `<callbackUrl>/fulfillment_order_notification` endpoint, and acting on fulfillment requests and cancellations.
+ *   to notify the fulfillment service about fulfillment requests and fulfillment cancellation requests.
  *
  *   For more information, refer to
  *   [Receive fulfillment requests and cancellations](https://shopify.dev/apps/fulfillment/fulfillment-service-apps/manage-fulfillments#step-2-receive-fulfillment-requests-and-cancellations).
@@ -18221,11 +20032,6 @@ export type FulfillmentService = {
   permitsSkuSharing: Scalars['Boolean']['output'];
   /** The name of the fulfillment service as seen by merchants. */
   serviceName: Scalars['String']['output'];
-  /**
-   * Shipping methods associated with the fulfillment service provider. Applies only to Fulfill By Amazon fulfillment service.
-   * @deprecated The Fulfillment by Amazon feature will no longer be supported from March 30, 2023. To continue using Amazon fulfillment, merchants need to set up a Multi-Channel Fulfillment solution recommended by Amazon: https://help.shopify.com/manual/shipping/fulfillment-services/amazon#activate-fulfillment-by-amazon
-   */
-  shippingMethods: Array<ShippingMethod>;
   /** Whether the fulfillment service implemented the /fetch_tracking_numbers endpoint. */
   trackingSupport: Scalars['Boolean']['output'];
   /** Type associated with the fulfillment service. */
@@ -18240,6 +20046,16 @@ export type FulfillmentServiceCreatePayload = {
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<UserError>;
 };
+
+/** Actions that can be taken at the location when a client requests the deletion of the fulfillment service. */
+export enum FulfillmentServiceDeleteInventoryAction {
+  /** Deactivate and delete the inventory and location. */
+  Delete = 'DELETE',
+  /** Keep the inventory in place and convert the Fulfillment Service's location to be merchant managed. */
+  Keep = 'KEEP',
+  /** Transfer the inventory and other dependencies to the provided location. */
+  Transfer = 'TRANSFER'
+}
 
 /** Return type for `fulfillmentServiceDelete` mutation. */
 export type FulfillmentServiceDeletePayload = {
@@ -18311,8 +20127,8 @@ export type FulfillmentTrackingInfo = {
    *
    *   * 4PX
    *   * AGS
+   *   * Amazon
    *   * Amazon Logistics UK
-   *   * Amazon Logistics US
    *   * An Post
    *   * Anjun Logistics
    *   * APC
@@ -18469,6 +20285,15 @@ export type FulfillmentTrackingInfo = {
    * When accounts are enabled, it's also displayed in the customer's order history.
    */
   url?: Maybe<Scalars['URL']['output']>;
+};
+
+/** Return type for `fulfillmentTrackingInfoUpdate` mutation. */
+export type FulfillmentTrackingInfoUpdatePayload = {
+  __typename?: 'FulfillmentTrackingInfoUpdatePayload';
+  /** The updated fulfillment with tracking information. */
+  fulfillment?: Maybe<Fulfillment>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<UserError>;
 };
 
 /** Return type for `fulfillmentTrackingInfoUpdateV2` mutation. */
@@ -18667,11 +20492,8 @@ export type GiftCard = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The customer who will receive the gift card. */
   customer?: Maybe<Customer>;
-  /**
-   * The date and time at which the gift card was disabled.
-   * @deprecated Use `deactivatedAt` instead.
-   */
-  disabledAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The date and time at which the gift card was deactivated. */
+  deactivatedAt?: Maybe<Scalars['DateTime']['output']>;
   /** Whether the gift card is enabled. */
   enabled: Scalars['Boolean']['output'];
   /** The date at which the gift card will expire. */
@@ -18688,16 +20510,34 @@ export type GiftCard = Node & {
   note?: Maybe<Scalars['String']['output']>;
   /** The order associated with the gift card. This value is `null` if the gift card was issued manually. */
   order?: Maybe<Order>;
+  /** The recipient who will receive the gift card. */
+  recipientAttributes?: Maybe<GiftCardRecipient>;
+  /** The theme template used to render the gift card online. */
+  templateSuffix?: Maybe<Scalars['String']['output']>;
+  /** The transaction history of the gift card. */
+  transactions?: Maybe<GiftCardTransactionConnection>;
+  /** The date and time at which the gift card was updated. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** Represents an issued gift card. */
+export type GiftCardTransactionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** An auto-generated type for paginating through multiple GiftCards. */
 export type GiftCardConnection = {
   __typename?: 'GiftCardConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<GiftCardEdge>;
-  /** A list of the nodes contained in GiftCardEdge. */
+  /** A list of nodes that are contained in GiftCardEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<GiftCard>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -18716,6 +20556,8 @@ export type GiftCardCreateInput = {
   initialValue: Scalars['Decimal']['input'];
   /** The note associated with the gift card, which isn't visible to the customer. */
   note?: InputMaybe<Scalars['String']['input']>;
+  /** The recipient attributes of the gift card. */
+  recipientAttributes?: InputMaybe<GiftCardRecipientInput>;
   /**
    * The suffix of the Liquid template that's used to render the gift card online.
    * For example, if the value is `birthday`, then the gift card is rendered using the template `gift_card.birthday.liquid`.
@@ -18735,19 +20577,228 @@ export type GiftCardCreatePayload = {
   userErrors: Array<GiftCardUserError>;
 };
 
-/** Return type for `giftCardDisable` mutation. */
-export type GiftCardDisablePayload = {
-  __typename?: 'GiftCardDisablePayload';
-  /** The disabled gift card. */
+/** The input fields for a gift card credit transaction. */
+export type GiftCardCreditInput = {
+  /** The amount to credit the gift card. */
+  creditAmount: MoneyInput;
+  /** A note about the credit. */
+  note?: InputMaybe<Scalars['String']['input']>;
+  /** The date and time the credit was processed. Defaults to current date and time. */
+  processedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+/** Return type for `giftCardCredit` mutation. */
+export type GiftCardCreditPayload = {
+  __typename?: 'GiftCardCreditPayload';
+  /** The gift card credit transaction that was created. */
+  giftCardCreditTransaction?: Maybe<GiftCardCreditTransaction>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<GiftCardTransactionUserError>;
+};
+
+/** A credit transaction which increases the gift card balance. */
+export type GiftCardCreditTransaction = GiftCardTransaction & HasMetafields & Node & {
+  __typename?: 'GiftCardCreditTransaction';
+  /** The amount of the transaction. */
+  amount: MoneyV2;
+  /** The gift card that the transaction belongs to. */
+  giftCard: GiftCard;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
+  metafield?: Maybe<Metafield>;
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
+  metafields: MetafieldConnection;
+  /** A note about the transaction. */
+  note?: Maybe<Scalars['String']['output']>;
+  /**
+   * Returns a private metafield by namespace and key that belongs to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafield?: Maybe<PrivateMetafield>;
+  /**
+   * List of private metafields that belong to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafields: PrivateMetafieldConnection;
+  /** The date and time when the transaction was processed. */
+  processedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A credit transaction which increases the gift card balance. */
+export type GiftCardCreditTransactionMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** A credit transaction which increases the gift card balance. */
+export type GiftCardCreditTransactionMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** A credit transaction which increases the gift card balance. */
+export type GiftCardCreditTransactionPrivateMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace: Scalars['String']['input'];
+};
+
+
+/** A credit transaction which increases the gift card balance. */
+export type GiftCardCreditTransactionPrivateMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Return type for `giftCardDeactivate` mutation. */
+export type GiftCardDeactivatePayload = {
+  __typename?: 'GiftCardDeactivatePayload';
+  /** The deactivated gift card. */
   giftCard?: Maybe<GiftCard>;
   /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
+  userErrors: Array<GiftCardDeactivateUserError>;
+};
+
+/** An error that occurs during the execution of `GiftCardDeactivate`. */
+export type GiftCardDeactivateUserError = DisplayableError & {
+  __typename?: 'GiftCardDeactivateUserError';
+  /** The error code. */
+  code?: Maybe<GiftCardDeactivateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `GiftCardDeactivateUserError`. */
+export enum GiftCardDeactivateUserErrorCode {
+  /** The gift card could not be found. */
+  GiftCardNotFound = 'GIFT_CARD_NOT_FOUND'
+}
+
+/** The input fields for a gift card debit transaction. */
+export type GiftCardDebitInput = {
+  /** The amount to debit the gift card. */
+  debitAmount: MoneyInput;
+  /** A note about the debit. */
+  note?: InputMaybe<Scalars['String']['input']>;
+  /** The date and time the debit was processed. Defaults to current date and time. */
+  processedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+/** Return type for `giftCardDebit` mutation. */
+export type GiftCardDebitPayload = {
+  __typename?: 'GiftCardDebitPayload';
+  /** The gift card debit transaction that was created. */
+  giftCardDebitTransaction?: Maybe<GiftCardDebitTransaction>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<GiftCardTransactionUserError>;
+};
+
+/** A debit transaction which decreases the gift card balance. */
+export type GiftCardDebitTransaction = GiftCardTransaction & HasMetafields & Node & {
+  __typename?: 'GiftCardDebitTransaction';
+  /** The amount of the transaction. */
+  amount: MoneyV2;
+  /** The gift card that the transaction belongs to. */
+  giftCard: GiftCard;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
+  metafield?: Maybe<Metafield>;
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
+  metafields: MetafieldConnection;
+  /** A note about the transaction. */
+  note?: Maybe<Scalars['String']['output']>;
+  /**
+   * Returns a private metafield by namespace and key that belongs to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafield?: Maybe<PrivateMetafield>;
+  /**
+   * List of private metafields that belong to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafields: PrivateMetafieldConnection;
+  /** The date and time when the transaction was processed. */
+  processedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A debit transaction which decreases the gift card balance. */
+export type GiftCardDebitTransactionMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** A debit transaction which decreases the gift card balance. */
+export type GiftCardDebitTransactionMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** A debit transaction which decreases the gift card balance. */
+export type GiftCardDebitTransactionPrivateMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace: Scalars['String']['input'];
+};
+
+
+/** A debit transaction which decreases the gift card balance. */
+export type GiftCardDebitTransactionPrivateMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** An auto-generated type which holds one GiftCard and a cursor during pagination. */
 export type GiftCardEdge = {
   __typename?: 'GiftCardEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of GiftCardEdge. */
   node: GiftCard;
@@ -18755,6 +20806,8 @@ export type GiftCardEdge = {
 
 /** Possible error codes that can be returned by `GiftCardUserError`. */
 export enum GiftCardErrorCode {
+  /** The customer could not be found. */
+  CustomerNotFound = 'CUSTOMER_NOT_FOUND',
   /** The input value should be greater than the minimum allowed value. */
   GreaterThan = 'GREATER_THAN',
   /** Unexpected internal error happened. */
@@ -18763,6 +20816,8 @@ export enum GiftCardErrorCode {
   Invalid = 'INVALID',
   /** Missing a required argument. */
   MissingArgument = 'MISSING_ARGUMENT',
+  /** The recipient could not be found. */
+  RecipientNotFound = 'RECIPIENT_NOT_FOUND',
   /** The input value is already taken. */
   Taken = 'TAKEN',
   /** The input value is too long. */
@@ -18770,6 +20825,31 @@ export enum GiftCardErrorCode {
   /** The input value is too short. */
   TooShort = 'TOO_SHORT'
 }
+
+/** Represents a recipient who will receive the issued gift card. */
+export type GiftCardRecipient = {
+  __typename?: 'GiftCardRecipient';
+  /** The message sent with the gift card. */
+  message?: Maybe<Scalars['String']['output']>;
+  /** The preferred name of the recipient who will receive the gift card. */
+  preferredName?: Maybe<Scalars['String']['output']>;
+  /** The recipient who will receive the gift card. */
+  recipient: Customer;
+  /** The scheduled datetime on which the gift card will be sent to the recipient. The gift card will be sent within an hour of the specified datetime. */
+  sendNotificationAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+/** The input fields to add a recipient to a gift card. */
+export type GiftCardRecipientInput = {
+  /** The ID of the customer who will be the recipient of the gift card. Requires `write_customers` access_scope. */
+  id: Scalars['ID']['input'];
+  /** The personalized message intended for the recipient. */
+  message?: InputMaybe<Scalars['String']['input']>;
+  /** The preferred name of the recipient. */
+  preferredName?: InputMaybe<Scalars['String']['input']>;
+  /** The scheduled datetime on which the gift card will be sent to the recipient. The gift card will be sent within an hour of the specified datetime. */
+  sendNotificationAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
 
 /** A sale associated with a gift card. */
 export type GiftCardSale = Sale & {
@@ -18795,6 +20875,66 @@ export type GiftCardSale = Sale & {
   /** The total amount of taxes for the sale. */
   totalTaxAmount: MoneyBag;
 };
+
+/** Return type for `giftCardSendNotificationToCustomer` mutation. */
+export type GiftCardSendNotificationToCustomerPayload = {
+  __typename?: 'GiftCardSendNotificationToCustomerPayload';
+  /** The gift card that was sent. */
+  giftCard?: Maybe<GiftCard>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<GiftCardSendNotificationToCustomerUserError>;
+};
+
+/** An error that occurs during the execution of `GiftCardSendNotificationToCustomer`. */
+export type GiftCardSendNotificationToCustomerUserError = DisplayableError & {
+  __typename?: 'GiftCardSendNotificationToCustomerUserError';
+  /** The error code. */
+  code?: Maybe<GiftCardSendNotificationToCustomerUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `GiftCardSendNotificationToCustomerUserError`. */
+export enum GiftCardSendNotificationToCustomerUserErrorCode {
+  /** The customer could not be found. */
+  CustomerNotFound = 'CUSTOMER_NOT_FOUND',
+  /** The gift card could not be found. */
+  GiftCardNotFound = 'GIFT_CARD_NOT_FOUND',
+  /** The input value is invalid. */
+  Invalid = 'INVALID'
+}
+
+/** Return type for `giftCardSendNotificationToRecipient` mutation. */
+export type GiftCardSendNotificationToRecipientPayload = {
+  __typename?: 'GiftCardSendNotificationToRecipientPayload';
+  /** The gift card that was sent. */
+  giftCard?: Maybe<GiftCard>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<GiftCardSendNotificationToRecipientUserError>;
+};
+
+/** An error that occurs during the execution of `GiftCardSendNotificationToRecipient`. */
+export type GiftCardSendNotificationToRecipientUserError = DisplayableError & {
+  __typename?: 'GiftCardSendNotificationToRecipientUserError';
+  /** The error code. */
+  code?: Maybe<GiftCardSendNotificationToRecipientUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `GiftCardSendNotificationToRecipientUserError`. */
+export enum GiftCardSendNotificationToRecipientUserErrorCode {
+  /** The gift card could not be found. */
+  GiftCardNotFound = 'GIFT_CARD_NOT_FOUND',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
+  /** The recipient could not be found. */
+  RecipientNotFound = 'RECIPIENT_NOT_FOUND'
+}
 
 /** The set of valid sort keys for the GiftCard query. */
 export enum GiftCardSortKeys {
@@ -18825,6 +20965,131 @@ export enum GiftCardSortKeys {
   UpdatedAt = 'UPDATED_AT'
 }
 
+/** Represents information about the metafields associated to the specified resource. */
+export type GiftCardTransaction = {
+  /** The amount of the transaction. */
+  amount: MoneyV2;
+  /** The gift card that the transaction belongs to. */
+  giftCard: GiftCard;
+  /** The unique ID for the transaction. */
+  id: Scalars['ID']['output'];
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
+  metafield?: Maybe<Metafield>;
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
+  metafields: MetafieldConnection;
+  /** A note about the transaction. */
+  note?: Maybe<Scalars['String']['output']>;
+  /**
+   * Returns a private metafield by namespace and key that belongs to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafield?: Maybe<PrivateMetafield>;
+  /**
+   * List of private metafields that belong to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafields: PrivateMetafieldConnection;
+  /** The date and time when the transaction was processed. */
+  processedAt: Scalars['DateTime']['output'];
+};
+
+
+/** Represents information about the metafields associated to the specified resource. */
+export type GiftCardTransactionMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Represents information about the metafields associated to the specified resource. */
+export type GiftCardTransactionMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Represents information about the metafields associated to the specified resource. */
+export type GiftCardTransactionPrivateMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace: Scalars['String']['input'];
+};
+
+
+/** Represents information about the metafields associated to the specified resource. */
+export type GiftCardTransactionPrivateMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** An auto-generated type for paginating through multiple GiftCardTransactions. */
+export type GiftCardTransactionConnection = {
+  __typename?: 'GiftCardTransactionConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<GiftCardTransactionEdge>;
+  /** A list of nodes that are contained in GiftCardTransactionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<GiftCardTransaction>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** An auto-generated type which holds one GiftCardTransaction and a cursor during pagination. */
+export type GiftCardTransactionEdge = {
+  __typename?: 'GiftCardTransactionEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of GiftCardTransactionEdge. */
+  node: GiftCardTransaction;
+};
+
+/** Represents an error that happens during the execution of a gift card transaction mutation. */
+export type GiftCardTransactionUserError = DisplayableError & {
+  __typename?: 'GiftCardTransactionUserError';
+  /** The error code. */
+  code?: Maybe<GiftCardTransactionUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `GiftCardTransactionUserError`. */
+export enum GiftCardTransactionUserErrorCode {
+  /** The gift card's value exceeds the allowed limits. */
+  GiftCardLimitExceeded = 'GIFT_CARD_LIMIT_EXCEEDED',
+  /** The gift card could not be found. */
+  GiftCardNotFound = 'GIFT_CARD_NOT_FOUND',
+  /** The gift card does not have sufficient funds to satisfy the request. */
+  InsufficientFunds = 'INSUFFICIENT_FUNDS',
+  /** Unexpected internal error happened. */
+  InternalError = 'INTERNAL_ERROR',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
+  /** The currency provided does not match the currency of the gift card. */
+  MismatchingCurrency = 'MISMATCHING_CURRENCY',
+  /** A positive amount must be used. */
+  NegativeOrZeroAmount = 'NEGATIVE_OR_ZERO_AMOUNT'
+}
+
 /** The input fields to update a gift card. */
 export type GiftCardUpdateInput = {
   /** The ID of the customer who will receive the gift card. The ID can't be changed if the gift card already has an assigned customer ID. */
@@ -18833,6 +21098,8 @@ export type GiftCardUpdateInput = {
   expiresOn?: InputMaybe<Scalars['Date']['input']>;
   /** The note associated with the gift card, which isn't visible to the customer. */
   note?: InputMaybe<Scalars['String']['input']>;
+  /** The recipient attributes of the gift card. */
+  recipientAttributes?: InputMaybe<GiftCardRecipientInput>;
   /**
    * The suffix of the Liquid template that's used to render the gift card online.
    * For example, if the value is `birthday`, then the gift card is rendered using the template `gift_card.birthday.liquid`.
@@ -18931,9 +21198,16 @@ export type HasMetafieldDefinitionsMetafieldDefinitionsArgs = {
 
 /** Represents information about the metafields associated to the specified resource. */
 export type HasMetafields = {
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -18990,7 +21264,7 @@ export type HasMetafieldsPrivateMetafieldsArgs = {
 
 /** Published translations associated with the resource. */
 export type HasPublishedTranslations = {
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
 };
 
@@ -19026,9 +21300,16 @@ export type Image = HasMetafields & {
   height?: Maybe<Scalars['Int']['output']>;
   /** A unique ID for the image. */
   id?: Maybe<Scalars['ID']['output']>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * The location of the original image as a URL.
@@ -19134,11 +21415,11 @@ export type ImageUrlArgs = {
 /** An auto-generated type for paginating through multiple Images. */
 export type ImageConnection = {
   __typename?: 'ImageConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ImageEdge>;
-  /** A list of the nodes contained in ImageEdge. */
+  /** A list of nodes that are contained in ImageEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Image>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -19155,7 +21436,7 @@ export enum ImageContentType {
 /** An auto-generated type which holds one Image and a cursor during pagination. */
 export type ImageEdge = {
   __typename?: 'ImageEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ImageEdge. */
   node: Image;
@@ -19540,18 +21821,18 @@ export type InventoryItemInventoryLevelsArgs = {
 /** An auto-generated type for paginating through multiple InventoryItems. */
 export type InventoryItemConnection = {
   __typename?: 'InventoryItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<InventoryItemEdge>;
-  /** A list of the nodes contained in InventoryItemEdge. */
+  /** A list of nodes that are contained in InventoryItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<InventoryItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one InventoryItem and a cursor during pagination. */
 export type InventoryItemEdge = {
   __typename?: 'InventoryItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of InventoryItemEdge. */
   node: InventoryItem;
@@ -19655,18 +21936,18 @@ export type InventoryLevelScheduledChangesArgs = {
 /** An auto-generated type for paginating through multiple InventoryLevels. */
 export type InventoryLevelConnection = {
   __typename?: 'InventoryLevelConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<InventoryLevelEdge>;
-  /** A list of the nodes contained in InventoryLevelEdge. */
+  /** A list of nodes that are contained in InventoryLevelEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<InventoryLevel>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one InventoryLevel and a cursor during pagination. */
 export type InventoryLevelEdge = {
   __typename?: 'InventoryLevelEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of InventoryLevelEdge. */
   node: InventoryLevel;
@@ -19873,18 +22154,18 @@ export type InventoryScheduledChange = {
 /** An auto-generated type for paginating through multiple InventoryScheduledChanges. */
 export type InventoryScheduledChangeConnection = {
   __typename?: 'InventoryScheduledChangeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<InventoryScheduledChangeEdge>;
-  /** A list of the nodes contained in InventoryScheduledChangeEdge. */
+  /** A list of nodes that are contained in InventoryScheduledChangeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<InventoryScheduledChange>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one InventoryScheduledChange and a cursor during pagination. */
 export type InventoryScheduledChangeEdge = {
   __typename?: 'InventoryScheduledChangeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of InventoryScheduledChangeEdge. */
   node: InventoryScheduledChange;
@@ -20038,6 +22319,8 @@ export enum InventorySetQuantitiesUserErrorCode {
   InvalidQuantityNegative = 'INVALID_QUANTITY_NEGATIVE',
   /** The total quantity can't be higher than 1,000,000,000. */
   InvalidQuantityTooHigh = 'INVALID_QUANTITY_TOO_HIGH',
+  /** The total quantity can't be lower than -1,000,000,000. */
+  InvalidQuantityTooLow = 'INVALID_QUANTITY_TOO_LOW',
   /** The specified reason is invalid. */
   InvalidReason = 'INVALID_REASON',
   /** The specified reference document is invalid. */
@@ -20638,18 +22921,18 @@ export type LineItemTaxLinesArgs = {
 /** An auto-generated type for paginating through multiple LineItems. */
 export type LineItemConnection = {
   __typename?: 'LineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<LineItemEdge>;
-  /** A list of the nodes contained in LineItemEdge. */
+  /** A list of nodes that are contained in LineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<LineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one LineItem and a cursor during pagination. */
 export type LineItemEdge = {
   __typename?: 'LineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of LineItemEdge. */
   node: LineItem;
@@ -20672,148 +22955,6 @@ export type LineItemGroup = Node & {
   variantSku?: Maybe<Scalars['String']['output']>;
 };
 
-/** Represents a single line item on an order. */
-export type LineItemMutable = Node & {
-  __typename?: 'LineItemMutable';
-  /**
-   * Whether the line item can be restocked.
-   * @deprecated Use `restockable` instead.
-   */
-  canRestock: Scalars['Boolean']['output'];
-  /** A list of attributes that represent custom features or special requests. */
-  customAttributes: Array<Attribute>;
-  /** The discounts that have been allocated onto the line item by discount applications. */
-  discountAllocations: Array<DiscountAllocation>;
-  /**
-   * The total line price after discounts are applied, in shop currency.
-   * @deprecated Use `discountedTotalSet` instead.
-   */
-  discountedTotal: Scalars['Money']['output'];
-  /** The total line price after discounts are applied, in shop and presentment currencies. */
-  discountedTotalSet: MoneyBag;
-  /**
-   * The approximate split price of a line item unit, in shop currency. This value doesn't include discounts applied to the entire order.
-   * @deprecated Use `discountedUnitPriceSet` instead.
-   */
-  discountedUnitPrice: Scalars['Money']['output'];
-  /** The approximate split price of a line item unit, in shop and presentment currencies. This value doesn't include discounts applied to the entire order. */
-  discountedUnitPriceSet: MoneyBag;
-  /** The total number of units to fulfill. */
-  fulfillableQuantity: Scalars['Int']['output'];
-  /**
-   * The service provider that fulfills the line item.
-   *
-   * Deleted fulfillment services will return null.
-   */
-  fulfillmentService?: Maybe<FulfillmentService>;
-  /**
-   * The line item's fulfillment status. Returns 'fulfilled' if fulfillableQuantity >= quantity,
-   * 'partial' if  fulfillableQuantity > 0, and 'unfulfilled' otherwise.
-   */
-  fulfillmentStatus: Scalars['String']['output'];
-  /** A globally-unique ID. */
-  id: Scalars['ID']['output'];
-  /** The image associated to the line item's variant. */
-  image?: Maybe<Image>;
-  /** Whether the line item represents the purchase of a gift card. */
-  isGiftCard: Scalars['Boolean']['output'];
-  /** Whether the line item can be edited or not. */
-  merchantEditable: Scalars['Boolean']['output'];
-  /** The name of the product. */
-  name: Scalars['String']['output'];
-  /** The total number of units that can't be fulfilled. For example, if items have been refunded, or the item isn't something that can be fulfilled, like a tip. */
-  nonFulfillableQuantity: Scalars['Int']['output'];
-  /**
-   * The total price without any discounts applied, in shop currency. ""This value is based on the unit price of the variant x quantity.
-   * @deprecated Use `originalTotalSet` instead.
-   */
-  originalTotal: Scalars['Money']['output'];
-  /** The total price in shop and presentment currencies, without discounts applied. This value is based on the unit price of the variant x quantity. */
-  originalTotalSet: MoneyBag;
-  /**
-   * The variant unit price without discounts applied, in shop currency.
-   * @deprecated Use `originalUnitPriceSet` instead.
-   */
-  originalUnitPrice: Scalars['Money']['output'];
-  /** The variant unit price without discounts applied, in shop and presentment currencies. */
-  originalUnitPriceSet: MoneyBag;
-  /** The Product object associated with this line item's variant. */
-  product?: Maybe<Product>;
-  /** The number of variant units ordered. */
-  quantity: Scalars['Int']['output'];
-  /** The line item's quantity, minus the refunded quantity. */
-  refundableQuantity: Scalars['Int']['output'];
-  /** Whether physical shipping is required for the variant. */
-  requiresShipping: Scalars['Boolean']['output'];
-  /** Whether the line item can be restocked. */
-  restockable: Scalars['Boolean']['output'];
-  /** The variant SKU number. */
-  sku?: Maybe<Scalars['String']['output']>;
-  /** Staff attributed to the line item. */
-  staffMember?: Maybe<StaffMember>;
-  /** The TaxLine object connected to this line item. */
-  taxLines: Array<TaxLine>;
-  /** Whether the variant is taxable. */
-  taxable: Scalars['Boolean']['output'];
-  /** The title of the product. */
-  title: Scalars['String']['output'];
-  /**
-   * The total amount of the discount allocated to the line item in the shop currency. This field must be explicitly set using draft orders, Shopify scripts, or the API. Instead of using this field, Shopify recommends using `discountAllocations`, which provides the same information.
-   * @deprecated Use `totalDiscountSet` instead.
-   */
-  totalDiscount: Scalars['Money']['output'];
-  /** The total amount of the discount allocated to the line item in the presentment currency. This field must be explicitly set using draft orders, Shopify scripts, or the API. Instead of using this field, Shopify recommends using `discountAllocations`, which provides the same information. */
-  totalDiscountSet: MoneyBag;
-  /**
-   * The total discounted value of unfulfilled units, in shop currency.
-   * @deprecated Use `unfulfilledDiscountedTotalSet` instead.
-   */
-  unfulfilledDiscountedTotal: Scalars['Money']['output'];
-  /** The total discounted value of unfulfilled units, in shop and presentment currencies. */
-  unfulfilledDiscountedTotalSet: MoneyBag;
-  /**
-   * The total price without any discounts applied. This value is based on the unit price of the variant x quantity of all unfulfilled units, in shop currency.
-   * @deprecated Use `unfulfilledOriginalTotalSet` instead.
-   */
-  unfulfilledOriginalTotal: Scalars['Money']['output'];
-  /** The total price without any discounts applied. This value is based on the unit price of the variant x quantity of all unfulfilled units, in shop and presentment currencies. */
-  unfulfilledOriginalTotalSet: MoneyBag;
-  /** The number of units not yet fulfilled. */
-  unfulfilledQuantity: Scalars['Int']['output'];
-  /** The Variant object associated with this line item. */
-  variant?: Maybe<ProductVariant>;
-  /** The name of the variant. */
-  variantTitle?: Maybe<Scalars['String']['output']>;
-  /** The name of the vendor who made the variant. */
-  vendor?: Maybe<Scalars['String']['output']>;
-};
-
-
-/** Represents a single line item on an order. */
-export type LineItemMutableTaxLinesArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** An auto-generated type for paginating through multiple LineItemMutables. */
-export type LineItemMutableConnection = {
-  __typename?: 'LineItemMutableConnection';
-  /** A list of edges. */
-  edges: Array<LineItemMutableEdge>;
-  /** A list of the nodes contained in LineItemMutableEdge. */
-  nodes: Array<LineItemMutable>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-};
-
-/** An auto-generated type which holds one LineItemMutable and a cursor during pagination. */
-export type LineItemMutableEdge = {
-  __typename?: 'LineItemMutableEdge';
-  /** A cursor for use in pagination. */
-  cursor: Scalars['String']['output'];
-  /** The item at the end of LineItemMutableEdge. */
-  node: LineItemMutable;
-};
-
 /** Represents the selling plan for a line item. */
 export type LineItemSellingPlan = {
   __typename?: 'LineItemSellingPlan';
@@ -20828,7 +22969,7 @@ export type Link = HasPublishedTranslations & {
   __typename?: 'Link';
   /** A context-sensitive label for the link. */
   label: Scalars['String']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
   /** The URL that the link visits. */
   url: Scalars['URL']['output'];
@@ -20884,6 +23025,15 @@ export type LinkedMetafieldUpdateInput = {
   key: Scalars['String']['input'];
   /** The namespace of the metafield this option is linked to. */
   namespace: Scalars['String']['input'];
+};
+
+/** Local payment methods payment details related to a transaction. */
+export type LocalPaymentMethodsPaymentDetails = BasePaymentDetails & {
+  __typename?: 'LocalPaymentMethodsPaymentDetails';
+  /** The descriptor by the payment provider. Only available for Amazon Pay and Buy with Prime. */
+  paymentDescriptor?: Maybe<Scalars['String']['output']>;
+  /** The name of payment method used by the buyer. */
+  paymentMethodName?: Maybe<Scalars['String']['output']>;
 };
 
 /** A locale. */
@@ -20951,18 +23101,18 @@ export type LocalizationExtension = {
 /** An auto-generated type for paginating through multiple LocalizationExtensions. */
 export type LocalizationExtensionConnection = {
   __typename?: 'LocalizationExtensionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<LocalizationExtensionEdge>;
-  /** A list of the nodes contained in LocalizationExtensionEdge. */
+  /** A list of nodes that are contained in LocalizationExtensionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<LocalizationExtension>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one LocalizationExtension and a cursor during pagination. */
 export type LocalizationExtensionEdge = {
   __typename?: 'LocalizationExtensionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of LocalizationExtensionEdge. */
   node: LocalizationExtension;
@@ -21060,10 +23210,18 @@ export enum LocalizationExtensionPurpose {
   Tax = 'TAX'
 }
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type Location = HasMetafieldDefinitions & HasMetafields & LegacyInteroperability & Node & {
   __typename?: 'Location';
-  /** Whether this location can be reactivated. */
+  /**
+   * Whether the location can be reactivated. If `false`, then trying to activate the location with the
+   * [`LocationActivate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/locationActivate)
+   * mutation will return an error that describes why the location can't be activated.
+   */
   activatable: Scalars['Boolean']['output'];
   /** The address of this location. */
   address: LocationAddress;
@@ -21071,7 +23229,12 @@ export type Location = HasMetafieldDefinitions & HasMetafields & LegacyInteroper
   addressVerified: Scalars['Boolean']['output'];
   /** The date and time ([ISO 8601 format](http://en.wikipedia.org/wiki/ISO_8601)) that the location was added to a shop. */
   createdAt: Scalars['DateTime']['output'];
-  /** Whether this location can be deactivated. */
+  /**
+   * Whether this location can be deactivated. If `true`, then the location can be deactivated by calling the
+   * [`LocationDeactivate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/locationDeactivate)
+   * mutation. If `false`, then calling the mutation to deactivate it will return an error that describes why the
+   * location can't be deactivated.
+   */
   deactivatable: Scalars['Boolean']['output'];
   /** The date and time ([ISO 8601 format](http://en.wikipedia.org/wiki/ISO_8601)) that the location was deactivated at. For example, 3:30 pm on September 7, 2019 in the time zone of UTC (Universal Time Coordinated) is represented as `"2019-09-07T15:50:00Z`". */
   deactivatedAt?: Maybe<Scalars['String']['output']>;
@@ -21091,7 +23254,12 @@ export type Location = HasMetafieldDefinitions & HasMetafields & LegacyInteroper
   inventoryLevel?: Maybe<InventoryLevel>;
   /** A list of the quantities of the inventory items that can be stocked at this location. */
   inventoryLevels: InventoryLevelConnection;
-  /** Whether the location is active. */
+  /**
+   * Whether the location is active. A deactivated location can be activated (change `isActive: true`) if it has
+   * `activatable` set to `true` by calling the
+   * [`locationActivate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/locationActivate)
+   * mutation.
+   */
   isActive: Scalars['Boolean']['output'];
   /** Whether this location is a fulfillment service. */
   isFulfillmentService: Scalars['Boolean']['output'];
@@ -21104,14 +23272,21 @@ export type Location = HasMetafieldDefinitions & HasMetafields & LegacyInteroper
   legacyResourceId: Scalars['UnsignedInt64']['output'];
   /** Local pickup settings for the location. */
   localPickupSettingsV2?: Maybe<DeliveryLocalPickupSettings>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The name of the location. */
   name: Scalars['String']['output'];
@@ -21138,13 +23313,21 @@ export type Location = HasMetafieldDefinitions & HasMetafields & LegacyInteroper
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationInventoryLevelArgs = {
   inventoryItemId: Scalars['ID']['input'];
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationInventoryLevelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -21155,14 +23338,22 @@ export type LocationInventoryLevelsArgs = {
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationMetafieldArgs = {
   key: Scalars['String']['input'];
   namespace?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationMetafieldDefinitionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -21176,7 +23367,11 @@ export type LocationMetafieldDefinitionsArgs = {
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationMetafieldsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -21188,14 +23383,22 @@ export type LocationMetafieldsArgs = {
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationPrivateMetafieldArgs = {
   key: Scalars['String']['input'];
   namespace: Scalars['String']['input'];
 };
 
 
-/** Represents the location where the physical good resides. */
+/**
+ * Represents the location where the physical good resides. You can stock inventory at active locations. Active
+ * locations that have `fulfills_online_orders: true` and are configured with a shipping rate, pickup enabled or
+ * local delivery will be able to sell from their storefront.
+ */
 export type LocationPrivateMetafieldsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -21360,11 +23563,11 @@ export type LocationAddress = {
 /** An auto-generated type for paginating through multiple Locations. */
 export type LocationConnection = {
   __typename?: 'LocationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<LocationEdge>;
-  /** A list of the nodes contained in LocationEdge. */
+  /** A list of nodes that are contained in LocationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Location>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -21402,8 +23605,6 @@ export enum LocationDeactivateUserErrorCode {
   FailedToRelocateIncomingMovements = 'FAILED_TO_RELOCATE_INCOMING_MOVEMENTS',
   /** Failed to relocate open purchase orders to the destination location. */
   FailedToRelocateOpenPurchaseOrders = 'FAILED_TO_RELOCATE_OPEN_PURCHASE_ORDERS',
-  /** Failed to relocate open transfers to the destination location. */
-  FailedToRelocateOpenTransfers = 'FAILED_TO_RELOCATE_OPEN_TRANSFERS',
   /** Location could not be deactivated without specifying where to relocate inventory at the location. */
   HasActiveInventoryError = 'HAS_ACTIVE_INVENTORY_ERROR',
   /** Location needs to be removed from Shopify POS for Retail subscription in Point of Sale channel. */
@@ -21414,8 +23615,6 @@ export enum LocationDeactivateUserErrorCode {
   HasIncomingMovementsError = 'HAS_INCOMING_MOVEMENTS_ERROR',
   /** Location could not be deactivated because it has open purchase orders. */
   HasOpenPurchaseOrdersError = 'HAS_OPEN_PURCHASE_ORDERS_ERROR',
-  /** Location could not be deactivated because it has open transfers. */
-  HasOpenTransfersError = 'HAS_OPEN_TRANSFERS_ERROR',
   /** Location not found. */
   LocationNotFound = 'LOCATION_NOT_FOUND',
   /** Location either has a fulfillment service or is the only location with a shipping address. */
@@ -21463,7 +23662,7 @@ export enum LocationDeleteUserErrorCode {
 /** An auto-generated type which holds one Location and a cursor during pagination. */
 export type LocationEdge = {
   __typename?: 'LocationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of LocationEdge. */
   node: Location;
@@ -21702,18 +23901,18 @@ export type MailingAddressFormattedArgs = {
 /** An auto-generated type for paginating through multiple MailingAddresses. */
 export type MailingAddressConnection = {
   __typename?: 'MailingAddressConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MailingAddressEdge>;
-  /** A list of the nodes contained in MailingAddressEdge. */
+  /** A list of nodes that are contained in MailingAddressEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MailingAddress>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MailingAddress and a cursor during pagination. */
 export type MailingAddressEdge = {
   __typename?: 'MailingAddressEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MailingAddressEdge. */
   node: MailingAddress;
@@ -21811,14 +24010,21 @@ export type Market = HasMetafieldDefinitions & HasMetafields & Node & {
   handle: Scalars['String']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The name of the market. Not shown to customers. */
   name: Scalars['String']['output'];
@@ -22037,18 +24243,18 @@ export type MarketCatalogMarketsArgs = {
 /** An auto-generated type for paginating through multiple MarketCatalogs. */
 export type MarketCatalogConnection = {
   __typename?: 'MarketCatalogConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketCatalogEdge>;
-  /** A list of the nodes contained in MarketCatalogEdge. */
+  /** A list of nodes that are contained in MarketCatalogEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MarketCatalog>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MarketCatalog and a cursor during pagination. */
 export type MarketCatalogEdge = {
   __typename?: 'MarketCatalogEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketCatalogEdge. */
   node: MarketCatalog;
@@ -22057,11 +24263,11 @@ export type MarketCatalogEdge = {
 /** An auto-generated type for paginating through multiple Markets. */
 export type MarketConnection = {
   __typename?: 'MarketConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketEdge>;
-  /** A list of the nodes contained in MarketEdge. */
+  /** A list of nodes that are contained in MarketEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Market>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -22182,7 +24388,7 @@ export type MarketDeletePayload = {
 /** An auto-generated type which holds one Market and a cursor during pagination. */
 export type MarketEdge = {
   __typename?: 'MarketEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketEdge. */
   node: Market;
@@ -22219,18 +24425,18 @@ export type MarketLocalizableResourceMarketLocalizationsArgs = {
 /** An auto-generated type for paginating through multiple MarketLocalizableResources. */
 export type MarketLocalizableResourceConnection = {
   __typename?: 'MarketLocalizableResourceConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketLocalizableResourceEdge>;
-  /** A list of the nodes contained in MarketLocalizableResourceEdge. */
+  /** A list of nodes that are contained in MarketLocalizableResourceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MarketLocalizableResource>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MarketLocalizableResource and a cursor during pagination. */
 export type MarketLocalizableResourceEdge = {
   __typename?: 'MarketLocalizableResourceEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketLocalizableResourceEdge. */
   node: MarketLocalizableResource;
@@ -22300,11 +24506,11 @@ export type MarketRegion = {
 /** An auto-generated type for paginating through multiple MarketRegions. */
 export type MarketRegionConnection = {
   __typename?: 'MarketRegionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketRegionEdge>;
-  /** A list of the nodes contained in MarketRegionEdge. */
+  /** A list of nodes that are contained in MarketRegionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MarketRegion>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -22341,7 +24547,7 @@ export type MarketRegionDeletePayload = {
 /** An auto-generated type which holds one MarketRegion and a cursor during pagination. */
 export type MarketRegionEdge = {
   __typename?: 'MarketRegionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketRegionEdge. */
   node: MarketRegion;
@@ -22515,11 +24721,11 @@ export type MarketWebPresence = Node & {
 /** An auto-generated type for paginating through multiple MarketWebPresences. */
 export type MarketWebPresenceConnection = {
   __typename?: 'MarketWebPresenceConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketWebPresenceEdge>;
-  /** A list of the nodes contained in MarketWebPresenceEdge. */
+  /** A list of nodes that are contained in MarketWebPresenceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MarketWebPresence>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -22562,7 +24768,7 @@ export type MarketWebPresenceDeletePayload = {
 /** An auto-generated type which holds one MarketWebPresence and a cursor during pagination. */
 export type MarketWebPresenceEdge = {
   __typename?: 'MarketWebPresenceEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketWebPresenceEdge. */
   node: MarketWebPresence;
@@ -22703,11 +24909,11 @@ export type MarketingActivityBudgetInput = {
 /** An auto-generated type for paginating through multiple MarketingActivities. */
 export type MarketingActivityConnection = {
   __typename?: 'MarketingActivityConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketingActivityEdge>;
-  /** A list of the nodes contained in MarketingActivityEdge. */
+  /** A list of nodes that are contained in MarketingActivityEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MarketingActivity>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -22812,7 +25018,7 @@ export type MarketingActivityDeleteExternalPayload = {
 /** An auto-generated type which holds one MarketingActivity and a cursor during pagination. */
 export type MarketingActivityEdge = {
   __typename?: 'MarketingActivityEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketingActivityEdge. */
   node: MarketingActivity;
@@ -23337,18 +25543,18 @@ export type MarketingEvent = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple MarketingEvents. */
 export type MarketingEventConnection = {
   __typename?: 'MarketingEventConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MarketingEventEdge>;
-  /** A list of the nodes contained in MarketingEventEdge. */
+  /** A list of nodes that are contained in MarketingEventEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MarketingEvent>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MarketingEvent and a cursor during pagination. */
 export type MarketingEventEdge = {
   __typename?: 'MarketingEventEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MarketingEventEdge. */
   node: MarketingEvent;
@@ -23418,11 +25624,11 @@ export type Media = {
 /** An auto-generated type for paginating through multiple Media. */
 export type MediaConnection = {
   __typename?: 'MediaConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MediaEdge>;
-  /** A list of the nodes contained in MediaEdge. */
+  /** A list of nodes that are contained in MediaEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Media>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -23441,7 +25647,7 @@ export enum MediaContentType {
 /** An auto-generated type which holds one Media and a cursor during pagination. */
 export type MediaEdge = {
   __typename?: 'MediaEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MediaEdge. */
   node: Media;
@@ -23560,9 +25766,16 @@ export type MediaImage = File & HasMetafields & Media & Node & {
   mediaErrors: Array<MediaError>;
   /** The warnings attached to the media. */
   mediaWarnings: Array<MediaWarning>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The MIME type of the image. */
   mimeType?: Maybe<Scalars['String']['output']>;
@@ -23759,7 +25972,7 @@ export type Menu = HasPublishedTranslations & Node & {
   items: Array<MenuItem>;
   /** The menu's title. */
   title: Scalars['String']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
 };
 
@@ -23779,11 +25992,11 @@ export type MenuTranslationsArgs = {
 /** An auto-generated type for paginating through multiple Menus. */
 export type MenuConnection = {
   __typename?: 'MenuConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MenuEdge>;
-  /** A list of the nodes contained in MenuEdge. */
+  /** A list of nodes that are contained in MenuEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Menu>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -23846,7 +26059,7 @@ export enum MenuDeleteUserErrorCode {
 /** An auto-generated type which holds one Menu and a cursor during pagination. */
 export type MenuEdge = {
   __typename?: 'MenuEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MenuEdge. */
   node: Menu;
@@ -24066,13 +26279,19 @@ export type MetafieldAccess = {
   /**
    * The explicit grants for this metafield definition, superseding the default admin access
    * for the specified grantees.
+   * @deprecated Explicit grants are [deprecated](https://shopify.dev/changelog/deprecating-explicit-access-grants-for-app-owned-metafields).
+   *
    */
   grants: Array<MetafieldAccessGrant>;
   /** The storefront access setting used for the metafields under this definition. */
   storefront?: Maybe<MetafieldStorefrontAccess>;
 };
 
-/** An explicit access grant for the metafields under this definition. */
+/**
+ * An explicit access grant for the metafields under this definition.
+ *
+ * Explicit grants are [deprecated](https://shopify.dev/changelog/deprecating-explicit-access-grants-for-app-owned-metafields).
+ */
 export type MetafieldAccessGrant = {
   __typename?: 'MetafieldAccessGrant';
   /** The level of access the grantee has. */
@@ -24087,7 +26306,11 @@ export type MetafieldAccessGrantDeleteInput = {
   grantee: Scalars['String']['input'];
 };
 
-/** The input fields for an explicit access grant to be created or updated for the metafields under this definition. */
+/**
+ * The input fields for an explicit access grant to be created or updated for the metafields under this definition.
+ *
+ * Explicit grants are [deprecated](https://shopify.dev/changelog/deprecating-explicit-access-grants-for-app-owned-metafields).
+ */
 export type MetafieldAccessGrantInput = {
   /** The level of access being granted. */
   access: MetafieldGrantAccessLevel;
@@ -24095,13 +26318,25 @@ export type MetafieldAccessGrantInput = {
   grantee: Scalars['String']['input'];
 };
 
-/** The input fields for possible operations for modifying access grants. Exactly one option is required. */
+/**
+ * The input fields for possible operations for modifying access grants. Exactly one option is required.
+ *
+ * Explicit grants are [deprecated](https://shopify.dev/changelog/deprecating-explicit-access-grants-for-app-owned-metafields).
+ */
 export type MetafieldAccessGrantOperationInput = {
-  /** The input fields for an explicit access grant to be created or updated for the metafields under this definition. */
+  /**
+   * The input fields for an explicit access grant to be created or updated for the metafields under this definition.
+   *
+   * Explicit grants are [deprecated](https://shopify.dev/changelog/deprecating-explicit-access-grants-for-app-owned-metafields).
+   */
   create?: InputMaybe<MetafieldAccessGrantInput>;
   /** The input fields for an explicit access grant to be deleted for the metafields under this definition. */
   delete?: InputMaybe<MetafieldAccessGrantDeleteInput>;
-  /** The input fields for an explicit access grant to be created or updated for the metafields under this definition. */
+  /**
+   * The input fields for an explicit access grant to be created or updated for the metafields under this definition.
+   *
+   * Explicit grants are [deprecated](https://shopify.dev/changelog/deprecating-explicit-access-grants-for-app-owned-metafields).
+   */
   update?: InputMaybe<MetafieldAccessGrantInput>;
 };
 
@@ -24111,8 +26346,6 @@ export type MetafieldAccessInput = {
   admin: MetafieldAdminAccessInput;
   /** The Customer Account API access setting to use for the metafields under this definition. */
   customerAccount?: InputMaybe<MetafieldCustomerAccountAccessInput>;
-  /** The list of explicit grants to grant for the metafields under this definition. */
-  grants?: InputMaybe<Array<MetafieldAccessGrantInput>>;
   /** The storefront access setting to use for the metafields under this definition. */
   storefront?: InputMaybe<MetafieldStorefrontAccessInput>;
 };
@@ -24123,8 +26356,6 @@ export type MetafieldAccessUpdateInput = {
   admin: MetafieldAdminAccessInput;
   /** The Customer Account API access setting to use for the metafields under this definition. */
   customerAccount?: InputMaybe<MetafieldCustomerAccountAccessInput>;
-  /** The set of grant operations to perform. */
-  grants?: InputMaybe<Array<MetafieldAccessGrantOperationInput>>;
   /** The storefront access setting to use for the metafields under this definition. */
   storefront?: InputMaybe<MetafieldStorefrontAccessInput>;
 };
@@ -24157,14 +26388,71 @@ export enum MetafieldAdminAccessInput {
   PublicReadWrite = 'PUBLIC_READ_WRITE'
 }
 
+/** Provides the capabilities of a metafield definition. */
+export type MetafieldCapabilities = {
+  __typename?: 'MetafieldCapabilities';
+  /** Indicate whether a metafield definition is configured for filtering. */
+  adminFilterable: MetafieldCapabilityAdminFilterable;
+  /** Indicate whether a metafield definition can be used as a smart collection condition. */
+  smartCollectionCondition: MetafieldCapabilitySmartCollectionCondition;
+};
+
+/** Information about the admin filterable capability on a metafield definition. */
+export type MetafieldCapabilityAdminFilterable = {
+  __typename?: 'MetafieldCapabilityAdminFilterable';
+  /** Indicates if the definition is eligible to have the capability. */
+  eligible: Scalars['Boolean']['output'];
+  /** Indicates if the capability is enabled. */
+  enabled: Scalars['Boolean']['output'];
+  /** Determines the metafield definition's filter status for use in admin filtering. */
+  status: MetafieldDefinitionAdminFilterStatus;
+};
+
+/** The input fields for enabling and disabling the admin filterable capability. */
+export type MetafieldCapabilityAdminFilterableInput = {
+  /** Indicates whether the capability should be enabled or disabled. */
+  enabled: Scalars['Boolean']['input'];
+};
+
+/** The input fields for creating a metafield capability. */
+export type MetafieldCapabilityCreateInput = {
+  /** The input for updating the admin filterable capability. */
+  adminFilterable?: InputMaybe<MetafieldCapabilityAdminFilterableInput>;
+  /** The input for updating the smart collection condition capability. */
+  smartCollectionCondition?: InputMaybe<MetafieldCapabilitySmartCollectionConditionInput>;
+};
+
+/** Information about the smart collection condition capability on a metafield definition. */
+export type MetafieldCapabilitySmartCollectionCondition = {
+  __typename?: 'MetafieldCapabilitySmartCollectionCondition';
+  /** Indicates if the definition is eligible to have the capability. */
+  eligible: Scalars['Boolean']['output'];
+  /** Indicates if the capability is enabled. */
+  enabled: Scalars['Boolean']['output'];
+};
+
+/** The input fields for enabling and disabling the smart collection condition capability. */
+export type MetafieldCapabilitySmartCollectionConditionInput = {
+  /** Indicates whether the capability should be enabled or disabled. */
+  enabled: Scalars['Boolean']['input'];
+};
+
+/** The input fields for updating a metafield capability. */
+export type MetafieldCapabilityUpdateInput = {
+  /** The input for updating the admin filterable capability. */
+  adminFilterable?: InputMaybe<MetafieldCapabilityAdminFilterableInput>;
+  /** The input for updating the smart collection condition capability. */
+  smartCollectionCondition?: InputMaybe<MetafieldCapabilitySmartCollectionConditionInput>;
+};
+
 /** An auto-generated type for paginating through multiple Metafields. */
 export type MetafieldConnection = {
   __typename?: 'MetafieldConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetafieldEdge>;
-  /** A list of the nodes contained in MetafieldEdge. */
+  /** A list of nodes that are contained in MetafieldEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Metafield>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -24196,6 +26484,8 @@ export type MetafieldDefinition = Node & {
   __typename?: 'MetafieldDefinition';
   /** The access settings associated with the metafield definition. */
   access: MetafieldAccess;
+  /** The capabilities of the metafield definition. */
+  capabilities: MetafieldCapabilities;
   /** The constraints that determine what subtypes of resources a metafield definition applies to. */
   constraints?: Maybe<MetafieldDefinitionConstraints>;
   /** The description of the metafield definition. */
@@ -24264,14 +26554,26 @@ export type MetafieldDefinitionMetafieldsCountArgs = {
   validationStatus?: InputMaybe<MetafieldValidationStatus>;
 };
 
+/** Possible filter statuses associated with a metafield definition for use in admin filtering. */
+export enum MetafieldDefinitionAdminFilterStatus {
+  /** The metafield definition has failed to be enabled for admin filtering. */
+  Failed = 'FAILED',
+  /** The metafield definition allows admin filtering by matching metafield values. */
+  Filterable = 'FILTERABLE',
+  /** The metafield definition's metafields are currently being processed for admin filtering. */
+  InProgress = 'IN_PROGRESS',
+  /** The metafield definition cannot be used for admin filtering. */
+  NotFilterable = 'NOT_FILTERABLE'
+}
+
 /** An auto-generated type for paginating through multiple MetafieldDefinitions. */
 export type MetafieldDefinitionConnection = {
   __typename?: 'MetafieldDefinitionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetafieldDefinitionEdge>;
-  /** A list of the nodes contained in MetafieldDefinitionEdge. */
+  /** A list of nodes that are contained in MetafieldDefinitionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MetafieldDefinition>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -24303,18 +26605,18 @@ export type MetafieldDefinitionConstraintValue = {
 /** An auto-generated type for paginating through multiple MetafieldDefinitionConstraintValues. */
 export type MetafieldDefinitionConstraintValueConnection = {
   __typename?: 'MetafieldDefinitionConstraintValueConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetafieldDefinitionConstraintValueEdge>;
-  /** A list of the nodes contained in MetafieldDefinitionConstraintValueEdge. */
+  /** A list of nodes that are contained in MetafieldDefinitionConstraintValueEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MetafieldDefinitionConstraintValue>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MetafieldDefinitionConstraintValue and a cursor during pagination. */
 export type MetafieldDefinitionConstraintValueEdge = {
   __typename?: 'MetafieldDefinitionConstraintValueEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetafieldDefinitionConstraintValueEdge. */
   node: MetafieldDefinitionConstraintValue;
@@ -24371,6 +26673,8 @@ export enum MetafieldDefinitionCreateUserErrorCode {
   Inclusion = 'INCLUSION',
   /** The input value is invalid. */
   Invalid = 'INVALID',
+  /** The metafield definition capability is invalid. */
+  InvalidCapability = 'INVALID_CAPABILITY',
   /** A field contains an invalid character. */
   InvalidCharacter = 'INVALID_CHARACTER',
   /** The input combination is invalid. */
@@ -24442,7 +26746,7 @@ export enum MetafieldDefinitionDeleteUserErrorCode {
 /** An auto-generated type which holds one MetafieldDefinition and a cursor during pagination. */
 export type MetafieldDefinitionEdge = {
   __typename?: 'MetafieldDefinitionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetafieldDefinitionEdge. */
   node: MetafieldDefinition;
@@ -24452,6 +26756,8 @@ export type MetafieldDefinitionEdge = {
 export type MetafieldDefinitionInput = {
   /** The access settings that apply to each of the metafields that belong to the metafield definition. */
   access?: InputMaybe<MetafieldAccessInput>;
+  /** The capabilities of the metafield definition. */
+  capabilities?: InputMaybe<MetafieldCapabilityCreateInput>;
   /** The description for the metafield definition. */
   description?: InputMaybe<Scalars['String']['input']>;
   /**
@@ -24620,6 +26926,8 @@ export enum MetafieldDefinitionUnpinUserErrorCode {
 export type MetafieldDefinitionUpdateInput = {
   /** The access settings that apply to each of the metafields that belong to the metafield definition. */
   access?: InputMaybe<MetafieldAccessUpdateInput>;
+  /** The capabilities of the metafield definition. */
+  capabilities?: InputMaybe<MetafieldCapabilityUpdateInput>;
   /** The description for the metafield definition. */
   description?: InputMaybe<Scalars['String']['input']>;
   /**
@@ -24676,10 +26984,14 @@ export type MetafieldDefinitionUpdateUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `MetafieldDefinitionUpdateUserError`. */
 export enum MetafieldDefinitionUpdateUserErrorCode {
+  /** The metafield definition capability cannot be disabled. */
+  CapabilityCannotBeDisabled = 'CAPABILITY_CANNOT_BE_DISABLED',
   /** The maximum limit of grants per definition type has been exceeded. */
   GrantLimitExceeded = 'GRANT_LIMIT_EXCEEDED',
   /** An internal error occurred. */
   InternalError = 'INTERNAL_ERROR',
+  /** The metafield definition capability is invalid. */
+  InvalidCapability = 'INVALID_CAPABILITY',
   /** An invalid input. */
   InvalidInput = 'INVALID_INPUT',
   /** The input combination is invalid. */
@@ -24763,7 +27075,7 @@ export type MetafieldDeletePayload = {
 /** An auto-generated type which holds one Metafield and a cursor during pagination. */
 export type MetafieldEdge = {
   __typename?: 'MetafieldEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetafieldEdge. */
   node: Metafield;
@@ -24805,12 +27117,6 @@ export type MetafieldIdentifierInput = {
  */
 export type MetafieldInput = {
   /**
-   * The unique ID of the metafield.
-   *
-   * Required when updating a metafield, but shouldn't be included when creating as it's created automatically.
-   */
-  id?: InputMaybe<Scalars['ID']['input']>;
-  /**
    * The unique identifier for a metafield within its namespace.
    *
    * Required when creating a metafield, but optional when updating. Used to help identify the metafield when
@@ -24833,7 +27139,7 @@ export type MetafieldInput = {
    * The type of data that is stored in the metafield.
    * Refer to the list of [supported types](https://shopify.dev/apps/metafields/types).
    *
-   * Required when creating a metafield, but optional when updating.
+   * Required when creating or updating a metafield without a definition.
    */
   type?: InputMaybe<Scalars['String']['input']>;
   /** The data stored in the metafield. Always stored as a string, regardless of the metafield's type. */
@@ -24866,11 +27172,16 @@ export enum MetafieldOwnerType {
   Draftorder = 'DRAFTORDER',
   /** The Fulfillment Constraint Rule metafield owner type. */
   FulfillmentConstraintRule = 'FULFILLMENT_CONSTRAINT_RULE',
+  /** The GiftCardTransaction metafield owner type. */
+  GiftCardTransaction = 'GIFT_CARD_TRANSACTION',
   /** The Location metafield owner type. */
   Location = 'LOCATION',
   /** The Market metafield owner type. */
   Market = 'MARKET',
-  /** The Media Image metafield owner type. */
+  /**
+   * The Media Image metafield owner type.
+   * @deprecated `MEDIA_IMAGE` is deprecated.
+   */
   MediaImage = 'MEDIA_IMAGE',
   /** The Order metafield owner type. */
   Order = 'ORDER',
@@ -24882,11 +27193,6 @@ export enum MetafieldOwnerType {
   PaymentCustomization = 'PAYMENT_CUSTOMIZATION',
   /** The Product metafield owner type. */
   Product = 'PRODUCT',
-  /**
-   * The Product Image metafield owner type.
-   * @deprecated `PRODUCTIMAGE` is deprecated. Use `MEDIA_IMAGE` instead.
-   */
-  Productimage = 'PRODUCTIMAGE',
   /** The Product Variant metafield owner type. */
   Productvariant = 'PRODUCTVARIANT',
   /** The Selling Plan metafield owner type. */
@@ -24898,30 +27204,30 @@ export enum MetafieldOwnerType {
 }
 
 /** The resource referenced by the metafield value. */
-export type MetafieldReference = Collection | Company | Customer | GenericFile | MediaImage | Metaobject | Model3d | OnlineStorePage | Order | Product | ProductVariant | TaxonomyValue | Video;
+export type MetafieldReference = Collection | Company | Customer | GenericFile | MediaImage | Metaobject | Model3d | Order | Page | Product | ProductVariant | TaxonomyValue | Video;
 
 /** An auto-generated type for paginating through multiple MetafieldReferences. */
 export type MetafieldReferenceConnection = {
   __typename?: 'MetafieldReferenceConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetafieldReferenceEdge>;
-  /** A list of the nodes contained in MetafieldReferenceEdge. */
+  /** A list of nodes that are contained in MetafieldReferenceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Maybe<MetafieldReference>>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MetafieldReference and a cursor during pagination. */
 export type MetafieldReferenceEdge = {
   __typename?: 'MetafieldReferenceEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetafieldReferenceEdge. */
   node?: Maybe<MetafieldReference>;
 };
 
 /** Types of resources that may use metafields to reference other resources. */
-export type MetafieldReferencer = AppInstallation | Collection | Company | CompanyLocation | Customer | DeliveryCustomization | DiscountAutomaticNode | DiscountCodeNode | DiscountNode | DraftOrder | FulfillmentOrder | Location | Market | Metaobject | OnlineStoreArticle | OnlineStoreBlog | OnlineStorePage | Order | PaymentCustomization | Product | ProductVariant | Shop;
+export type MetafieldReferencer = AppInstallation | Article | Blog | Collection | Company | CompanyLocation | Customer | DeliveryCustomization | DiscountAutomaticNode | DiscountCodeNode | DiscountNode | DraftOrder | FulfillmentOrder | Location | Market | Metaobject | Order | Page | PaymentCustomization | Product | ProductVariant | Shop;
 
 /**
  * Defines a relation between two resources via a reference metafield.
@@ -24945,18 +27251,18 @@ export type MetafieldRelation = {
 /** An auto-generated type for paginating through multiple MetafieldRelations. */
 export type MetafieldRelationConnection = {
   __typename?: 'MetafieldRelationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetafieldRelationEdge>;
-  /** A list of the nodes contained in MetafieldRelationEdge. */
+  /** A list of nodes that are contained in MetafieldRelationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MetafieldRelation>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one MetafieldRelation and a cursor during pagination. */
 export type MetafieldRelationEdge = {
   __typename?: 'MetafieldRelationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetafieldRelationEdge. */
   node: MetafieldRelation;
@@ -25013,11 +27319,11 @@ export type MetafieldStorefrontVisibility = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple MetafieldStorefrontVisibilities. */
 export type MetafieldStorefrontVisibilityConnection = {
   __typename?: 'MetafieldStorefrontVisibilityConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetafieldStorefrontVisibilityEdge>;
-  /** A list of the nodes contained in MetafieldStorefrontVisibilityEdge. */
+  /** A list of nodes that are contained in MetafieldStorefrontVisibilityEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MetafieldStorefrontVisibility>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -25042,7 +27348,7 @@ export type MetafieldStorefrontVisibilityDeletePayload = {
 /** An auto-generated type which holds one MetafieldStorefrontVisibility and a cursor during pagination. */
 export type MetafieldStorefrontVisibilityEdge = {
   __typename?: 'MetafieldStorefrontVisibilityEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetafieldStorefrontVisibilityEdge. */
   node: MetafieldStorefrontVisibility;
@@ -25467,11 +27773,11 @@ export type MetaobjectCapabilityUpdateInput = {
 /** An auto-generated type for paginating through multiple Metaobjects. */
 export type MetaobjectConnection = {
   __typename?: 'MetaobjectConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetaobjectEdge>;
-  /** A list of the nodes contained in MetaobjectEdge. */
+  /** A list of nodes that are contained in MetaobjectEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Metaobject>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -25540,11 +27846,11 @@ export type MetaobjectDefinitionMetaobjectsArgs = {
 /** An auto-generated type for paginating through multiple MetaobjectDefinitions. */
 export type MetaobjectDefinitionConnection = {
   __typename?: 'MetaobjectDefinitionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MetaobjectDefinitionEdge>;
-  /** A list of the nodes contained in MetaobjectDefinitionEdge. */
+  /** A list of nodes that are contained in MetaobjectDefinitionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MetaobjectDefinition>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -25591,7 +27897,7 @@ export type MetaobjectDefinitionDeletePayload = {
 /** An auto-generated type which holds one MetaobjectDefinition and a cursor during pagination. */
 export type MetaobjectDefinitionEdge = {
   __typename?: 'MetaobjectDefinitionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetaobjectDefinitionEdge. */
   node: MetaobjectDefinition;
@@ -25640,7 +27946,7 @@ export type MetaobjectDeletePayload = {
 /** An auto-generated type which holds one Metaobject and a cursor during pagination. */
 export type MetaobjectEdge = {
   __typename?: 'MetaobjectEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MetaobjectEdge. */
   node: Metaobject;
@@ -25946,11 +28252,11 @@ export type MobilePlatformApplication = AndroidApplication | AppleApplication;
 /** An auto-generated type for paginating through multiple MobilePlatformApplications. */
 export type MobilePlatformApplicationConnection = {
   __typename?: 'MobilePlatformApplicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<MobilePlatformApplicationEdge>;
-  /** A list of the nodes contained in MobilePlatformApplicationEdge. */
+  /** A list of nodes that are contained in MobilePlatformApplicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<MobilePlatformApplication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -26007,7 +28313,7 @@ export type MobilePlatformApplicationDeletePayload = {
 /** An auto-generated type which holds one MobilePlatformApplication and a cursor during pagination. */
 export type MobilePlatformApplicationEdge = {
   __typename?: 'MobilePlatformApplicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of MobilePlatformApplicationEdge. */
   node: MobilePlatformApplication;
@@ -26150,6 +28456,17 @@ export type MoneyBag = {
   shopMoney: MoneyV2;
 };
 
+/**
+ * An input collection of monetary values in their respective currencies.
+ * Represents an amount in the shop's currency and the amount as converted to the customer's currency of choice (the presentment currency).
+ */
+export type MoneyBagInput = {
+  /** Amount in presentment currency. If this isn't given then we assume that the presentment currency is the same as the shop's currency. */
+  presentmentMoney?: InputMaybe<MoneyInput>;
+  /** Amount in shop currency. */
+  shopMoney: MoneyInput;
+};
+
 /** The input fields for a monetary value with currency. */
 export type MoneyInput = {
   /** Decimal money amount. */
@@ -26191,6 +28508,8 @@ export type Mutation = {
    * Test and demo shops aren't charged.
    */
   appPurchaseOneTimeCreate?: Maybe<AppPurchaseOneTimeCreatePayload>;
+  /** Revokes access scopes previously granted for an app installation. */
+  appRevokeAccessScopes?: Maybe<AppRevokeAccessScopesPayload>;
   /** Cancels an app subscription on a store. */
   appSubscriptionCancel?: Maybe<AppSubscriptionCancelPayload>;
   /** Allows an app to charge a store for features or services on a recurring basis. */
@@ -26205,6 +28524,18 @@ export type Mutation = {
    * If you create an app usage charge that causes the total usage charges in a billing interval to exceed the capped amount, then a `Total price exceeds balance remaining` error is returned.
    */
   appUsageRecordCreate?: Maybe<AppUsageRecordCreatePayload>;
+  /** Creates an article. */
+  articleCreate?: Maybe<ArticleCreatePayload>;
+  /** Deletes an article. */
+  articleDelete?: Maybe<ArticleDeletePayload>;
+  /** Updates an article. */
+  articleUpdate?: Maybe<ArticleUpdatePayload>;
+  /** Creates a blog. */
+  blogCreate?: Maybe<BlogCreatePayload>;
+  /** Deletes a blog. */
+  blogDelete?: Maybe<BlogDeletePayload>;
+  /** Updates a blog. */
+  blogUpdate?: Maybe<BlogUpdatePayload>;
   /**
    * Starts the cancelation process of a running bulk operation.
    *
@@ -26254,7 +28585,6 @@ export type Mutation = {
    *
    * To learn more about updating checkout branding settings, refer to the checkout branding
    * [tutorial](https://shopify.dev/docs/apps/checkout/styling).
-   * @deprecated To be replaced with checkoutAndAccountsConfigurationUpdate.
    */
   checkoutBrandingUpsert?: Maybe<CheckoutBrandingUpsertPayload>;
   /** Adds products to a collection. */
@@ -26298,6 +28628,14 @@ export type Mutation = {
    * Learn more about [Combined Listings](https://shopify.dev/apps/selling-strategies/combined-listings).
    */
   combinedListingUpdate?: Maybe<CombinedListingUpdatePayload>;
+  /** Approves a comment. */
+  commentApprove?: Maybe<CommentApprovePayload>;
+  /** Deletes a comment. */
+  commentDelete?: Maybe<CommentDeletePayload>;
+  /** Marks a comment as not spam. */
+  commentNotSpam?: Maybe<CommentNotSpamPayload>;
+  /** Marks a comment as spam. */
+  commentSpam?: Maybe<CommentSpamPayload>;
   /** Deletes a list of companies. */
   companiesDelete?: Maybe<CompaniesDeletePayload>;
   /** Deletes a company address. */
@@ -26334,6 +28672,8 @@ export type Mutation = {
   companyLocationAssignAddress?: Maybe<CompanyLocationAssignAddressPayload>;
   /** Assigns roles on a company location. */
   companyLocationAssignRoles?: Maybe<CompanyLocationAssignRolesPayload>;
+  /** Creates one or more mappings between a staff member at a shop and a company location. */
+  companyLocationAssignStaffMembers?: Maybe<CompanyLocationAssignStaffMembersPayload>;
   /** Assigns tax exemptions to the company location. */
   companyLocationAssignTaxExemptions?: Maybe<CompanyLocationAssignTaxExemptionsPayload>;
   /** Creates a company location. */
@@ -26342,6 +28682,8 @@ export type Mutation = {
   companyLocationCreateTaxRegistration?: Maybe<CompanyLocationCreateTaxRegistrationPayload>;
   /** Deletes a company location. */
   companyLocationDelete?: Maybe<CompanyLocationDeletePayload>;
+  /** Deletes one or more existing mappings between a staff member at a shop and a company location. */
+  companyLocationRemoveStaffMembers?: Maybe<CompanyLocationRemoveStaffMembersPayload>;
   /** Revokes roles on a company location. */
   companyLocationRevokeRoles?: Maybe<CompanyLocationRevokeRolesPayload>;
   /** Revokes tax exemptions from the company location. */
@@ -26429,6 +28771,8 @@ export type Mutation = {
   customerRequestDataErasure?: Maybe<CustomerRequestDataErasurePayload>;
   /** Creates a customer segment members query. */
   customerSegmentMembersQueryCreate?: Maybe<CustomerSegmentMembersQueryCreatePayload>;
+  /** Sends the customer an account invite email. */
+  customerSendAccountInviteEmail?: Maybe<CustomerSendAccountInviteEmailPayload>;
   /** Update a customer's SMS marketing consent information. */
   customerSmsMarketingConsentUpdate?: Maybe<CustomerSmsMarketingConsentUpdatePayload>;
   /** Update a customer's attributes. As of API version 2022-10, apps using protected customer data must meet the protected customer data [requirements](https://shopify.dev/apps/store/data-protection/protected-customer-data). */
@@ -26441,8 +28785,7 @@ export type Mutation = {
    * Creates a delegate access token.
    *
    * To learn more about creating delegate access tokens, refer to
-   * [Delegate OAuth access tokens to subsystems]
-   * (https://shopify.dev/apps/auth/oauth/delegate-access-tokens).
+   * [Delegate OAuth access tokens to subsystems](https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/use-delegate-tokens).
    */
   delegateAccessTokenCreate?: Maybe<DelegateAccessTokenCreatePayload>;
   /** Destroys a delegate access token. */
@@ -26578,9 +28921,17 @@ export type Mutation = {
    * Running this mutation deletes any previous subscriptions for the server pixel.
    */
   eventBridgeServerPixelUpdate?: Maybe<EventBridgeServerPixelUpdatePayload>;
-  /** Creates a new Amazon EventBridge webhook subscription. */
+  /**
+   * Creates a new Amazon EventBridge webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   eventBridgeWebhookSubscriptionCreate?: Maybe<EventBridgeWebhookSubscriptionCreatePayload>;
-  /** Updates an Amazon EventBridge webhook subscription. */
+  /**
+   * Updates an Amazon EventBridge webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   eventBridgeWebhookSubscriptionUpdate?: Maybe<EventBridgeWebhookSubscriptionUpdatePayload>;
   /** Acknowledges file update failure by resetting FAILED status to READY and clearing any media errors. */
   fileAcknowledgeUpdateFailed?: Maybe<FileAcknowledgeUpdateFailedPayload>;
@@ -26611,6 +28962,13 @@ export type Mutation = {
   fulfillmentConstraintRuleCreate?: Maybe<FulfillmentConstraintRuleCreatePayload>;
   /** Deletes a fulfillment constraint rule and its metafields. */
   fulfillmentConstraintRuleDelete?: Maybe<FulfillmentConstraintRuleDeletePayload>;
+  /** Update a fulfillment constraint rule. */
+  fulfillmentConstraintRuleUpdate?: Maybe<FulfillmentConstraintRuleUpdatePayload>;
+  /**
+   * Creates a fulfillment for one or many fulfillment orders.
+   * The fulfillment orders are associated with the same order and are assigned to the same location.
+   */
+  fulfillmentCreate?: Maybe<FulfillmentCreatePayload>;
   /**
    * Creates a fulfillment for one or many fulfillment orders.
    * The fulfillment orders are associated with the same order and are assigned to the same location.
@@ -26627,7 +28985,7 @@ export type Mutation = {
   fulfillmentOrderCancel?: Maybe<FulfillmentOrderCancelPayload>;
   /** Marks an in-progress fulfillment order as incomplete, indicating the fulfillment service is unable to ship any remaining items and intends to close the fulfillment order. */
   fulfillmentOrderClose?: Maybe<FulfillmentOrderClosePayload>;
-  /** Applies a fulfillment hold on an open fulfillment order. */
+  /** Applies a fulfillment hold on a fulfillment order. */
   fulfillmentOrderHold?: Maybe<FulfillmentOrderHoldPayload>;
   /**
    * Mark line items associated with a fulfillment order as being ready for pickup by a customer.
@@ -26700,12 +29058,6 @@ export type Mutation = {
   fulfillmentOrderSubmitCancellationRequest?: Maybe<FulfillmentOrderSubmitCancellationRequestPayload>;
   /** Sends a fulfillment request to the fulfillment service of a fulfillment order. */
   fulfillmentOrderSubmitFulfillmentRequest?: Maybe<FulfillmentOrderSubmitFulfillmentRequestPayload>;
-  /**
-   * Releases the fulfillment holds on a list of fulfillment orders.
-   * @deprecated This mutation is deprecated and will be removed in the 2025-01 API version.
-   *     Consider using the fulfillmentOrderReleaseHold mutation instead.
-   */
-  fulfillmentOrdersReleaseHolds?: Maybe<FulfillmentOrdersReleaseHoldsPayload>;
   /** Sets the latest date and time by which the fulfillment orders need to be fulfilled. */
   fulfillmentOrdersSetFulfillmentDeadline?: Maybe<FulfillmentOrdersSetFulfillmentDeadlinePayload>;
   /**
@@ -26737,6 +29089,8 @@ export type Mutation = {
    * mutation.
    */
   fulfillmentServiceUpdate?: Maybe<FulfillmentServiceUpdatePayload>;
+  /** Updates tracking information for a fulfillment. */
+  fulfillmentTrackingInfoUpdate?: Maybe<FulfillmentTrackingInfoUpdatePayload>;
   /**
    * Updates tracking information for a fulfillment.
    * @deprecated Use `fulfillmentTrackingInfoUpdate` instead.
@@ -26744,11 +29098,19 @@ export type Mutation = {
   fulfillmentTrackingInfoUpdateV2?: Maybe<FulfillmentTrackingInfoUpdateV2Payload>;
   /** Create a gift card. */
   giftCardCreate?: Maybe<GiftCardCreatePayload>;
+  /** Credit a gift card. */
+  giftCardCredit?: Maybe<GiftCardCreditPayload>;
   /**
-   * Disable a gift card. A disabled gift card cannot be used by a customer. A disabled gift card cannot be re-enabled.
-   * @deprecated Use `giftCardDeactivate` instead.
+   * Deactivate a gift card. A deactivated gift card cannot be used by a customer.
+   * A deactivated gift card cannot be re-enabled.
    */
-  giftCardDisable?: Maybe<GiftCardDisablePayload>;
+  giftCardDeactivate?: Maybe<GiftCardDeactivatePayload>;
+  /** Debit a gift card. */
+  giftCardDebit?: Maybe<GiftCardDebitPayload>;
+  /** Send notification to the customer of a gift card. */
+  giftCardSendNotificationToCustomer?: Maybe<GiftCardSendNotificationToCustomerPayload>;
+  /** Send notification to the recipient of a gift card. */
+  giftCardSendNotificationToRecipient?: Maybe<GiftCardSendNotificationToRecipientPayload>;
   /** Update a gift card. */
   giftCardUpdate?: Maybe<GiftCardUpdatePayload>;
   /** Activate an inventory item at a location. */
@@ -26787,7 +29149,12 @@ export type Mutation = {
   inventorySetQuantities?: Maybe<InventorySetQuantitiesPayload>;
   /** Set up scheduled changes of inventory items. */
   inventorySetScheduledChanges?: Maybe<InventorySetScheduledChangesPayload>;
-  /** Activates a location. */
+  /**
+   * Activates a location so that you can stock inventory at the location. Refer to the
+   * [`isActive`](https://shopify.dev/docs/api/admin-graphql/latest/objects/Location#field-isactive) and
+   * [`activatable`](https://shopify.dev/docs/api/admin-graphql/latest/objects/Location#field-activatable)
+   * fields on the `Location` object.
+   */
   locationActivate?: Maybe<LocationActivatePayload>;
   /** Adds a new location. */
   locationAdd?: Maybe<LocationAddPayload>;
@@ -26952,6 +29319,8 @@ export type Mutation = {
   orderCapture?: Maybe<OrderCapturePayload>;
   /** Closes an open order. */
   orderClose?: Maybe<OrderClosePayload>;
+  /** Creates an order. */
+  orderCreate?: Maybe<OrderCreatePayload>;
   /** Creates a payment for an order by mandate. */
   orderCreateMandatePayment?: Maybe<OrderCreateMandatePaymentPayload>;
   /** Deletes an order. For more information on which orders can be deleted, refer to [Delete an order](https://help.shopify.com/manual/orders/cancel-delete-order#delete-an-order). */
@@ -26999,6 +29368,12 @@ export type Mutation = {
   orderRiskAssessmentCreate?: Maybe<OrderRiskAssessmentCreatePayload>;
   /** Updates the fields of an order. */
   orderUpdate?: Maybe<OrderUpdatePayload>;
+  /** Creates a page. */
+  pageCreate?: Maybe<PageCreatePayload>;
+  /** Deletes a page. */
+  pageDelete?: Maybe<PageDeletePayload>;
+  /** Updates a page. */
+  pageUpdate?: Maybe<PageUpdatePayload>;
   /** Activates and deactivates payment customizations. */
   paymentCustomizationActivation?: Maybe<PaymentCustomizationActivationPayload>;
   /** Creates a payment customization. */
@@ -27033,41 +29408,6 @@ export type Mutation = {
    */
   priceListUpdate?: Maybe<PriceListUpdatePayload>;
   /**
-   * Activate a price rule.
-   * @deprecated Use `discountCodeActivate` instead.
-   */
-  priceRuleActivate?: Maybe<PriceRuleActivatePayload>;
-  /**
-   * Create a price rule using the input.
-   * @deprecated Use `discountCodeBasicCreate` instead.
-   */
-  priceRuleCreate?: Maybe<PriceRuleCreatePayload>;
-  /**
-   * Deactivate a price rule.
-   * @deprecated Use `discountCodeDeactivate` instead.
-   */
-  priceRuleDeactivate?: Maybe<PriceRuleDeactivatePayload>;
-  /**
-   * Delete a price rule.
-   * @deprecated Use `discountCodeDelete` instead.
-   */
-  priceRuleDelete?: Maybe<PriceRuleDeletePayload>;
-  /**
-   * Create a discount code for a price rule.
-   * @deprecated Use `discountRedeemCodeBulkAdd` instead.
-   */
-  priceRuleDiscountCodeCreate?: Maybe<PriceRuleDiscountCodeCreatePayload>;
-  /**
-   * Update a discount code for a price rule.
-   * @deprecated Use `discountCodeBasicUpdate` instead.
-   */
-  priceRuleDiscountCodeUpdate?: Maybe<PriceRuleDiscountCodeUpdatePayload>;
-  /**
-   * Updates a price rule using its ID and an input.
-   * @deprecated Use `discountCodeBasicUpdate` instead.
-   */
-  priceRuleUpdate?: Maybe<PriceRuleUpdatePayload>;
-  /**
    * Deletes a private metafield.
    * Private metafields are automatically deleted when the app that created them is uninstalled.
    * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
@@ -27085,11 +29425,6 @@ export type Mutation = {
    *
    */
   privateMetafieldUpsert?: Maybe<PrivateMetafieldUpsertPayload>;
-  /**
-   * Appends images to a product.
-   * @deprecated Use `productCreateMedia` instead.
-   */
-  productAppendImages?: Maybe<ProductAppendImagesPayload>;
   /** Creates a new componentized product. */
   productBundleCreate?: Maybe<ProductBundleCreatePayload>;
   /** Updates a componentized product. */
@@ -27102,37 +29437,8 @@ export type Mutation = {
   /**
    * Creates a product.
    *
-   * For versions `2024-01` and older:
-   *
-   * If you need to create a product with many
-   * [variants](https://shopify.dev/api/admin-graphql/latest/input-objects/ProductVariantInput)
-   * that are active at several
-   * [locations](https://shopify.dev/api/admin-graphql/latest/input-objects/InventoryLevelInput),
-   * especially with a lot of
-   * [collections](https://shopify.dev/api/admin-graphql/latest/mutations/productCreate#field-productinput-collectionstojoin)
-   * and
-   * [tags](https://shopify.dev/api/admin-graphql/latest/mutations/productCreate#field-productinput-tags),
-   * then you should first create the product with just the variants.
-   *
-   * After the product is created, you can activate the variants at locations
-   * and add the other related objects to the product. This reduces the size of each mutation and increases the likelihood that it will
-   * complete before the operation times out.
-   *
-   * The following example shows how you might break up product creation and object association into multiple steps:
-   *
-   * 1. Create the product with variants. Don't specify any tags or collections on the product, and don't specify
-   * [inventory quantities](https://shopify.dev/api/admin-graphql/latest/input-objects/ProductVariantInput#field-productvariantinput-inventoryquantities)
-   * for each variant.
-   *
-   * 2. After the product is created, add tags to the product using the
-   * [tagsAdd](https://shopify.dev/api/admin-graphql/latest/mutations/tagsAdd) mutation, and add collections using the
-   * [collectionsAddProducts](https://shopify.dev/api/admin-graphql/latest/mutations/collectionAddProducts) mutation.
-   *
-   * 3. Use the [inventoryBulkToggleActivation](https://shopify.dev/api/admin-graphql/latest/mutations/inventoryBulkToggleActivation) mutation
-   * on each [inventory item](https://shopify.dev/api/admin-graphql/latest/objects/InventoryItem) to activate it at the appropriate locations.
-   *
-   * 4. After activating the variants at the locations, adjust inventory quantities for the inventory items using the
-   * [inventoryAdjustQuantities](https://shopify.dev/api/admin-graphql/latest/mutations/inventoryAdjustQuantities) mutation.
+   * Learn more about the [product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model)
+   * and [adding product data](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/add-data).
    */
   productCreate?: Maybe<ProductCreatePayload>;
   /** Creates media for a product. */
@@ -27149,16 +29455,6 @@ export type Mutation = {
    * mutation.
    */
   productDelete?: Maybe<ProductDeletePayload>;
-  /**
-   * Deletes a product asynchronously, including all associated variants and media.
-   * @deprecated Use `productDelete` instead.
-   */
-  productDeleteAsync?: Maybe<ProductDeleteAsyncPayload>;
-  /**
-   * Removes product images from the product.
-   * @deprecated Use `productDeleteMedia` instead.
-   */
-  productDeleteImages?: Maybe<ProductDeleteImagesPayload>;
   /** Deletes media for a product. */
   productDeleteMedia?: Maybe<ProductDeleteMediaPayload>;
   /**
@@ -27177,24 +29473,12 @@ export type Mutation = {
    * In API version 2024-07 and lower, use the asynchronous [`ProductDuplicateAsyncV2`](https://shopify.dev/api/admin-graphql/2024-07/mutations/productDuplicateAsyncV2).
    */
   productDuplicate?: Maybe<ProductDuplicatePayload>;
-  /**
-   * Asynchronously duplicate a single product.
-   *
-   * For API version 2024-10 and higher, use the `productDuplicate` mutation with the `synchronous: false` argument instead.
-   * @deprecated Use `productDuplicate` instead.
-   */
-  productDuplicateAsyncV2?: Maybe<ProductDuplicateAsyncV2Payload>;
   /** Creates a product feed for a specific publication. */
   productFeedCreate?: Maybe<ProductFeedCreatePayload>;
   /** Deletes a product feed for a specific publication. */
   productFeedDelete?: Maybe<ProductFeedDeletePayload>;
   /** Runs the full product sync for a given shop. */
   productFullSync?: Maybe<ProductFullSyncPayload>;
-  /**
-   * Updates an image of a product.
-   * @deprecated Use `productUpdateMedia` instead.
-   */
-  productImageUpdate?: Maybe<ProductImageUpdatePayload>;
   /** Adds multiple selling plan groups to a product. */
   productJoinSellingPlanGroups?: Maybe<ProductJoinSellingPlanGroupsPayload>;
   /** Removes multiple groups from a product. */
@@ -27236,11 +29520,6 @@ export type Mutation = {
    * @deprecated Use `publishablePublish` instead.
    */
   productPublish?: Maybe<ProductPublishPayload>;
-  /**
-   * Asynchronously reorders a set of images for a given product.
-   * @deprecated Use `productReorderMedia` instead.
-   */
-  productReorderImages?: Maybe<ProductReorderImagesPayload>;
   /** Asynchronously reorders the media attached to a product. */
   productReorderMedia?: Maybe<ProductReorderMediaPayload>;
   /**
@@ -27312,16 +29591,6 @@ export type Mutation = {
   productUpdateMedia?: Maybe<ProductUpdateMediaPayload>;
   /** Appends media from a product to variants of the product. */
   productVariantAppendMedia?: Maybe<ProductVariantAppendMediaPayload>;
-  /**
-   * Creates a product variant.
-   * @deprecated Use `productVariantsBulkCreate` instead.
-   */
-  productVariantCreate?: Maybe<ProductVariantCreatePayload>;
-  /**
-   * Deletes a product variant.
-   * @deprecated Use `productVariantsBulkDelete` instead.
-   */
-  productVariantDelete?: Maybe<ProductVariantDeletePayload>;
   /** Detaches media from product variants. */
   productVariantDetachMedia?: Maybe<ProductVariantDetachMediaPayload>;
   /** Adds multiple selling plan groups to a product variant. */
@@ -27330,11 +29599,6 @@ export type Mutation = {
   productVariantLeaveSellingPlanGroups?: Maybe<ProductVariantLeaveSellingPlanGroupsPayload>;
   /** Creates new bundles, updates existing bundles, and removes bundle components for one or multiple bundles. */
   productVariantRelationshipBulkUpdate?: Maybe<ProductVariantRelationshipBulkUpdatePayload>;
-  /**
-   * Updates a product variant.
-   * @deprecated Use `productVariantsBulkUpdate` instead.
-   */
-  productVariantUpdate?: Maybe<ProductVariantUpdatePayload>;
   /** Creates multiple variants in a single product. This mutation can be called directly or via the bulkOperation. */
   productVariantsBulkCreate?: Maybe<ProductVariantsBulkCreatePayload>;
   /** Deletes multiple variants in a single product. This mutation can be called directly or via the bulkOperation. */
@@ -27348,9 +29612,17 @@ export type Mutation = {
    * Running this mutation deletes any previous subscriptions for the server pixel.
    */
   pubSubServerPixelUpdate?: Maybe<PubSubServerPixelUpdatePayload>;
-  /** Creates a new Google Cloud Pub/Sub webhook subscription. */
+  /**
+   * Creates a new Google Cloud Pub/Sub webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   pubSubWebhookSubscriptionCreate?: Maybe<PubSubWebhookSubscriptionCreatePayload>;
-  /** Updates a Google Cloud Pub/Sub webhook subscription. */
+  /**
+   * Updates a Google Cloud Pub/Sub webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   pubSubWebhookSubscriptionUpdate?: Maybe<PubSubWebhookSubscriptionUpdatePayload>;
   /** Creates a publication. */
   publicationCreate?: Maybe<PublicationCreatePayload>;
@@ -27419,11 +29691,6 @@ export type Mutation = {
   returnRequest?: Maybe<ReturnRequestPayload>;
   /** Creates a new reverse delivery with associated external shipping information. */
   reverseDeliveryCreateWithShipping?: Maybe<ReverseDeliveryCreateWithShippingPayload>;
-  /**
-   * Disposes reverse delivery line items for a reverse delivery on the same shop.
-   * @deprecated `reverseDeliveryDispose` will be removed in API version 2024-10. Use `reverseFulfillmentOrderDispose` instead.
-   */
-  reverseDeliveryDispose?: Maybe<ReverseDeliveryDisposePayload>;
   /** Updates a reverse delivery with associated external shipping information. */
   reverseDeliveryShippingUpdate?: Maybe<ReverseDeliveryShippingUpdatePayload>;
   /** Disposes reverse fulfillment order line items. */
@@ -27479,7 +29746,7 @@ export type Mutation = {
   sellingPlanGroupAddProducts?: Maybe<SellingPlanGroupAddProductsPayload>;
   /** Creates a Selling Plan Group. */
   sellingPlanGroupCreate?: Maybe<SellingPlanGroupCreatePayload>;
-  /** Delete a Selling Plan Group. */
+  /** Delete a Selling Plan Group. This does not affect subscription contracts. */
   sellingPlanGroupDelete?: Maybe<SellingPlanGroupDeletePayload>;
   /** Removes multiple product variants from a selling plan group. */
   sellingPlanGroupRemoveProductVariants?: Maybe<SellingPlanGroupRemoveProductVariantsPayload>;
@@ -27572,15 +29839,9 @@ export type Mutation = {
   storefrontAccessTokenDelete?: Maybe<StorefrontAccessTokenDeletePayload>;
   /** Creates a new subscription billing attempt. For more information, refer to [Create a subscription contract](https://shopify.dev/docs/apps/selling-strategies/subscriptions/contracts/create#step-4-create-a-billing-attempt). */
   subscriptionBillingAttemptCreate?: Maybe<SubscriptionBillingAttemptCreatePayload>;
-  /**
-   * Asynchronously queries and charges all subscription billing cycles whose `billingAttemptExpectedDate` values fall within a specified date range and meet additional filtering criteria.
-   * The results of this action can be retrieved using the `SubscriptionBillingCyclesResults` query.
-   */
+  /** Asynchronously queries and charges all subscription billing cycles whose [billingAttemptExpectedDate](https://shopify.dev/api/admin-graphql/latest/objects/SubscriptionBillingCycle#field-billingattemptexpecteddate) values fall within a specified date range and meet additional filtering criteria. The results of this action can be retrieved using the [subscriptionBillingCycleBulkResults](https://shopify.dev/api/admin-graphql/latest/queries/subscriptionBillingCycleBulkResults) query. */
   subscriptionBillingCycleBulkCharge?: Maybe<SubscriptionBillingCycleBulkChargePayload>;
-  /**
-   * Asynchronously queries all subscription billing cycles whose `billingAttemptExpectedDate` values fall within a specified date range and meet additional filtering criteria.
-   * The results of this action can be retrieved using the `SubscriptionBillingCyclesResults` query.
-   */
+  /** Asynchronously queries all subscription billing cycles whose [billingAttemptExpectedDate](https://shopify.dev/api/admin-graphql/latest/objects/SubscriptionBillingCycle#field-billingattemptexpecteddate) values fall within a specified date range and meet additional filtering criteria. The results of this action can be retrieved using the [subscriptionBillingCycleBulkResults](https://shopify.dev/api/admin-graphql/latest/queries/subscriptionBillingCycleBulkResults) query. */
   subscriptionBillingCycleBulkSearch?: Maybe<SubscriptionBillingCycleBulkSearchPayload>;
   /** Creates a new subscription billing attempt for a specified billing cycle. This is the alternative mutation for [subscriptionBillingAttemptCreate](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionBillingAttemptCreate). For more information, refer to [Create a subscription contract](https://shopify.dev/docs/apps/selling-strategies/subscriptions/contracts/create#step-4-create-a-billing-attempt). */
   subscriptionBillingCycleCharge?: Maybe<SubscriptionBillingCycleChargePayload>;
@@ -27628,7 +29889,7 @@ export type Mutation = {
    *         which provide auto-computed billing dates and additional functionalities.
    */
   subscriptionContractSetNextBillingDate?: Maybe<SubscriptionContractSetNextBillingDatePayload>;
-  /** Updates a Subscription Contract. */
+  /** The subscriptionContractUpdate mutation allows you to create a draft of an existing subscription contract. This [draft](https://shopify.dev/api/admin-graphql/latest/objects/SubscriptionDraft) can be reviewed and modified as needed. Once the draft is committed with [subscriptionDraftCommit](https://shopify.dev/api/admin-graphql/latest/mutations/subscriptionDraftCommit), the changes are applied to the original subscription contract. */
   subscriptionContractUpdate?: Maybe<SubscriptionContractUpdatePayload>;
   /** Commits the updates of a Subscription Contract draft. */
   subscriptionDraftCommit?: Maybe<SubscriptionDraftCommitPayload>;
@@ -27658,6 +29919,24 @@ export type Mutation = {
   tagsRemove?: Maybe<TagsRemovePayload>;
   /** Allows tax app configurations for tax partners. */
   taxAppConfigure?: Maybe<TaxAppConfigurePayload>;
+  /**
+   * Creates a theme using an external URL or for files that were previously uploaded using the
+   * [stagedUploadsCreate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/stageduploadscreate).
+   * These themes are added to the [Themes page](https://admin.shopify.com/themes) in Shopify admin.
+   */
+  themeCreate?: Maybe<ThemeCreatePayload>;
+  /** Deletes a theme. */
+  themeDelete?: Maybe<ThemeDeletePayload>;
+  /** Copy theme files. Copying to existing theme files will overwrite them. */
+  themeFilesCopy?: Maybe<ThemeFilesCopyPayload>;
+  /** Deletes a theme's files. */
+  themeFilesDelete?: Maybe<ThemeFilesDeletePayload>;
+  /** Create or update theme files. */
+  themeFilesUpsert?: Maybe<ThemeFilesUpsertPayload>;
+  /** Publishes a theme. */
+  themePublish?: Maybe<ThemePublishPayload>;
+  /** Updates a theme. */
+  themeUpdate?: Maybe<ThemeUpdatePayload>;
   /** Trigger the voiding of an uncaptured authorization transaction. */
   transactionVoid?: Maybe<TransactionVoidPayload>;
   /** Creates or updates translations. */
@@ -27707,11 +29986,23 @@ export type Mutation = {
   webPixelDelete?: Maybe<WebPixelDeletePayload>;
   /** Updates the web pixel settings. */
   webPixelUpdate?: Maybe<WebPixelUpdatePayload>;
-  /** Creates a new webhook subscription. */
+  /**
+   * Creates a new webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   webhookSubscriptionCreate?: Maybe<WebhookSubscriptionCreatePayload>;
-  /** Deletes a webhook subscription. */
+  /**
+   * Deletes a webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   webhookSubscriptionDelete?: Maybe<WebhookSubscriptionDeletePayload>;
-  /** Updates a webhook subscription. */
+  /**
+   * Updates a webhook subscription.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   webhookSubscriptionUpdate?: Maybe<WebhookSubscriptionUpdatePayload>;
 };
 
@@ -27741,6 +30032,12 @@ export type MutationAppPurchaseOneTimeCreateArgs = {
   price: MoneyInput;
   returnUrl: Scalars['URL']['input'];
   test?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationAppRevokeAccessScopesArgs = {
+  scopes: Array<Scalars['String']['input']>;
 };
 
 
@@ -27782,6 +30079,46 @@ export type MutationAppUsageRecordCreateArgs = {
   idempotencyKey?: InputMaybe<Scalars['String']['input']>;
   price: MoneyInput;
   subscriptionLineItemId: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationArticleCreateArgs = {
+  article: ArticleCreateInput;
+  blog?: InputMaybe<ArticleBlogInput>;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationArticleDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationArticleUpdateArgs = {
+  article: ArticleUpdateInput;
+  blog?: InputMaybe<ArticleBlogInput>;
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationBlogCreateArgs = {
+  blog: BlogCreateInput;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationBlogDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationBlogUpdateArgs = {
+  blog: BlogUpdateInput;
+  id: Scalars['ID']['input'];
 };
 
 
@@ -27833,6 +30170,7 @@ export type MutationCarrierServiceUpdateArgs = {
 export type MutationCartTransformCreateArgs = {
   blockOnFailure?: InputMaybe<Scalars['Boolean']['input']>;
   functionId: Scalars['String']['input'];
+  metafields?: InputMaybe<Array<MetafieldInput>>;
 };
 
 
@@ -27943,6 +30281,30 @@ export type MutationCombinedListingUpdateArgs = {
   productsEdited?: InputMaybe<Array<ChildProductRelationInput>>;
   productsRemovedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationCommentApproveArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationCommentDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationCommentNotSpamArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationCommentSpamArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -28069,6 +30431,13 @@ export type MutationCompanyLocationAssignRolesArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
+export type MutationCompanyLocationAssignStaffMembersArgs = {
+  companyLocationId: Scalars['ID']['input'];
+  staffMemberIds: Array<Scalars['ID']['input']>;
+};
+
+
+/** The schema's entry point for all mutation operations. */
 export type MutationCompanyLocationAssignTaxExemptionsArgs = {
   companyLocationId: Scalars['ID']['input'];
   taxExemptions: Array<TaxExemption>;
@@ -28092,6 +30461,12 @@ export type MutationCompanyLocationCreateTaxRegistrationArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationCompanyLocationDeleteArgs = {
   companyLocationId: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationCompanyLocationRemoveStaffMembersArgs = {
+  companyLocationStaffMemberAssignmentIds: Array<Scalars['ID']['input']>;
 };
 
 
@@ -28291,6 +30666,13 @@ export type MutationCustomerRequestDataErasureArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationCustomerSegmentMembersQueryCreateArgs = {
   input: CustomerSegmentMembersQueryInput;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationCustomerSendAccountInviteEmailArgs = {
+  customerId: Scalars['ID']['input'];
+  email?: InputMaybe<EmailInput>;
 };
 
 
@@ -28750,6 +31132,7 @@ export type MutationFulfillmentCancelArgs = {
 
 /** The schema's entry point for all mutation operations. */
 export type MutationFulfillmentConstraintRuleCreateArgs = {
+  deliveryMethodTypes: Array<DeliveryMethodType>;
   functionId: Scalars['String']['input'];
   metafields?: InputMaybe<Array<MetafieldInput>>;
 };
@@ -28758,6 +31141,20 @@ export type MutationFulfillmentConstraintRuleCreateArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationFulfillmentConstraintRuleDeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationFulfillmentConstraintRuleUpdateArgs = {
+  deliveryMethodTypes: Array<DeliveryMethodType>;
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationFulfillmentCreateArgs = {
+  fulfillment: FulfillmentInput;
+  message?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -28853,6 +31250,7 @@ export type MutationFulfillmentOrderRejectFulfillmentRequestArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationFulfillmentOrderReleaseHoldArgs = {
   externalId?: InputMaybe<Scalars['String']['input']>;
+  holdIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   id: Scalars['ID']['input'];
 };
 
@@ -28887,13 +31285,6 @@ export type MutationFulfillmentOrderSubmitFulfillmentRequestArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
-export type MutationFulfillmentOrdersReleaseHoldsArgs = {
-  externalId?: InputMaybe<Scalars['String']['input']>;
-  ids: Array<Scalars['ID']['input']>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
 export type MutationFulfillmentOrdersSetFulfillmentDeadlineArgs = {
   fulfillmentDeadline: Scalars['DateTime']['input'];
   fulfillmentOrderIds: Array<Scalars['ID']['input']>;
@@ -28913,6 +31304,7 @@ export type MutationFulfillmentServiceCreateArgs = {
 export type MutationFulfillmentServiceDeleteArgs = {
   destinationLocationId?: InputMaybe<Scalars['ID']['input']>;
   id: Scalars['ID']['input'];
+  inventoryAction?: InputMaybe<FulfillmentServiceDeleteInventoryAction>;
 };
 
 
@@ -28923,6 +31315,14 @@ export type MutationFulfillmentServiceUpdateArgs = {
   inventoryManagement?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   trackingSupport?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationFulfillmentTrackingInfoUpdateArgs = {
+  fulfillmentId: Scalars['ID']['input'];
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
+  trackingInfoInput: FulfillmentTrackingInput;
 };
 
 
@@ -28941,7 +31341,33 @@ export type MutationGiftCardCreateArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
-export type MutationGiftCardDisableArgs = {
+export type MutationGiftCardCreditArgs = {
+  creditInput: GiftCardCreditInput;
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationGiftCardDeactivateArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationGiftCardDebitArgs = {
+  debitInput: GiftCardDebitInput;
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationGiftCardSendNotificationToCustomerArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationGiftCardSendNotificationToRecipientArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -28959,6 +31385,7 @@ export type MutationInventoryActivateArgs = {
   inventoryItemId: Scalars['ID']['input'];
   locationId: Scalars['ID']['input'];
   onHand?: InputMaybe<Scalars['Int']['input']>;
+  stockAtLegacyLocation?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -29370,6 +31797,13 @@ export type MutationOrderCloseArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
+export type MutationOrderCreateArgs = {
+  options?: InputMaybe<OrderCreateOptionsInput>;
+  order: OrderCreateOrderInput;
+};
+
+
+/** The schema's entry point for all mutation operations. */
 export type MutationOrderCreateMandatePaymentArgs = {
   amount?: InputMaybe<MoneyInput>;
   autoCapture?: InputMaybe<Scalars['Boolean']['input']>;
@@ -29515,6 +31949,25 @@ export type MutationOrderUpdateArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
+export type MutationPageCreateArgs = {
+  page: PageCreateInput;
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationPageDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationPageUpdateArgs = {
+  id: Scalars['ID']['input'];
+  page: PageUpdateInput;
+};
+
+
+/** The schema's entry point for all mutation operations. */
 export type MutationPaymentCustomizationActivationArgs = {
   enabled: Scalars['Boolean']['input'];
   ids: Array<Scalars['ID']['input']>;
@@ -29615,53 +32068,6 @@ export type MutationPriceListUpdateArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleActivateArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleCreateArgs = {
-  priceRule: PriceRuleInput;
-  priceRuleDiscountCode?: InputMaybe<PriceRuleDiscountCodeInput>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleDeactivateArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleDeleteArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleDiscountCodeCreateArgs = {
-  code: Scalars['String']['input'];
-  priceRuleId: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleDiscountCodeUpdateArgs = {
-  code: Scalars['String']['input'];
-  priceRuleId: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationPriceRuleUpdateArgs = {
-  id: Scalars['ID']['input'];
-  priceRule: PriceRuleInput;
-  priceRuleDiscountCode?: InputMaybe<PriceRuleDiscountCodeInput>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
 export type MutationPrivateMetafieldDeleteArgs = {
   input: PrivateMetafieldDeleteInput;
 };
@@ -29670,12 +32076,6 @@ export type MutationPrivateMetafieldDeleteArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationPrivateMetafieldUpsertArgs = {
   input: PrivateMetafieldInput;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductAppendImagesArgs = {
-  input: ProductAppendImagesInput;
 };
 
 
@@ -29700,8 +32100,8 @@ export type MutationProductChangeStatusArgs = {
 
 /** The schema's entry point for all mutation operations. */
 export type MutationProductCreateArgs = {
-  input: ProductInput;
   media?: InputMaybe<Array<CreateMediaInput>>;
+  product?: InputMaybe<ProductCreateInput>;
 };
 
 
@@ -29715,19 +32115,7 @@ export type MutationProductCreateMediaArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationProductDeleteArgs = {
   input: ProductDeleteInput;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductDeleteAsyncArgs = {
-  productId: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductDeleteImagesArgs = {
-  id: Scalars['ID']['input'];
-  imageIds: Array<Scalars['ID']['input']>;
+  synchronous?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -29745,12 +32133,7 @@ export type MutationProductDuplicateArgs = {
   newStatus?: InputMaybe<ProductStatus>;
   newTitle: Scalars['String']['input'];
   productId: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductDuplicateAsyncV2Args = {
-  input: ProductDuplicateAsyncInput;
+  synchronous?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -29771,13 +32154,6 @@ export type MutationProductFullSyncArgs = {
   beforeUpdatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   id: Scalars['ID']['input'];
   updatedAtSince?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductImageUpdateArgs = {
-  image: ImageInput;
-  productId: Scalars['ID']['input'];
 };
 
 
@@ -29810,6 +32186,7 @@ export type MutationProductOptionUpdateArgs = {
 export type MutationProductOptionsCreateArgs = {
   options: Array<OptionCreateInput>;
   productId: Scalars['ID']['input'];
+  variantStrategy?: InputMaybe<ProductOptionCreateVariantStrategy>;
 };
 
 
@@ -29835,13 +32212,6 @@ export type MutationProductPublishArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
-export type MutationProductReorderImagesArgs = {
-  id: Scalars['ID']['input'];
-  moves: Array<MoveInput>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
 export type MutationProductReorderMediaArgs = {
   id: Scalars['ID']['input'];
   moves: Array<MoveInput>;
@@ -29863,8 +32233,8 @@ export type MutationProductUnpublishArgs = {
 
 /** The schema's entry point for all mutation operations. */
 export type MutationProductUpdateArgs = {
-  input: ProductInput;
   media?: InputMaybe<Array<CreateMediaInput>>;
+  product?: InputMaybe<ProductUpdateInput>;
 };
 
 
@@ -29879,18 +32249,6 @@ export type MutationProductUpdateMediaArgs = {
 export type MutationProductVariantAppendMediaArgs = {
   productId: Scalars['ID']['input'];
   variantMedia: Array<ProductVariantAppendMediaInput>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductVariantCreateArgs = {
-  input: ProductVariantInput;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductVariantDeleteArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -29918,12 +32276,6 @@ export type MutationProductVariantLeaveSellingPlanGroupsArgs = {
 /** The schema's entry point for all mutation operations. */
 export type MutationProductVariantRelationshipBulkUpdateArgs = {
   input: Array<ProductVariantRelationshipUpdateInput>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationProductVariantUpdateArgs = {
-  input: ProductVariantInput;
 };
 
 
@@ -30114,12 +32466,6 @@ export type MutationReverseDeliveryCreateWithShippingArgs = {
   reverseDeliveryLineItems: Array<ReverseDeliveryLineItemInput>;
   reverseFulfillmentOrderId: Scalars['ID']['input'];
   trackingInput?: InputMaybe<ReverseDeliveryTrackingInput>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationReverseDeliveryDisposeArgs = {
-  dispositionInputs: Array<ReverseDeliveryDisposeInput>;
 };
 
 
@@ -30315,13 +32661,13 @@ export type MutationStagedUploadsCreateArgs = {
 
 /** The schema's entry point for all mutation operations. */
 export type MutationStandardMetafieldDefinitionEnableArgs = {
+  access?: InputMaybe<StandardMetafieldDefinitionAccessInput>;
   id?: InputMaybe<Scalars['ID']['input']>;
   key?: InputMaybe<Scalars['String']['input']>;
   namespace?: InputMaybe<Scalars['String']['input']>;
   ownerType: MetafieldOwnerType;
   pin?: Scalars['Boolean']['input'];
   useAsCollectionCondition?: InputMaybe<Scalars['Boolean']['input']>;
-  visibleToStorefrontApi?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -30599,6 +32945,53 @@ export type MutationTaxAppConfigureArgs = {
 
 
 /** The schema's entry point for all mutation operations. */
+export type MutationThemeCreateArgs = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  source: Scalars['URL']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationThemeDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationThemeFilesCopyArgs = {
+  files: Array<ThemeFilesCopyFileInput>;
+  themeId: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationThemeFilesDeleteArgs = {
+  files: Array<Scalars['String']['input']>;
+  themeId: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationThemeFilesUpsertArgs = {
+  files: Array<OnlineStoreThemeFilesUpsertFileInput>;
+  themeId: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationThemePublishArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry point for all mutation operations. */
+export type MutationThemeUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: OnlineStoreThemeInput;
+};
+
+
+/** The schema's entry point for all mutation operations. */
 export type MutationTransactionVoidArgs = {
   parentTransactionId: Scalars['ID']['input'];
 };
@@ -30753,7 +33146,7 @@ export type MutationsStagedUploadTargetGenerateUploadParameter = {
  * [Paginating results with GraphQL](https://shopify.dev/api/usage/pagination-graphql).
  */
 export type Navigable = {
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
 };
 
@@ -30798,301 +33191,6 @@ export type OnlineStore = {
   passwordProtection: OnlineStorePasswordProtection;
 };
 
-/** An article in the blogging system. */
-export type OnlineStoreArticle = HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Navigable & Node & {
-  __typename?: 'OnlineStoreArticle';
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
-  defaultCursor: Scalars['String']['output'];
-  /** A globally-unique ID. */
-  id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
-  metafield?: Maybe<Metafield>;
-  /**
-   * List of metafield definitions.
-   * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
-   */
-  metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
-  metafields: MetafieldConnection;
-  /**
-   * Returns a private metafield by namespace and key that belongs to the resource.
-   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
-   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
-   *
-   */
-  privateMetafield?: Maybe<PrivateMetafield>;
-  /**
-   * List of private metafields that belong to the resource.
-   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
-   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
-   *
-   */
-  privateMetafields: PrivateMetafieldConnection;
-  /** The translations associated with the resource. */
-  translations: Array<Translation>;
-};
-
-
-/** An article in the blogging system. */
-export type OnlineStoreArticleMetafieldArgs = {
-  key: Scalars['String']['input'];
-  namespace?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** An article in the blogging system. */
-export type OnlineStoreArticleMetafieldDefinitionsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  pinnedStatus?: InputMaybe<MetafieldDefinitionPinnedStatus>;
-  query?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-  sortKey?: InputMaybe<MetafieldDefinitionSortKeys>;
-};
-
-
-/** An article in the blogging system. */
-export type OnlineStoreArticleMetafieldsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  keys?: InputMaybe<Array<Scalars['String']['input']>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** An article in the blogging system. */
-export type OnlineStoreArticlePrivateMetafieldArgs = {
-  key: Scalars['String']['input'];
-  namespace: Scalars['String']['input'];
-};
-
-
-/** An article in the blogging system. */
-export type OnlineStoreArticlePrivateMetafieldsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** An article in the blogging system. */
-export type OnlineStoreArticleTranslationsArgs = {
-  locale: Scalars['String']['input'];
-  marketId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlog = HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Node & {
-  __typename?: 'OnlineStoreBlog';
-  /** A globally-unique ID. */
-  id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
-  metafield?: Maybe<Metafield>;
-  /**
-   * List of metafield definitions.
-   * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
-   */
-  metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
-  metafields: MetafieldConnection;
-  /**
-   * Returns a private metafield by namespace and key that belongs to the resource.
-   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
-   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
-   *
-   */
-  privateMetafield?: Maybe<PrivateMetafield>;
-  /**
-   * List of private metafields that belong to the resource.
-   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
-   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
-   *
-   */
-  privateMetafields: PrivateMetafieldConnection;
-  /** The translations associated with the resource. */
-  translations: Array<Translation>;
-};
-
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlogMetafieldArgs = {
-  key: Scalars['String']['input'];
-  namespace?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlogMetafieldDefinitionsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  pinnedStatus?: InputMaybe<MetafieldDefinitionPinnedStatus>;
-  query?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-  sortKey?: InputMaybe<MetafieldDefinitionSortKeys>;
-};
-
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlogMetafieldsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  keys?: InputMaybe<Array<Scalars['String']['input']>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlogPrivateMetafieldArgs = {
-  key: Scalars['String']['input'];
-  namespace: Scalars['String']['input'];
-};
-
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlogPrivateMetafieldsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * Shopify stores come with a built-in blogging engine, allowing a shop to have one or more blogs.  Blogs are meant
- * to be used as a type of magazine or newsletter for the shop, with content that changes over time.
- */
-export type OnlineStoreBlogTranslationsArgs = {
-  locale: Scalars['String']['input'];
-  marketId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-/** A page on the Online Store. */
-export type OnlineStorePage = HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Navigable & Node & {
-  __typename?: 'OnlineStorePage';
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
-  defaultCursor: Scalars['String']['output'];
-  /** A globally-unique ID. */
-  id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
-  metafield?: Maybe<Metafield>;
-  /**
-   * List of metafield definitions.
-   * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
-   */
-  metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
-  metafields: MetafieldConnection;
-  /**
-   * Returns a private metafield by namespace and key that belongs to the resource.
-   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
-   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
-   *
-   */
-  privateMetafield?: Maybe<PrivateMetafield>;
-  /**
-   * List of private metafields that belong to the resource.
-   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
-   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
-   *
-   */
-  privateMetafields: PrivateMetafieldConnection;
-  /** The translations associated with the resource. */
-  translations: Array<Translation>;
-};
-
-
-/** A page on the Online Store. */
-export type OnlineStorePageMetafieldArgs = {
-  key: Scalars['String']['input'];
-  namespace?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** A page on the Online Store. */
-export type OnlineStorePageMetafieldDefinitionsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  pinnedStatus?: InputMaybe<MetafieldDefinitionPinnedStatus>;
-  query?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-  sortKey?: InputMaybe<MetafieldDefinitionSortKeys>;
-};
-
-
-/** A page on the Online Store. */
-export type OnlineStorePageMetafieldsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  keys?: InputMaybe<Array<Scalars['String']['input']>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** A page on the Online Store. */
-export type OnlineStorePagePrivateMetafieldArgs = {
-  key: Scalars['String']['input'];
-  namespace: Scalars['String']['input'];
-};
-
-
-/** A page on the Online Store. */
-export type OnlineStorePagePrivateMetafieldsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  namespace?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** A page on the Online Store. */
-export type OnlineStorePageTranslationsArgs = {
-  locale: Scalars['String']['input'];
-  marketId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 /** Storefront password information. */
 export type OnlineStorePasswordProtection = {
   __typename?: 'OnlineStorePasswordProtection';
@@ -31102,8 +33200,234 @@ export type OnlineStorePasswordProtection = {
 
 /** Online Store preview URL of the object. */
 export type OnlineStorePreviewable = {
-  /** The online store preview URL. */
+  /** The [preview URL](https://help.shopify.com/manual/online-store/setting-up#preview-your-store) for the online store. */
   onlineStorePreviewUrl?: Maybe<Scalars['URL']['output']>;
+};
+
+/** A theme for display on the storefront. */
+export type OnlineStoreTheme = HasPublishedTranslations & Node & {
+  __typename?: 'OnlineStoreTheme';
+  /** The date and time when the theme was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The files in the theme. */
+  files?: Maybe<OnlineStoreThemeFileConnection>;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** The name of the theme, set by the merchant. */
+  name: Scalars['String']['output'];
+  /** The prefix of the theme. */
+  prefix: Scalars['String']['output'];
+  /** Whether the theme is processing. */
+  processing: Scalars['Boolean']['output'];
+  /** Whether the theme processing failed. */
+  processingFailed: Scalars['Boolean']['output'];
+  /** The role of the theme. */
+  role: ThemeRole;
+  /** The theme store ID. */
+  themeStoreId?: Maybe<Scalars['Int']['output']>;
+  /** The published translations associated with the resource. */
+  translations: Array<Translation>;
+  /** The date and time when the theme was last updated. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A theme for display on the storefront. */
+export type OnlineStoreThemeFilesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  filenames?: InputMaybe<Array<Scalars['String']['input']>>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** A theme for display on the storefront. */
+export type OnlineStoreThemeTranslationsArgs = {
+  locale: Scalars['String']['input'];
+  marketId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** An auto-generated type for paginating through multiple OnlineStoreThemes. */
+export type OnlineStoreThemeConnection = {
+  __typename?: 'OnlineStoreThemeConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<OnlineStoreThemeEdge>;
+  /** A list of nodes that are contained in OnlineStoreThemeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<OnlineStoreTheme>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** An auto-generated type which holds one OnlineStoreTheme and a cursor during pagination. */
+export type OnlineStoreThemeEdge = {
+  __typename?: 'OnlineStoreThemeEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of OnlineStoreThemeEdge. */
+  node: OnlineStoreTheme;
+};
+
+/** Represents a theme file. */
+export type OnlineStoreThemeFile = {
+  __typename?: 'OnlineStoreThemeFile';
+  /** The body of the theme file. */
+  body: OnlineStoreThemeFileBody;
+  /** The md5 digest of the theme file for data integrity. */
+  checksumMd5?: Maybe<Scalars['String']['output']>;
+  /** The content type of the theme file. */
+  contentType: Scalars['String']['output'];
+  /** The date and time when the theme file was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the theme file. */
+  filename: Scalars['String']['output'];
+  /** The size of the theme file in bytes. */
+  size: Scalars['UnsignedInt64']['output'];
+  /** The date and time when the theme file was last updated. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+/** Represents the body of a theme file. */
+export type OnlineStoreThemeFileBody = OnlineStoreThemeFileBodyBase64 | OnlineStoreThemeFileBodyText | OnlineStoreThemeFileBodyUrl;
+
+/** Represents the base64 encoded body of a theme file. */
+export type OnlineStoreThemeFileBodyBase64 = {
+  __typename?: 'OnlineStoreThemeFileBodyBase64';
+  /** The body of the theme file, base64 encoded. */
+  contentBase64: Scalars['String']['output'];
+};
+
+/** The input fields for the theme file body. */
+export type OnlineStoreThemeFileBodyInput = {
+  /** The input type of the theme file body. */
+  type: OnlineStoreThemeFileBodyInputType;
+  /** The body of the theme file. */
+  value: Scalars['String']['input'];
+};
+
+/** The input type for a theme file body. */
+export enum OnlineStoreThemeFileBodyInputType {
+  /** The base64 encoded body of a theme file. */
+  Base64 = 'BASE64',
+  /** The text body of the theme file. */
+  Text = 'TEXT',
+  /** The url of the body of a theme file. */
+  Url = 'URL'
+}
+
+/** Represents the body of a theme file. */
+export type OnlineStoreThemeFileBodyText = {
+  __typename?: 'OnlineStoreThemeFileBodyText';
+  /** The body of the theme file. */
+  content: Scalars['String']['output'];
+};
+
+/** Represents the url of the body of a theme file. */
+export type OnlineStoreThemeFileBodyUrl = {
+  __typename?: 'OnlineStoreThemeFileBodyUrl';
+  /** The url for the body of the theme file. */
+  url: Scalars['URL']['output'];
+};
+
+/** An auto-generated type for paginating through multiple OnlineStoreThemeFiles. */
+export type OnlineStoreThemeFileConnection = {
+  __typename?: 'OnlineStoreThemeFileConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<OnlineStoreThemeFileEdge>;
+  /** A list of nodes that are contained in OnlineStoreThemeFileEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<OnlineStoreThemeFile>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+  /** List of errors that occurred during the request. */
+  userErrors: Array<OnlineStoreThemeFileReadResult>;
+};
+
+/** An auto-generated type which holds one OnlineStoreThemeFile and a cursor during pagination. */
+export type OnlineStoreThemeFileEdge = {
+  __typename?: 'OnlineStoreThemeFileEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of OnlineStoreThemeFileEdge. */
+  node: OnlineStoreThemeFile;
+};
+
+/** Represents the result of a copy, delete, or write operation performed on a theme file. */
+export type OnlineStoreThemeFileOperationResult = {
+  __typename?: 'OnlineStoreThemeFileOperationResult';
+  /** Unique identifier of the theme file. */
+  filename: Scalars['String']['output'];
+};
+
+/** Represents the result of a read operation performed on a theme asset. */
+export type OnlineStoreThemeFileReadResult = {
+  __typename?: 'OnlineStoreThemeFileReadResult';
+  /** Type that indicates the result of the operation. */
+  code: OnlineStoreThemeFileResultType;
+  /** Unique identifier associated with the operation and the theme file. */
+  filename: Scalars['String']['output'];
+};
+
+/** Type of a theme file operation result. */
+export enum OnlineStoreThemeFileResultType {
+  /** Operation was malformed or invalid. */
+  BadRequest = 'BAD_REQUEST',
+  /** Operation faced a conflict with the current state of the file. */
+  Conflict = 'CONFLICT',
+  /** Operation encountered an error. */
+  Error = 'ERROR',
+  /** Operation file could not be found. */
+  NotFound = 'NOT_FOUND',
+  /** Operation was successful. */
+  Success = 'SUCCESS',
+  /** Operation timed out. */
+  Timeout = 'TIMEOUT',
+  /** Operation could not be processed due to issues with input data. */
+  UnprocessableEntity = 'UNPROCESSABLE_ENTITY'
+}
+
+/** The input fields for the file to create or update. */
+export type OnlineStoreThemeFilesUpsertFileInput = {
+  /** The body of the theme file. */
+  body: OnlineStoreThemeFileBodyInput;
+  /** The filename of the theme file. */
+  filename: Scalars['String']['input'];
+};
+
+/** User errors for theme file operations. */
+export type OnlineStoreThemeFilesUserErrors = DisplayableError & {
+  __typename?: 'OnlineStoreThemeFilesUserErrors';
+  /** The error code. */
+  code?: Maybe<OnlineStoreThemeFilesUserErrorsCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The filename of the theme file. */
+  filename?: Maybe<Scalars['String']['output']>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `OnlineStoreThemeFilesUserErrors`. */
+export enum OnlineStoreThemeFilesUserErrorsCode {
+  /** Access denied. */
+  AccessDenied = 'ACCESS_DENIED',
+  /** There are files with the same filename. */
+  DuplicateFileInput = 'DUPLICATE_FILE_INPUT',
+  /** Error. */
+  Error = 'ERROR',
+  /** The file is invalid. */
+  FileValidationError = 'FILE_VALIDATION_ERROR',
+  /** The input value should be less than or equal to the maximum value allowed. */
+  LessThanOrEqualTo = 'LESS_THAN_OR_EQUAL_TO',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** There are theme files with conflicts. */
+  ThemeFilesConflict = 'THEME_FILES_CONFLICT',
+  /** This action is not available on your current plan. Please upgrade to access theme editing features. */
+  ThemeLimitedPlan = 'THEME_LIMITED_PLAN'
+}
+
+/** The input fields for Theme attributes to update. */
+export type OnlineStoreThemeInput = {
+  /** The new name of the theme. */
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** The input fields for the options and values of the combined listing. */
@@ -31144,6 +33468,8 @@ export type OptionReorderInput = {
 export type OptionSetInput = {
   /** Specifies the product option to update. */
   id?: InputMaybe<Scalars['ID']['input']>;
+  /** Specifies the metafield the option is linked to. */
+  linkedMetafield?: InputMaybe<LinkedMetafieldCreateInput>;
   /** Name of the option. */
   name?: InputMaybe<Scalars['String']['input']>;
   /** Position of the option. */
@@ -31279,6 +33605,8 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
   currencyCode: CurrencyCode;
   /** The current order-level discount amount after all order updates, in shop and presentment currencies. */
   currentCartDiscountAmountSet: MoneyBag;
+  /** The current shipping price after applying refunds and discounts. If the parent `order.taxesIncluded` field is true, then this price includes taxes. Otherwise, this field is the pre-tax price. */
+  currentShippingPriceSet: MoneyBag;
   /** The sum of the quantities for all line items that contribute to the order's current subtotal price. */
   currentSubtotalLineItemsQuantity: Scalars['Int']['output'];
   /**
@@ -31354,6 +33682,8 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
   displayFulfillmentStatus: OrderDisplayFulfillmentStatus;
   /** A list of the disputes associated with the order. */
   disputes: Array<OrderDisputeSummary>;
+  /** Whether duties are included in the subtotal price of the order. */
+  dutiesIncluded: Scalars['Boolean']['output'];
   /** Whether the order has had any edits applied. */
   edited: Scalars['Boolean']['output'];
   /** The email address associated with the customer. */
@@ -31408,27 +33738,31 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
   legacyResourceId: Scalars['UnsignedInt64']['output'];
   /** A list of the order's line items. */
   lineItems: LineItemConnection;
-  /**
-   * A list of the order's line items.
-   * @deprecated Use `lineItems` instead.
-   */
-  lineItemsMutable: LineItemMutableConnection;
   /** List of localization extensions for the resource. */
   localizationExtensions: LocalizationExtensionConnection;
+  /** The merchant's business entity associated with the order. */
+  merchantBusinessEntity: BusinessEntity;
   /** Whether the order can be edited by the merchant. For example, canceled orders can’t be edited. */
   merchantEditable: Scalars['Boolean']['output'];
   /** A list of reasons why the order can't be edited. For example, "Canceled orders can't be edited". */
   merchantEditableErrors: Array<Scalars['String']['output']>;
   /** The application acting as the Merchant of Record for the order. */
   merchantOfRecordApp?: Maybe<OrderApp>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * The unique identifier for the order that appears on the order page in the Shopify admin and the <b>Order status</b> page.
@@ -31452,12 +33786,12 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
   /** The contents of the note associated with the order. */
   note?: Maybe<Scalars['String']['output']>;
   /**
-   * The total amount of additional fees after returns, in shop and presentment currencies.
-   * Returns `null` if there are no additional fees for the order.
+   * The total amount of additional fees at the time of order creation, in shop and presentment currencies.
+   * Returns `null` if additional fees aren't applicable.
    */
   originalTotalAdditionalFeesSet?: Maybe<MoneyBag>;
   /**
-   * The total amount of duties before returns, in shop and presentment currencies.
+   * The total amount of duties at the time of order creation, in shop and presentment currencies.
    * Returns `null` if duties aren't applicable.
    */
   originalTotalDutiesSet?: Maybe<MoneyBag>;
@@ -31573,6 +33907,8 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
   sourceName?: Maybe<Scalars['String']['output']>;
   /** The staff member associated with the order. */
   staffMember?: Maybe<StaffMember>;
+  /** The URL where the customer can check the order's current status. */
+  statusPageUrl: Scalars['URL']['output'];
   /** The sum of the quantities for all line items that contribute to the order's subtotal price. */
   subtotalLineItemsQuantity: Scalars['Int']['output'];
   /**
@@ -31621,6 +33957,8 @@ export type Order = CommentEventSubject & HasEvents & HasLocalizationExtensions 
    * This amount isn't adjusted for returns.
    */
   totalCapturableSet: MoneyBag;
+  /** The total rounding adjustment applied to payments or refunds for an Order involving cash payments. Applies to some countries where cash transactions are rounded to the nearest currency denomination. */
+  totalCashRoundingAdjustment: CashRoundingAdjustment;
   /**
    * The total amount discounted on the order before returns, in shop currency.
    * This includes both order and line level discounts.
@@ -31839,27 +34177,6 @@ export type OrderFulfillmentsArgs = {
  * **Caution:** Only use this data if it's required for your app's functionality. Shopify will restrict [access to scopes](https://shopify.dev/api/usage/access-scopes) for apps that don't have a legitimate use for the associated data.
  */
 export type OrderLineItemsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * An order is a customer's request to purchase one or more products from a shop. You can retrieve and update orders using the `Order` object.
- * Learn more about
- * [editing an existing order with the GraphQL Admin API](https://shopify.dev/apps/fulfillment/order-management-apps/order-editing).
- *
- * Only the last 60 days' worth of orders from a store are accessible from the `Order` object by default. If you want to access older orders,
- * then you need to [request access to all orders](https://shopify.dev/api/usage/access-scopes#orders-permissions). If your app is granted
- * access, then you can add the `read_all_orders` scope to your app along with `read_orders` or `write_orders`.
- * [Private apps](https://shopify.dev/apps/auth/basic-http) are not affected by this change and are automatically granted the scope.
- *
- * **Caution:** Only use this data if it's required for your app's functionality. Shopify will restrict [access to scopes](https://shopify.dev/api/usage/access-scopes) for apps that don't have a legitimate use for the associated data.
- */
-export type OrderLineItemsMutableArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -32152,6 +34469,67 @@ export enum OrderActionType {
   Unknown = 'UNKNOWN'
 }
 
+/** An order adjustment accounts for the difference between a calculated and actual refund amount. */
+export type OrderAdjustment = Node & {
+  __typename?: 'OrderAdjustment';
+  /** The amount of the order adjustment in shop and presentment currencies. */
+  amountSet: MoneyBag;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** An optional reason that explains a discrepancy between calculated and actual refund amounts. */
+  reason?: Maybe<OrderAdjustmentDiscrepancyReason>;
+  /** The tax amount of the order adjustment in shop and presentment currencies. */
+  taxAmountSet: MoneyBag;
+};
+
+/** An auto-generated type for paginating through multiple OrderAdjustments. */
+export type OrderAdjustmentConnection = {
+  __typename?: 'OrderAdjustmentConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<OrderAdjustmentEdge>;
+  /** A list of nodes that are contained in OrderAdjustmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<OrderAdjustment>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** Discrepancy reasons for order adjustments. */
+export enum OrderAdjustmentDiscrepancyReason {
+  /** The discrepancy reason is customer. */
+  Customer = 'CUSTOMER',
+  /** The discrepancy reason is damage. */
+  Damage = 'DAMAGE',
+  /** The discrepancy reason is balance adjustment. */
+  FullReturnBalancingAdjustment = 'FULL_RETURN_BALANCING_ADJUSTMENT',
+  /** The discrepancy reason is pending refund. */
+  PendingRefundDiscrepancy = 'PENDING_REFUND_DISCREPANCY',
+  /** The discrepancy reason is not one of the predefined reasons. */
+  RefundDiscrepancy = 'REFUND_DISCREPANCY',
+  /** The discrepancy reason is restocking. */
+  Restock = 'RESTOCK'
+}
+
+/** An auto-generated type which holds one OrderAdjustment and a cursor during pagination. */
+export type OrderAdjustmentEdge = {
+  __typename?: 'OrderAdjustmentEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of OrderAdjustmentEdge. */
+  node: OrderAdjustment;
+};
+
+/** Discrepancy reasons for order adjustments. */
+export enum OrderAdjustmentInputDiscrepancyReason {
+  /** The discrepancy reason is customer. */
+  Customer = 'CUSTOMER',
+  /** The discrepancy reason is damage. */
+  Damage = 'DAMAGE',
+  /** The discrepancy reason is not one of the predefined reasons. */
+  Other = 'OTHER',
+  /** The discrepancy reason is restocking. */
+  Restock = 'RESTOCK'
+}
+
 /** An agreement associated with an order placement. */
 export type OrderAgreement = SalesAgreement & {
   __typename?: 'OrderAgreement';
@@ -32300,12 +34678,184 @@ export type OrderClosePayload = {
 /** An auto-generated type for paginating through multiple Orders. */
 export type OrderConnection = {
   __typename?: 'OrderConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<OrderEdge>;
-  /** A list of the nodes contained in OrderEdge. */
+  /** A list of nodes that are contained in OrderEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Order>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
+};
+
+/** The input fields for a note attribute for an order. */
+export type OrderCreateCustomAttributeInput = {
+  /** The key or name of the custom attribute. */
+  key: Scalars['String']['input'];
+  /** The value of the custom attribute. */
+  value: Scalars['String']['input'];
+};
+
+/** The input fields for a discount code to apply to an order. Only one type of discount can be applied to an order. */
+export type OrderCreateDiscountCodeInput = {
+  /** A free shipping discount code applied to the shipping on an order. */
+  freeShippingDiscountCode?: InputMaybe<OrderCreateFreeShippingDiscountCodeAttributesInput>;
+  /** A fixed amount discount code applied to the line items on the order. */
+  itemFixedDiscountCode?: InputMaybe<OrderCreateFixedDiscountCodeAttributesInput>;
+  /** A percentage discount code applied to the line items on the order. */
+  itemPercentageDiscountCode?: InputMaybe<OrderCreatePercentageDiscountCodeAttributesInput>;
+};
+
+/** The status of payments associated with the order. Can only be set when the order is created. */
+export enum OrderCreateFinancialStatus {
+  /** The payments have been authorized. */
+  Authorized = 'AUTHORIZED',
+  /** The payments have been expired. */
+  Expired = 'EXPIRED',
+  /** The payments have been paid. */
+  Paid = 'PAID',
+  /** The order has been partially paid. */
+  PartiallyPaid = 'PARTIALLY_PAID',
+  /** The payments have been partially refunded. */
+  PartiallyRefunded = 'PARTIALLY_REFUNDED',
+  /** The payments are pending. Payment might fail in this state. Check again to confirm whether the payments have been paid successfully. */
+  Pending = 'PENDING',
+  /** The payments have been refunded. */
+  Refunded = 'REFUNDED',
+  /** The payments have been voided. */
+  Voided = 'VOIDED'
+}
+
+/** The input fields for a fixed amount discount code to apply to an order. */
+export type OrderCreateFixedDiscountCodeAttributesInput = {
+  /** The amount that's deducted from the order total. When you create an order, this value is the monetary amount to deduct. */
+  amountSet?: InputMaybe<MoneyBagInput>;
+  /** The discount code that was entered at checkout. */
+  code: Scalars['String']['input'];
+};
+
+/** The input fields for a free shipping discount code to apply to an order. */
+export type OrderCreateFreeShippingDiscountCodeAttributesInput = {
+  /** The discount code that was entered at checkout. */
+  code: Scalars['String']['input'];
+};
+
+/** The input fields for a fulfillment to create for an order. */
+export type OrderCreateFulfillmentInput = {
+  /** The ID of the location to fulfill the order from. */
+  locationId: Scalars['ID']['input'];
+  /** Whether the customer should be notified of changes with the fulfillment. */
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The address at which the fulfillment occurred. */
+  originAddress?: InputMaybe<FulfillmentOriginAddressInput>;
+  /** The status of the shipment. */
+  shipmentStatus?: InputMaybe<FulfillmentEventStatus>;
+  /**
+   * The name of the tracking company.
+   *
+   * If you specify a tracking company name from
+   * [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies),
+   * Shopify will automatically build tracking URLs for all provided tracking numbers,
+   * which will make the tracking numbers clickable in the interface.
+   * The same tracking company will be applied to all tracking numbers specified.
+   *
+   * Additionally, for the tracking companies listed on the
+   * [Shipping Carriers help page](https://help.shopify.com/manual/shipping/understanding-shipping/shipping-carriers#integrated-shipping-carriers)
+   * Shopify will automatically update the fulfillment's `shipment_status` field during the fulfillment process.
+   *
+   * > Note:
+   * > Send the tracking company name exactly as written in
+   * > [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
+   * > (capitalization matters).
+   */
+  trackingCompany?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The tracking number of the fulfillment.
+   *
+   * The tracking number will be clickable in the interface if one of the following applies
+   * (the highest in the list has the highest priority):
+   *
+   * * [Shopify-known tracking company name](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
+   *   specified in the `company` field.
+   *   Shopify will build the tracking URL automatically based on the tracking number specified.
+   * * The tracking number has a Shopify-known format.
+   *   Shopify will guess the tracking provider and build the tracking url based on the tracking number format.
+   *   Not all tracking carriers are supported, and multiple tracking carriers may use similarly formatted tracking numbers.
+   *   This can result in an invalid tracking URL.
+   */
+  trackingNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The order's status in terms of fulfilled line items. */
+export enum OrderCreateFulfillmentStatus {
+  /** Every line item in the order has been fulfilled. */
+  Fulfilled = 'FULFILLED',
+  /** At least one line item in the order has been fulfilled. */
+  Partial = 'PARTIAL',
+  /** Every line item in the order has been restocked and the order canceled. */
+  Restocked = 'RESTOCKED'
+}
+
+/** The types of behavior to use when updating inventory. */
+export enum OrderCreateInputsInventoryBehavior {
+  /** Do not claim inventory. */
+  Bypass = 'BYPASS',
+  /** Ignore the product's inventory policy and claim inventory. */
+  DecrementIgnoringPolicy = 'DECREMENT_IGNORING_POLICY',
+  /** Follow the product's inventory policy and claim inventory, if possible. */
+  DecrementObeyingPolicy = 'DECREMENT_OBEYING_POLICY'
+}
+
+/** The input fields for a line item to create for an order. */
+export type OrderCreateLineItemInput = {
+  /**
+   * The handle of a fulfillment service that stocks the product variant belonging to a line item.
+   *
+   *               This is a third-party fulfillment service in the following scenarios:
+   *
+   *               **Scenario 1**
+   *               - The product variant is stocked by a single fulfillment service.
+   *               - The [FulfillmentService](/api/admin-graphql/latest/objects/FulfillmentService) is a third-party fulfillment service. Third-party fulfillment services don't have a handle with the value `manual`.
+   *
+   *               **Scenario 2**
+   *               - Multiple fulfillment services stock the product variant.
+   *               - The last time that the line item was unfulfilled, it was awaiting fulfillment by a third-party fulfillment service. Third-party fulfillment services don't have a handle with the value `manual`.
+   *
+   *               If none of the above conditions are met, then the fulfillment service has the `manual` handle.
+   */
+  fulfillmentService?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the item is a gift card. If true, then the item is not taxed or considered for shipping charges. */
+  giftCard?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The price of the item before discounts have been applied in the shop currency. */
+  priceSet?: InputMaybe<MoneyBagInput>;
+  /** The ID of the product that the line item belongs to. Can be `null` if the original product associated with the order is deleted at a later date. */
+  productId?: InputMaybe<Scalars['ID']['input']>;
+  /** An array of custom information for the item that has been added to the cart. Often used to provide product customization options. */
+  properties?: InputMaybe<Array<OrderCreateLineItemPropertyInput>>;
+  /** The number of items that were purchased. */
+  quantity: Scalars['Int']['input'];
+  /** Whether the item requires shipping. */
+  requiresShipping?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The item's SKU (stock keeping unit). */
+  sku?: InputMaybe<Scalars['String']['input']>;
+  /** A list of tax line objects, each of which details a tax applied to the item. */
+  taxLines?: InputMaybe<Array<OrderCreateTaxLineInput>>;
+  /** Whether the item was taxable. */
+  taxable?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The title of the product. */
+  title?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the product variant. */
+  variantId?: InputMaybe<Scalars['ID']['input']>;
+  /** The title of the product variant. */
+  variantTitle?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the item's supplier. */
+  vendor?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The input fields for a line item property for an order. */
+export type OrderCreateLineItemPropertyInput = {
+  /** The name of the line item property. */
+  name: Scalars['String']['input'];
+  /** The value of the line item property. */
+  value: Scalars['String']['input'];
 };
 
 /** Return type for `orderCreateMandatePayment` mutation. */
@@ -32334,6 +34884,201 @@ export type OrderCreateMandatePaymentUserError = DisplayableError & {
 export enum OrderCreateMandatePaymentUserErrorCode {
   /** Errors for mandate payment on order. */
   OrderMandatePaymentErrorCode = 'ORDER_MANDATE_PAYMENT_ERROR_CODE'
+}
+
+/** The input fields which control certain side affects. */
+export type OrderCreateOptionsInput = {
+  /** The behaviour to use when updating inventory. */
+  inventoryBehaviour?: InputMaybe<OrderCreateInputsInventoryBehavior>;
+  /** Whether to send a shipping confirmation to the customer. */
+  sendFulfillmentReceipt?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether to send an order confirmation to the customer. */
+  sendReceipt?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** The input fields for creating an order. */
+export type OrderCreateOrderInput = {
+  /**
+   * The mailing address associated with the payment method. This address is an optional field that won't be
+   *                available on orders that don't require a payment method.
+   *
+   *               > Note:
+   *               > If a customer is provided, this field or `shipping_address` (which has precedence) will be set as the
+   *               > customer's default address. Additionally, if the provided customer is new or hasn't created an order yet
+   *               > then their name will be set to the first/last name from this address (if provided).
+   */
+  billingAddress?: InputMaybe<MailingAddressInput>;
+  /** Whether the customer consented to receive email updates from the shop. */
+  buyerAcceptsMarketing?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The date and time ([ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format) when the order was closed. Returns null if the order isn't closed. */
+  closedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** The ID of the purchasing company's location for the order. */
+  companyLocationId?: InputMaybe<Scalars['ID']['input']>;
+  /** The shop-facing currency for the order. If not specified, then the shop's default currency is used. */
+  currency?: InputMaybe<CurrencyCode>;
+  /** A list of extra information that's added to the order. Appears in the **Additional details** section of an order details page. */
+  customAttributes?: InputMaybe<Array<OrderCreateCustomAttributeInput>>;
+  /** A discount code applied to the order. */
+  discountCode?: InputMaybe<OrderCreateDiscountCodeInput>;
+  /**
+   * A new customer email address for the order.
+   *
+   *               > Note:
+   *               > If a customer is provided, and no email is provided, the customer's email will be set to this field.
+   */
+  email?: InputMaybe<Scalars['String']['input']>;
+  /** The financial status of the order. If not specified, then this will be derived through the given transactions. Note that it's possible to specify a status that doesn't match the given transactions and it will persist, but if an operation later occurs on the order, the status may then be recalculated to match the current state of transactions. */
+  financialStatus?: InputMaybe<OrderCreateFinancialStatus>;
+  /** The fulfillment to create for the order. This will apply to all line items. */
+  fulfillment?: InputMaybe<OrderCreateFulfillmentInput>;
+  /** The fulfillment status of the order. Will default to `unfulfilled` if not included. */
+  fulfillmentStatus?: InputMaybe<OrderCreateFulfillmentStatus>;
+  /** The line items to create for the order. */
+  lineItems?: InputMaybe<Array<OrderCreateLineItemInput>>;
+  /** A list of metafields to add to the order. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** The order name, generated by combining the `order_number` property with the order prefix and suffix that are set in the merchant's [general settings](https://www.shopify.com/admin/settings/general). This is different from the `id` property, which is the ID of the order used by the API. This field can also be set by the API to be any string value. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** The new contents for the note associated with the order. */
+  note?: InputMaybe<Scalars['String']['input']>;
+  /** A new customer phone number for the order. */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** The purchase order number associated to this order. */
+  poNumber?: InputMaybe<Scalars['String']['input']>;
+  /** The presentment currency that was used to display prices to the customer. This must be specified if any presentment currencies are used in the order. */
+  presentmentCurrency?: InputMaybe<CurrencyCode>;
+  /** The date and time ([ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format) when an order was processed. This value is the date that appears on your orders and that's used in the analytic reports. If you're importing orders from an app or another platform, then you can set processed_at to a date and time in the past to match when the original order was created. */
+  processedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** The website where the customer clicked a link to the shop. */
+  referringSite?: InputMaybe<Scalars['URL']['input']>;
+  /**
+   * The mailing address to where the order will be shipped.
+   *
+   *               > Note:
+   *               > If a customer is provided, this field (which has precedence) or `billing_address` will be set as the
+   *               > customer's default address. Additionally, if the provided customer doesn't have a first or last name
+   *               > then it will be set to the first/last name from this address (if provided).
+   */
+  shippingAddress?: InputMaybe<MailingAddressInput>;
+  /** An array of objects, each of which details a shipping method used. */
+  shippingLines?: InputMaybe<Array<OrderCreateShippingLineInput>>;
+  /** The ID of the order placed on the originating platform. This value doesn't correspond to the Shopify ID that's generated from a completed draft. */
+  sourceIdentifier?: InputMaybe<Scalars['String']['input']>;
+  /** The source of the checkout. To use this field for sales attribution, you must register the channels that your app is managing. You can register the channels that your app is managing by completing [this Google Form](https://docs.google.com/forms/d/e/1FAIpQLScmVTZRQNjOJ7RD738mL1lGeFjqKVe_FM2tO9xsm21QEo5Ozg/viewform?usp=sf_link). After you've submited your request, you need to wait for your request to be processed by Shopify. You can find a list of your channels in the Partner Dashboard, in your app's Marketplace extension. You can specify a handle as the source_name value in your request. */
+  sourceName?: InputMaybe<Scalars['String']['input']>;
+  /** A valid URL to the original order on the originating surface. This URL is displayed to merchants on the Order Details page. If the URL is invalid, then it won't be displayed. */
+  sourceUrl?: InputMaybe<Scalars['URL']['input']>;
+  /** A comma separated list of tags that have been added to the draft order. */
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** An array of tax line objects, each of which details a tax applicable to the order. When creating an order through the API, tax lines can be specified on the order or the line items but not both. Tax lines specified on the order are split across the _taxable_ line items in the created order. */
+  taxLines?: InputMaybe<Array<OrderCreateTaxLineInput>>;
+  /** Whether taxes are included in the order subtotal. */
+  taxesIncluded?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this is a test order. */
+  test?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The payment transactions to create for the order. */
+  transactions?: InputMaybe<Array<OrderCreateOrderTransactionInput>>;
+  /** The ID of the user logged into Shopify POS who processed the order, if applicable. */
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** The input fields for a transaction to create for an order. */
+export type OrderCreateOrderTransactionInput = {
+  /** The amount of the transaction. */
+  amountSet: MoneyBagInput;
+  /** The authorization code associated with the transaction. */
+  authorizationCode?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the device used to process the transaction. */
+  deviceId?: InputMaybe<Scalars['ID']['input']>;
+  /** The name of the gateway the transaction was issued through. */
+  gateway?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the gift card used for this transaction. */
+  giftCardId?: InputMaybe<Scalars['ID']['input']>;
+  /** The kind of transaction. */
+  kind?: InputMaybe<OrderTransactionKind>;
+  /** The ID of the location where the transaction was processed. */
+  locationId?: InputMaybe<Scalars['ID']['input']>;
+  /** The date and time when the transaction was processed. */
+  processedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /**
+   * The transaction receipt that the payment gateway attaches to the transaction.
+   * The value of this field depends on which payment gateway processed the transaction.
+   */
+  receiptJson?: InputMaybe<Scalars['JSON']['input']>;
+  /** The status of the transaction. */
+  status?: InputMaybe<OrderTransactionStatus>;
+  /** Whether the transaction is a test transaction. */
+  test?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The ID of the user who processed the transaction. */
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** Return type for `orderCreate` mutation. */
+export type OrderCreatePayload = {
+  __typename?: 'OrderCreatePayload';
+  /** The order that was created. */
+  order?: Maybe<Order>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<OrderCreateUserError>;
+};
+
+/** The input fields for a percentage discount code to apply to an order. */
+export type OrderCreatePercentageDiscountCodeAttributesInput = {
+  /** The discount code that was entered at checkout. */
+  code: Scalars['String']['input'];
+  /** The amount that's deducted from the order total. When you create an order, this value is the percentage to deduct. */
+  percentage?: InputMaybe<Scalars['Float']['input']>;
+};
+
+/** The input fields for a shipping line to create for an order. */
+export type OrderCreateShippingLineInput = {
+  /** A reference to the shipping method. */
+  code?: InputMaybe<Scalars['String']['input']>;
+  /** The price of this shipping method in the shop currency. Can't be negative. */
+  priceSet: MoneyBagInput;
+  /** The source of the shipping method. */
+  source?: InputMaybe<Scalars['String']['input']>;
+  /** A list of tax line objects, each of which details a tax applicable to this shipping line. */
+  taxLines?: InputMaybe<Array<OrderCreateTaxLineInput>>;
+  /** The title of the shipping method. */
+  title: Scalars['String']['input'];
+};
+
+/** The input fields for a tax line to create for an order. */
+export type OrderCreateTaxLineInput = {
+  /** Whether the channel that submitted the tax line is liable for remitting. A value of `null` indicates unknown liability for the tax line. */
+  channelLiable?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The amount of tax to be charged on the item. */
+  priceSet?: InputMaybe<MoneyBagInput>;
+  /** The proportion of the item price that the tax represents as a decimal. */
+  rate: Scalars['Decimal']['input'];
+  /** The name of the tax line to create. */
+  title: Scalars['String']['input'];
+};
+
+/** An error that occurs during the execution of `OrderCreate`. */
+export type OrderCreateUserError = DisplayableError & {
+  __typename?: 'OrderCreateUserError';
+  /** The error code. */
+  code?: Maybe<OrderCreateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `OrderCreateUserError`. */
+export enum OrderCreateUserErrorCode {
+  /** Indicates that the line item fulfillment service handle is invalid. */
+  FulfillmentServiceInvalid = 'FULFILLMENT_SERVICE_INVALID',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
+  /** Indicates that the inventory claim failed during order creation. */
+  InventoryClaimFailed = 'INVENTORY_CLAIM_FAILED',
+  /** Indicates that the processed_at field is invalid, such as when it references a future date. */
+  ProcessedAtInvalid = 'PROCESSED_AT_INVALID',
+  /** Indicates that the tax line rate is missing - only enforced for LineItem or ShippingLine-level tax lines. */
+  TaxLineRateMissing = 'TAX_LINE_RATE_MISSING'
 }
 
 /** Return type for `orderDelete` mutation. */
@@ -32398,6 +35143,8 @@ export enum OrderDisplayFulfillmentStatus {
   PartiallyFulfilled = 'PARTIALLY_FULFILLED',
   /** Displayed as **Pending fulfillment**. A request for fulfillment of some items awaits a response from the fulfillment service. Replaced by the "IN_PROGRESS" status. */
   PendingFulfillment = 'PENDING_FULFILLMENT',
+  /** Displayed as **Request declined**. Some of the items in the order have been rejected for fulfillment by the fulfillment service. */
+  RequestDeclined = 'REQUEST_DECLINED',
   /** Displayed as **Restocked**. All the items in the order have been restocked. Replaced by the "UNFULFILLED" status. */
   Restocked = 'RESTOCKED',
   /** Displayed as **Scheduled**. All of the unfulfilled items in this order are scheduled for fulfillment at later time. */
@@ -32420,7 +35167,7 @@ export type OrderDisputeSummary = Node & {
 /** An auto-generated type which holds one Order and a cursor during pagination. */
 export type OrderEdge = {
   __typename?: 'OrderEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of OrderEdge. */
   node: Order;
@@ -33064,11 +35811,11 @@ export type OrderStagedChangeAddVariant = {
 /** An auto-generated type for paginating through multiple OrderStagedChanges. */
 export type OrderStagedChangeConnection = {
   __typename?: 'OrderStagedChangeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<OrderStagedChangeEdge>;
-  /** A list of the nodes contained in OrderStagedChangeEdge. */
+  /** A list of nodes that are contained in OrderStagedChangeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<OrderStagedChange>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -33086,7 +35833,7 @@ export type OrderStagedChangeDecrementItem = {
 /** An auto-generated type which holds one OrderStagedChange and a cursor during pagination. */
 export type OrderStagedChangeEdge = {
   __typename?: 'OrderStagedChangeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of OrderStagedChangeEdge. */
   node: OrderStagedChange;
@@ -33118,6 +35865,8 @@ export type OrderTransaction = Node & {
    * @deprecated Use `amountSet` instead.
    */
   amount: Scalars['Money']['output'];
+  /** The rounding adjustment applied on the cash amount in shop and presentment currencies. */
+  amountRoundingSet?: Maybe<MoneyBag>;
   /** The amount and currency of the transaction in shop and presentment currencies. */
   amountSet: MoneyBag;
   /**
@@ -33214,18 +35963,18 @@ export type OrderTransaction = Node & {
 /** An auto-generated type for paginating through multiple OrderTransactions. */
 export type OrderTransactionConnection = {
   __typename?: 'OrderTransactionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<OrderTransactionEdge>;
-  /** A list of the nodes contained in OrderTransactionEdge. */
+  /** A list of nodes that are contained in OrderTransactionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<OrderTransaction>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one OrderTransaction and a cursor during pagination. */
 export type OrderTransactionEdge = {
   __typename?: 'OrderTransactionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of OrderTransactionEdge. */
   node: OrderTransaction;
@@ -33354,6 +36103,247 @@ export type OrderUpdatePayload = {
   userErrors: Array<UserError>;
 };
 
+/** A page on the Online Store. */
+export type Page = HasEvents & HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & Navigable & Node & {
+  __typename?: 'Page';
+  /** The text content of the page, complete with HTML markup. */
+  body: Scalars['HTML']['output'];
+  /** The first 150 characters of the page body. If the page body contains more than 150 characters, additional characters are truncated by ellipses. */
+  bodySummary: Scalars['String']['output'];
+  /** The date and time (ISO 8601 format) of the page creation. */
+  createdAt: Scalars['DateTime']['output'];
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
+  defaultCursor: Scalars['String']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
+  /**
+   * A unique, human-friendly string for the page.
+   * In themes, the Liquid templating language refers to a page by its handle.
+   */
+  handle: Scalars['String']['output'];
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** Whether or not the page is visible. */
+  isPublished: Scalars['Boolean']['output'];
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
+  metafield?: Maybe<Metafield>;
+  /**
+   * List of metafield definitions.
+   * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
+   */
+  metafieldDefinitions: MetafieldDefinitionConnection;
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
+  metafields: MetafieldConnection;
+  /**
+   * Returns a private metafield by namespace and key that belongs to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafield?: Maybe<PrivateMetafield>;
+  /**
+   * List of private metafields that belong to the resource.
+   * @deprecated Metafields created using a reserved namespace are private by default. See our guide for
+   * [migrating private metafields](https://shopify.dev/docs/apps/custom-data/metafields/migrate-private-metafields).
+   *
+   */
+  privateMetafields: PrivateMetafieldConnection;
+  /**
+   * The date and time (ISO 8601 format) when the page became or will become visible.
+   * Returns null when the page isn't visible.
+   */
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The suffix of the template that's used to render the page. */
+  templateSuffix?: Maybe<Scalars['String']['output']>;
+  /** Title of the page. */
+  title: Scalars['String']['output'];
+  /** The published translations associated with the resource. */
+  translations: Array<Translation>;
+  /** The date and time (ISO 8601 format) of the latest page update. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A page on the Online Store. */
+export type PageEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
+};
+
+
+/** A page on the Online Store. */
+export type PageMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** A page on the Online Store. */
+export type PageMetafieldDefinitionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  pinnedStatus?: InputMaybe<MetafieldDefinitionPinnedStatus>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<MetafieldDefinitionSortKeys>;
+};
+
+
+/** A page on the Online Store. */
+export type PageMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** A page on the Online Store. */
+export type PagePrivateMetafieldArgs = {
+  key: Scalars['String']['input'];
+  namespace: Scalars['String']['input'];
+};
+
+
+/** A page on the Online Store. */
+export type PagePrivateMetafieldsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  namespace?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** A page on the Online Store. */
+export type PageTranslationsArgs = {
+  locale: Scalars['String']['input'];
+  marketId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+/** An auto-generated type for paginating through multiple Pages. */
+export type PageConnection = {
+  __typename?: 'PageConnection';
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
+  edges: Array<PageEdge>;
+  /** A list of nodes that are contained in PageEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
+  nodes: Array<Page>;
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
+  pageInfo: PageInfo;
+};
+
+/** The input fields to create a page. */
+export type PageCreateInput = {
+  /** The text content of the page, complete with HTML markup. */
+  body?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * A unique, human-friendly string for the page. If no handle is specified, a handle will be generated automatically from the page title.
+   * In themes, the Liquid templating language refers to a page by its handle.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** Whether or not the page should be visible. Defaults to `true` if no publish date is specified. */
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The input fields to create or update a metafield. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** The date and time (ISO 8601 format) when the page should become visible. */
+  publishDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /**
+   * The suffix of the template that's used to render the page.
+   * If the value is an empty string or `null`, then the default page template is used.
+   */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /** The title of the page. */
+  title: Scalars['String']['input'];
+};
+
+/** Return type for `pageCreate` mutation. */
+export type PageCreatePayload = {
+  __typename?: 'PageCreatePayload';
+  /** The page that was created. */
+  page?: Maybe<Page>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<PageCreateUserError>;
+};
+
+/** An error that occurs during the execution of `PageCreate`. */
+export type PageCreateUserError = DisplayableError & {
+  __typename?: 'PageCreateUserError';
+  /** The error code. */
+  code?: Maybe<PageCreateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `PageCreateUserError`. */
+export enum PageCreateUserErrorCode {
+  /** Can’t set isPublished to true and also set a future publish date. */
+  InvalidPublishDate = 'INVALID_PUBLISH_DATE',
+  /** The metafield type is invalid. */
+  InvalidType = 'INVALID_TYPE',
+  /** The value is invalid for the metafield type or for the definition options. */
+  InvalidValue = 'INVALID_VALUE',
+  /** The input value is already taken. */
+  Taken = 'TAKEN',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG'
+}
+
+/** Return type for `pageDelete` mutation. */
+export type PageDeletePayload = {
+  __typename?: 'PageDeletePayload';
+  /** The ID of the deleted page. */
+  deletedPageId?: Maybe<Scalars['ID']['output']>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<PageDeleteUserError>;
+};
+
+/** An error that occurs during the execution of `PageDelete`. */
+export type PageDeleteUserError = DisplayableError & {
+  __typename?: 'PageDeleteUserError';
+  /** The error code. */
+  code?: Maybe<PageDeleteUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `PageDeleteUserError`. */
+export enum PageDeleteUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** An auto-generated type which holds one Page and a cursor during pagination. */
+export type PageEdge = {
+  __typename?: 'PageEdge';
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of PageEdge. */
+  node: Page;
+};
+
 /**
  * Returns information about pagination in a connection, in accordance with the
  * [Relay specification](https://relay.dev/graphql/connections.htm#sec-undefined.PageInfo).
@@ -33371,6 +36361,69 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+/** The input fields to update a page. */
+export type PageUpdateInput = {
+  /** The text content of the page, complete with HTML markup. */
+  body?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * A unique, human-friendly string for the page. If no handle is specified, a handle will be generated automatically from the page title.
+   * In themes, the Liquid templating language refers to a page by its handle.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** Whether or not the page should be visible. Defaults to `true` if no publish date is specified. */
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The input fields to create or update a metafield. */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** The date and time (ISO 8601 format) when the page should become visible. */
+  publishDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /**
+   * Whether a redirect is required after a new handle has been provided.
+   * If `true`, then the old handle is redirected to the new one automatically.
+   */
+  redirectNewHandle?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * The suffix of the template that's used to render the page.
+   * If the value is an empty string or `null`, then the default page template is used.
+   */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /** The title of the page. */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Return type for `pageUpdate` mutation. */
+export type PageUpdatePayload = {
+  __typename?: 'PageUpdatePayload';
+  /** The page that was updated. */
+  page?: Maybe<Page>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<PageUpdateUserError>;
+};
+
+/** An error that occurs during the execution of `PageUpdate`. */
+export type PageUpdateUserError = DisplayableError & {
+  __typename?: 'PageUpdateUserError';
+  /** The error code. */
+  code?: Maybe<PageUpdateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `PageUpdateUserError`. */
+export enum PageUpdateUserErrorCode {
+  /** The input value is blank. */
+  Blank = 'BLANK',
+  /** Can’t set isPublished to true and also set a future publish date. */
+  InvalidPublishDate = 'INVALID_PUBLISH_DATE',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** The input value is already taken. */
+  Taken = 'TAKEN',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG'
+}
+
 /** A payment customization. */
 export type PaymentCustomization = HasMetafieldDefinitions & HasMetafields & Node & {
   __typename?: 'PaymentCustomization';
@@ -33382,14 +36435,21 @@ export type PaymentCustomization = HasMetafieldDefinitions & HasMetafields & Nod
   functionId: Scalars['String']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -33474,11 +36534,11 @@ export type PaymentCustomizationActivationPayload = {
 /** An auto-generated type for paginating through multiple PaymentCustomizations. */
 export type PaymentCustomizationConnection = {
   __typename?: 'PaymentCustomizationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PaymentCustomizationEdge>;
-  /** A list of the nodes contained in PaymentCustomizationEdge. */
+  /** A list of nodes that are contained in PaymentCustomizationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<PaymentCustomization>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -33503,7 +36563,7 @@ export type PaymentCustomizationDeletePayload = {
 /** An auto-generated type which holds one PaymentCustomization and a cursor during pagination. */
 export type PaymentCustomizationEdge = {
   __typename?: 'PaymentCustomizationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PaymentCustomizationEdge. */
   node: PaymentCustomization;
@@ -33568,7 +36628,7 @@ export type PaymentCustomizationUpdatePayload = {
 };
 
 /** Payment details related to a transaction. */
-export type PaymentDetails = CardPaymentDetails | ShopPayInstallmentsPaymentDetails;
+export type PaymentDetails = CardPaymentDetails | LocalPaymentMethodsPaymentDetails | ShopPayInstallmentsPaymentDetails;
 
 /** All possible instrument outputs for Payment Mandates. */
 export type PaymentInstrument = VaultCreditCard | VaultPaypalBillingAgreement;
@@ -33640,7 +36700,10 @@ export enum PaymentReminderSendUserErrorCode {
 /** Represents the payment schedule for a single payment defined in the payment terms. */
 export type PaymentSchedule = Node & {
   __typename?: 'PaymentSchedule';
-  /** Amount owed for this payment schedule. */
+  /**
+   * Amount owed for this payment schedule.
+   * @deprecated Use `balanceDue`, `totalBalance`, or `Order.totalOutstandingSet` instead.
+   */
   amount: MoneyV2;
   /** Date and time when the payment schedule is paid or fulfilled. */
   completedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -33657,18 +36720,18 @@ export type PaymentSchedule = Node & {
 /** An auto-generated type for paginating through multiple PaymentSchedules. */
 export type PaymentScheduleConnection = {
   __typename?: 'PaymentScheduleConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PaymentScheduleEdge>;
-  /** A list of the nodes contained in PaymentScheduleEdge. */
+  /** A list of nodes that are contained in PaymentScheduleEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<PaymentSchedule>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one PaymentSchedule and a cursor during pagination. */
 export type PaymentScheduleEdge = {
   __typename?: 'PaymentScheduleEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PaymentScheduleEdge. */
   node: PaymentSchedule;
@@ -33871,6 +36934,8 @@ export enum PaymentTermsUpdateUserErrorCode {
 export enum PayoutSortKeys {
   /** Sort by the `adjustment_gross` value. */
   AdjustmentGross = 'ADJUSTMENT_GROSS',
+  /** Sort by the `advance_gross` value. */
+  AdvanceGross = 'ADVANCE_GROSS',
   /** Sort by the `amount` value. */
   Amount = 'AMOUNT',
   /** Sort by the `charge_gross` value. */
@@ -34058,11 +37123,11 @@ export enum PriceListCompareAtMode {
 /** An auto-generated type for paginating through multiple PriceLists. */
 export type PriceListConnection = {
   __typename?: 'PriceListConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PriceListEdge>;
-  /** A list of the nodes contained in PriceListEdge. */
+  /** A list of nodes that are contained in PriceListEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<PriceList>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -34099,7 +37164,7 @@ export type PriceListDeletePayload = {
 /** An auto-generated type which holds one PriceList and a cursor during pagination. */
 export type PriceListEdge = {
   __typename?: 'PriceListEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PriceListEdge. */
   node: PriceList;
@@ -34245,18 +37310,18 @@ export type PriceListPriceQuantityPriceBreaksArgs = {
 /** An auto-generated type for paginating through multiple PriceListPrices. */
 export type PriceListPriceConnection = {
   __typename?: 'PriceListPriceConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PriceListPriceEdge>;
-  /** A list of the nodes contained in PriceListPriceEdge. */
+  /** A list of nodes that are contained in PriceListPriceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<PriceListPrice>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one PriceListPrice and a cursor during pagination. */
 export type PriceListPriceEdge = {
   __typename?: 'PriceListPriceEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PriceListPriceEdge. */
   node: PriceListPrice;
@@ -34552,20 +37617,6 @@ export type PriceRuleEventsArgs = {
   sortKey?: InputMaybe<EventSortKeys>;
 };
 
-/** Return type for `priceRuleActivate` mutation. */
-export type PriceRuleActivatePayload = {
-  __typename?: 'PriceRuleActivatePayload';
-  /** The activated price rule. */
-  priceRule?: Maybe<PriceRule>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
-};
-
 /** The method by which the price rule's value is allocated to its entitled items. */
 export enum PriceRuleAllocationMethod {
   /** The value will be applied once across the entitled items. */
@@ -34573,33 +37624,6 @@ export enum PriceRuleAllocationMethod {
   /** The value will be applied to each of the entitled items. */
   Each = 'EACH'
 }
-
-/** An auto-generated type for paginating through multiple PriceRules. */
-export type PriceRuleConnection = {
-  __typename?: 'PriceRuleConnection';
-  /** A list of edges. */
-  edges: Array<PriceRuleEdge>;
-  /** A list of the nodes contained in PriceRuleEdge. */
-  nodes: Array<PriceRule>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-};
-
-/** Return type for `priceRuleCreate` mutation. */
-export type PriceRuleCreatePayload = {
-  __typename?: 'PriceRuleCreatePayload';
-  /** The newly created price rule. */
-  priceRule?: Maybe<PriceRule>;
-  /** The newly created discount code. */
-  priceRuleDiscountCode?: Maybe<PriceRuleDiscountCode>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
-};
 
 /** A selection of customers for whom the price rule applies. */
 export type PriceRuleCustomerSelection = {
@@ -34625,48 +37649,6 @@ export type PriceRuleCustomerSelectionCustomersArgs = {
   sortKey?: InputMaybe<CustomerSortKeys>;
 };
 
-/** The input fields to update a price rule customer selection. */
-export type PriceRuleCustomerSelectionInput = {
-  /** List of customers to add to the current list of customers to whom the price rule applies. `savedSearchIds` must be empty. */
-  customerIdsToAdd?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** A list of customers to remove from the current list of customers to whom the price rule applies. */
-  customerIdsToRemove?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Whether the price rule applies to all customers. */
-  forAllCustomers?: InputMaybe<Scalars['Boolean']['input']>;
-  /** List of customer segments that contain the customers to whom the price rule applies. No single customer IDs may be present. */
-  segmentIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-};
-
-/** Return type for `priceRuleDeactivate` mutation. */
-export type PriceRuleDeactivatePayload = {
-  __typename?: 'PriceRuleDeactivatePayload';
-  /** The deactivated price rule. */
-  priceRule?: Maybe<PriceRule>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
-};
-
-/** Return type for `priceRuleDelete` mutation. */
-export type PriceRuleDeletePayload = {
-  __typename?: 'PriceRuleDeletePayload';
-  /** The ID price of the deleted price rule. */
-  deletedPriceRuleId?: Maybe<Scalars['ID']['output']>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /** The shop of the deleted price rule. */
-  shop: Shop;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
-};
-
 /** A discount code of a price rule. */
 export type PriceRuleDiscountCode = Node & {
   __typename?: 'PriceRuleDiscountCode';
@@ -34683,68 +37665,21 @@ export type PriceRuleDiscountCode = Node & {
 /** An auto-generated type for paginating through multiple PriceRuleDiscountCodes. */
 export type PriceRuleDiscountCodeConnection = {
   __typename?: 'PriceRuleDiscountCodeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PriceRuleDiscountCodeEdge>;
-  /** A list of the nodes contained in PriceRuleDiscountCodeEdge. */
+  /** A list of nodes that are contained in PriceRuleDiscountCodeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<PriceRuleDiscountCode>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
-};
-
-/** Return type for `priceRuleDiscountCodeCreate` mutation. */
-export type PriceRuleDiscountCodeCreatePayload = {
-  __typename?: 'PriceRuleDiscountCodeCreatePayload';
-  /** The updated price rule. */
-  priceRule?: Maybe<PriceRule>;
-  /** The newly created discount code. */
-  priceRuleDiscountCode?: Maybe<PriceRuleDiscountCode>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
 };
 
 /** An auto-generated type which holds one PriceRuleDiscountCode and a cursor during pagination. */
 export type PriceRuleDiscountCodeEdge = {
   __typename?: 'PriceRuleDiscountCodeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PriceRuleDiscountCodeEdge. */
   node: PriceRuleDiscountCode;
-};
-
-/** The input fields to manipulate a discount code. */
-export type PriceRuleDiscountCodeInput = {
-  /** The code to use the discount. */
-  code?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Return type for `priceRuleDiscountCodeUpdate` mutation. */
-export type PriceRuleDiscountCodeUpdatePayload = {
-  __typename?: 'PriceRuleDiscountCodeUpdatePayload';
-  /** The updated price rule. */
-  priceRule?: Maybe<PriceRule>;
-  /** The updated discount code. */
-  priceRuleDiscountCode?: Maybe<PriceRuleDiscountCode>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
-};
-
-/** An auto-generated type which holds one PriceRule and a cursor during pagination. */
-export type PriceRuleEdge = {
-  __typename?: 'PriceRuleEdge';
-  /** A cursor for use in pagination. */
-  cursor: Scalars['String']['output'];
-  /** The item at the end of PriceRuleEdge. */
-  node: PriceRule;
 };
 
 /** Quantity of prerequisite items required for the price rule to be applicable, compared to quantity of entitled items. */
@@ -34755,168 +37690,6 @@ export type PriceRuleEntitlementToPrerequisiteQuantityRatio = {
   /** The quantity of prerequisite items in the ratio. */
   prerequisiteQuantity: Scalars['Int']['output'];
 };
-
-/** Specifies the quantity of prerequisite items required for the price rule to be applicable, compared to quantity of entitled items. */
-export type PriceRuleEntitlementToPrerequisiteQuantityRatioInput = {
-  /** The quantity of entitled items in the ratio. */
-  entitlementQuantity?: InputMaybe<Scalars['Int']['input']>;
-  /** The quantity of prerequisite items in the ratio. */
-  prerequisiteQuantity?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** Possible error codes that could be returned by a price rule mutation. */
-export enum PriceRuleErrorCode {
-  /** The allocation method must be `ACROSS` for the provided target selection. */
-  AllocationMethodMustBeAcrossForGivenTargetSelection = 'ALLOCATION_METHOD_MUST_BE_ACROSS_FOR_GIVEN_TARGET_SELECTION',
-  /** The discount must apply on either one-time purchase or subscription items, or both. */
-  AppliesOnNothing = 'APPLIES_ON_NOTHING',
-  /** The input value is blank. */
-  Blank = 'BLANK',
-  /** Invalid BOGO target selection. */
-  BogoInvalidTargetSelection = 'BOGO_INVALID_TARGET_SELECTION',
-  /** Invalid BOGO target type. */
-  BogoInvalidTargetType = 'BOGO_INVALID_TARGET_TYPE',
-  /** Invalid BOGO value type. */
-  BogoInvalidValueType = 'BOGO_INVALID_VALUE_TYPE',
-  /** Can't use both prerequisite customers and saved search. */
-  BothCustomerAndSavedSearchPrerequisitesSelected = 'BOTH_CUSTOMER_AND_SAVED_SEARCH_PREREQUISITES_SELECTED',
-  /** Can't have both prerequisite customers and prerequisite segments. */
-  BothCustomerAndSegmentPrerequisitesSelected = 'BOTH_CUSTOMER_AND_SEGMENT_PREREQUISITES_SELECTED',
-  /** Can't have both saved searches and segments prerequisites. */
-  BothSavedSearchAndSegmentPrerequisitesSelected = 'BOTH_SAVED_SEARCH_AND_SEGMENT_PREREQUISITES_SELECTED',
-  /** Can't entitle collections in combination with product variants or products. */
-  CannotEntitleCollectionsWithProductsOrVariants = 'CANNOT_ENTITLE_COLLECTIONS_WITH_PRODUCTS_OR_VARIANTS',
-  /** Can't use collections as a prequisite in combination with product variants or products. */
-  CannotPrerequisiteCollectionWithProductOrVariants = 'CANNOT_PREREQUISITE_COLLECTION_WITH_PRODUCT_OR_VARIANTS',
-  /** The customer prerequisites exceeded the maximum number. */
-  CustomerPrerequisitesExceededMax = 'CUSTOMER_PREREQUISITES_EXCEEDED_MAX',
-  /** Invalid customer prerequisites selection. */
-  CustomerPrerequisitesInvalidSelection = 'CUSTOMER_PREREQUISITES_INVALID_SELECTION',
-  /** Customer prerequisites are missing. */
-  CustomerPrerequisitesMissing = 'CUSTOMER_PREREQUISITES_MISSING',
-  /** A duplicate customer prerequisite ID exists. */
-  CustomerPrerequisiteDuplicate = 'CUSTOMER_PREREQUISITE_DUPLICATE',
-  /** A duplicate customer saved search exists. */
-  CustomerSavedSearchDuplicate = 'CUSTOMER_SAVED_SEARCH_DUPLICATE',
-  /** The customer saved search exceeded the maximum number. */
-  CustomerSavedSearchExceededMax = 'CUSTOMER_SAVED_SEARCH_EXCEEDED_MAX',
-  /** Invalid customer saved search. */
-  CustomerSavedSearchInvalid = 'CUSTOMER_SAVED_SEARCH_INVALID',
-  /** The customer segment prerequisites exceeded the maximum number. */
-  CustomerSegmentExceededMax = 'CUSTOMER_SEGMENT_EXCEEDED_MAX',
-  /** The customer segment prerequisite ID is invalid. */
-  CustomerSegmentInvalid = 'CUSTOMER_SEGMENT_INVALID',
-  /** A duplicate customer segment prerequisite ID exists. */
-  CustomerSegmentPrerequisiteDuplicate = 'CUSTOMER_SEGMENT_PREREQUISITE_DUPLICATE',
-  /** A duplicate discount code exists. */
-  DiscountCodeDuplicate = 'DISCOUNT_CODE_DUPLICATE',
-  /** The discount end date must be after the start date. */
-  EndDateBeforeStartDate = 'END_DATE_BEFORE_START_DATE',
-  /** The input value should be equal to the value allowed. */
-  EqualTo = 'EQUAL_TO',
-  /** Can't exceed the maximum number. */
-  ExceededMax = 'EXCEEDED_MAX',
-  /** The input value should be greater than the minimum allowed value. */
-  GreaterThan = 'GREATER_THAN',
-  /** The input value should be greater than or equal to the minimum value allowed. */
-  GreaterThanOrEqualTo = 'GREATER_THAN_OR_EQUAL_TO',
-  /** Unexpected internal error happened. */
-  InternalError = 'INTERNAL_ERROR',
-  /** The input value is invalid. */
-  Invalid = 'INVALID',
-  /** The `combinesWith` settings are invalid for the discount class. */
-  InvalidCombinesWithForDiscountClass = 'INVALID_COMBINES_WITH_FOR_DISCOUNT_CLASS',
-  /** The discountClass is invalid for the price rule. */
-  InvalidDiscountClassForPriceRule = 'INVALID_DISCOUNT_CLASS_FOR_PRICE_RULE',
-  /** The target type is invalid when defining a prerequisite shipping price range. */
-  InvalidTargetTypePrerequisiteShippingPriceRange = 'INVALID_TARGET_TYPE_PREREQUISITE_SHIPPING_PRICE_RANGE',
-  /** Can't add the same collection twice. */
-  ItemEntitlementsDuplicateCollection = 'ITEM_ENTITLEMENTS_DUPLICATE_COLLECTION',
-  /** Can't add the same product twice. */
-  ItemEntitlementsDuplicateProduct = 'ITEM_ENTITLEMENTS_DUPLICATE_PRODUCT',
-  /** Can't add the same collection twice. */
-  ItemEntitlementsDuplicateVariant = 'ITEM_ENTITLEMENTS_DUPLICATE_VARIANT',
-  /** Can't exceed the maximum number of collection entitlements. */
-  ItemEntitlementsExceededMaxCollection = 'ITEM_ENTITLEMENTS_EXCEEDED_MAX_COLLECTION',
-  /** Can't exceed the maximum number of product entitlements. */
-  ItemEntitlementsExceededMaxProduct = 'ITEM_ENTITLEMENTS_EXCEEDED_MAX_PRODUCT',
-  /** Can't exceed the maximum number of variant entitlements. */
-  ItemEntitlementsExceededMaxVariant = 'ITEM_ENTITLEMENTS_EXCEEDED_MAX_VARIANT',
-  /** Invalid collection. */
-  ItemEntitlementsInvalidCollection = 'ITEM_ENTITLEMENTS_INVALID_COLLECTION',
-  /** Invalid product. */
-  ItemEntitlementsInvalidProduct = 'ITEM_ENTITLEMENTS_INVALID_PRODUCT',
-  /** Invalid combination of target type and selection. */
-  ItemEntitlementsInvalidTargetTypeOrSelection = 'ITEM_ENTITLEMENTS_INVALID_TARGET_TYPE_OR_SELECTION',
-  /** Invalid variant. */
-  ItemEntitlementsInvalidVariant = 'ITEM_ENTITLEMENTS_INVALID_VARIANT',
-  /** Entitlements are missing. */
-  ItemEntitlementsMissing = 'ITEM_ENTITLEMENTS_MISSING',
-  /** Invalid entitlement type. */
-  ItemEntitlementInvalidType = 'ITEM_ENTITLEMENT_INVALID_TYPE',
-  /** Can't add the same collection twice. */
-  ItemPrerequisitesDuplicateCollection = 'ITEM_PREREQUISITES_DUPLICATE_COLLECTION',
-  /** Can't add the same product twice. */
-  ItemPrerequisitesDuplicateProduct = 'ITEM_PREREQUISITES_DUPLICATE_PRODUCT',
-  /** Can't add the same variant twice. */
-  ItemPrerequisitesDuplicateVariant = 'ITEM_PREREQUISITES_DUPLICATE_VARIANT',
-  /** Can't exceed the maximum number of item prerequisites. */
-  ItemPrerequisitesExceededMax = 'ITEM_PREREQUISITES_EXCEEDED_MAX',
-  /** Invalid collection. */
-  ItemPrerequisitesInvalidCollection = 'ITEM_PREREQUISITES_INVALID_COLLECTION',
-  /** Invalid product. */
-  ItemPrerequisitesInvalidProduct = 'ITEM_PREREQUISITES_INVALID_PRODUCT',
-  /** Invalid type. */
-  ItemPrerequisitesInvalidType = 'ITEM_PREREQUISITES_INVALID_TYPE',
-  /** Invalid variant. */
-  ItemPrerequisitesInvalidVariant = 'ITEM_PREREQUISITES_INVALID_VARIANT',
-  /** Item prerequisites must have at least one item prerequisite if the prerequisite quantity ratio is defined. */
-  ItemPrerequisitesMissing = 'ITEM_PREREQUISITES_MISSING',
-  /** Item prerequisites must be empty if the prerequisite quantity ratio isn't defined. */
-  ItemPrerequisitesMustBeEmpty = 'ITEM_PREREQUISITES_MUST_BE_EMPTY',
-  /** The input value should be less than the maximum value allowed. */
-  LessThan = 'LESS_THAN',
-  /** The input value should be less than or equal to the maximum value allowed. */
-  LessThanOrEqualTo = 'LESS_THAN_OR_EQUAL_TO',
-  /** Missing a required argument. */
-  MissingArgument = 'MISSING_ARGUMENT',
-  /** The recurring cycle limit must be 1 when a discount doesn't apply on subscription items. */
-  MultipleRecurringCycleLimitForNonSubscriptionItems = 'MULTIPLE_RECURRING_CYCLE_LIMIT_FOR_NON_SUBSCRIPTION_ITEMS',
-  /** Only one of the minimum subtotal or minimum quantity condition can be defined. */
-  PrerequisiteSubtotalAndQuantityRangeBothPresent = 'PREREQUISITE_SUBTOTAL_AND_QUANTITY_RANGE_BOTH_PRESENT',
-  /** The allocation limit must be a non-zero positive number. */
-  PriceRuleAllocationLimitIsZero = 'PRICE_RULE_ALLOCATION_LIMIT_IS_ZERO',
-  /** The allocation limit can only be set on Buy x, get y (BXGY) discounts. */
-  PriceRuleAllocationLimitOnNonBogo = 'PRICE_RULE_ALLOCATION_LIMIT_ON_NON_BOGO',
-  /** The number of discount codes in the shop has reached its limit. */
-  PriceRuleExceededMaxDiscountCode = 'PRICE_RULE_EXCEEDED_MAX_DISCOUNT_CODE',
-  /** The percentage value must be between 0 and -100. */
-  PriceRulePercentageValueOutsideRange = 'PRICE_RULE_PERCENTAGE_VALUE_OUTSIDE_RANGE',
-  /** A duplicate country code exists. */
-  ShippingEntitlementsDuplicateCountry = 'SHIPPING_ENTITLEMENTS_DUPLICATE_COUNTRY',
-  /** Can't exceed the maximum number of entitlements. */
-  ShippingEntitlementsExceededMax = 'SHIPPING_ENTITLEMENTS_EXCEEDED_MAX',
-  /** The country is unknown. */
-  ShippingEntitlementsInvalidCountry = 'SHIPPING_ENTITLEMENTS_INVALID_COUNTRY',
-  /** Invalid target type or selection. */
-  ShippingEntitlementsInvalidTargetTypeOrSelection = 'SHIPPING_ENTITLEMENTS_INVALID_TARGET_TYPE_OR_SELECTION',
-  /** Missing entitlements. */
-  ShippingEntitlementsMissing = 'SHIPPING_ENTITLEMENTS_MISSING',
-  /** Unsupported destination type. */
-  ShippingEntitlementsUnsupportedDestinationType = 'SHIPPING_ENTITLEMENTS_UNSUPPORTED_DESTINATION_TYPE',
-  /** The number of discounts in the shop has reached its limit. */
-  ShopExceededMaxPriceRules = 'SHOP_EXCEEDED_MAX_PRICE_RULES',
-  /** The input value is already taken. */
-  Taken = 'TAKEN',
-  /** The input value is too long. */
-  TooLong = 'TOO_LONG',
-  /** Too many arguments provided. */
-  TooManyArguments = 'TOO_MANY_ARGUMENTS',
-  /** The input value is too short. */
-  TooShort = 'TOO_SHORT',
-  /** The variant is already entitled through a product. */
-  VariantAlreadyEntitledThroughProduct = 'VARIANT_ALREADY_ENTITLED_THROUGH_PRODUCT'
-}
 
 /** The list of features that can be supported by a price rule. */
 export enum PriceRuleFeature {
@@ -34937,44 +37710,6 @@ export type PriceRuleFixedAmountValue = {
   __typename?: 'PriceRuleFixedAmountValue';
   /** The monetary value of the price rule. */
   amount: Scalars['Money']['output'];
-};
-
-/** The input fields to manipulate a price rule. */
-export type PriceRuleInput = {
-  /** The maximum number of times that the price rule can be allocated onto an order. */
-  allocationLimit?: InputMaybe<Scalars['Int']['input']>;
-  /** The method by which the price rule's value is allocated to its entitled items. */
-  allocationMethod?: InputMaybe<PriceRuleAllocationMethod>;
-  /** Determines which discount classes the discount can combine with. */
-  combinesWith?: InputMaybe<DiscountCombinesWithInput>;
-  /** The customers that can use this price rule. */
-  customerSelection?: InputMaybe<PriceRuleCustomerSelectionInput>;
-  /** The items to which the price rule applies. */
-  itemEntitlements?: InputMaybe<PriceRuleItemEntitlementsInput>;
-  /** The items required for the price rule to be applicable. */
-  itemPrerequisites?: InputMaybe<PriceRuleItemPrerequisitesInput>;
-  /** Whether the price rule can be applied only once per customer. */
-  oncePerCustomer?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The number of the entitled items must fall within this range for the price rule to be applicable. */
-  prerequisiteQuantityRange?: InputMaybe<PriceRuleQuantityRangeInput>;
-  /** The shipping cost must fall within this range for the price rule to be applicable. */
-  prerequisiteShippingPriceRange?: InputMaybe<PriceRuleMoneyRangeInput>;
-  /** The sum of the entitled items subtotal prices must fall within this range for the price rule to be applicable. */
-  prerequisiteSubtotalRange?: InputMaybe<PriceRuleMoneyRangeInput>;
-  /** Quantity of prerequisite items required for the price rule to be applicable, compared to quantity of entitled items. */
-  prerequisiteToEntitlementQuantityRatio?: InputMaybe<PriceRulePrerequisiteToEntitlementQuantityRatioInput>;
-  /** The shipping lines to which the price rule applies. */
-  shippingEntitlements?: InputMaybe<PriceRuleShippingEntitlementsInput>;
-  /** The type of lines (line_item or shipping_line) to which the price rule applies. */
-  target?: InputMaybe<PriceRuleTarget>;
-  /** Title of the price rule. */
-  title?: InputMaybe<Scalars['String']['input']>;
-  /** The maximum number of times that the price rule can be used in total. */
-  usageLimit?: InputMaybe<Scalars['Int']['input']>;
-  /** PriceRuleValidityPeriod for the price rule. */
-  validityPeriod?: InputMaybe<PriceRuleValidityPeriodInput>;
-  /** The value of the price rule. */
-  value?: InputMaybe<PriceRuleValueInput>;
 };
 
 /** The items to which this price rule applies. This may be multiple products, product variants, collections or combinations of the aforementioned. */
@@ -35018,28 +37753,6 @@ export type PriceRuleItemEntitlementsProductsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** The input fields to update a price rule line item entitlement. */
-export type PriceRuleItemEntitlementsInput = {
-  /** The collections to which the price rule applies. */
-  collectionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** The products to which the price rule applies. */
-  productIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** The product variants to which the price rule applies. */
-  productVariantIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** Whether the price rule applies to all items. */
-  targetAllLineItems?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** The input fields to update a price rule's item prerequisites. */
-export type PriceRuleItemPrerequisitesInput = {
-  /** The collections needed for the price rule to be applied. */
-  collectionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** The products needed for the price rule to be applied. */
-  productIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** The product variants needed for the price rule to be applied. */
-  productVariantIds?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 /** Single or multiple line item products, product variants or collections required for the price rule to be applicable, can also be provided in combination. */
@@ -35096,18 +37809,6 @@ export type PriceRuleMoneyRange = {
   lessThanOrEqualTo?: Maybe<Scalars['Money']['output']>;
 };
 
-/** The input fields to update the money range within which the price rule is applicable. */
-export type PriceRuleMoneyRangeInput = {
-  /** The lower bound of the money range. */
-  greaterThan?: InputMaybe<Scalars['Money']['input']>;
-  /** The lower or equal bound of the money range. */
-  greaterThanOrEqualTo?: InputMaybe<Scalars['Money']['input']>;
-  /** The upper bound of the money range. */
-  lessThan?: InputMaybe<Scalars['Money']['input']>;
-  /** The upper or equal bound of the money range. */
-  lessThanOrEqualTo?: InputMaybe<Scalars['Money']['input']>;
-};
-
 /** The value of a percent price rule. */
 export type PriceRulePercentValue = {
   __typename?: 'PriceRulePercentValue';
@@ -35124,14 +37825,6 @@ export type PriceRulePrerequisiteToEntitlementQuantityRatio = {
   prerequisiteQuantity: Scalars['Int']['output'];
 };
 
-/** Specifies the quantity of prerequisite items required for the price rule to be applicable, compared to quantity of entitled items. */
-export type PriceRulePrerequisiteToEntitlementQuantityRatioInput = {
-  /** The quantity of entitled items in the ratio. */
-  entitlementQuantity?: InputMaybe<Scalars['Int']['input']>;
-  /** The quantity of prerequisite items in the ratio. */
-  prerequisiteQuantity?: InputMaybe<Scalars['Int']['input']>;
-};
-
 /** A quantity range within which the price rule is applicable. */
 export type PriceRuleQuantityRange = {
   __typename?: 'PriceRuleQuantityRange';
@@ -35143,18 +37836,6 @@ export type PriceRuleQuantityRange = {
   lessThan?: Maybe<Scalars['Int']['output']>;
   /** The upper bound or equal of the quantity range. */
   lessThanOrEqualTo?: Maybe<Scalars['Int']['output']>;
-};
-
-/** The input fields to update the quantity range within which the price rule is applicable. */
-export type PriceRuleQuantityRangeInput = {
-  /** The lower bound of the quantity range. */
-  greaterThan?: InputMaybe<Scalars['Int']['input']>;
-  /** The lower or equal bound of the quantity range. */
-  greaterThanOrEqualTo?: InputMaybe<Scalars['Int']['input']>;
-  /** The upper bound of the quantity range. */
-  lessThan?: InputMaybe<Scalars['Int']['input']>;
-  /** The upper or equal bound of the quantity range. */
-  lessThanOrEqualTo?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Shareable URL for the discount code associated with the price rule. */
@@ -35180,16 +37861,6 @@ export enum PriceRuleShareableUrlTargetType {
   Product = 'PRODUCT'
 }
 
-/** The input fields to update a price rule shipping entitlement. */
-export type PriceRuleShippingEntitlementsInput = {
-  /** The codes for the countries to which the price rule applies to. */
-  countryCodes?: InputMaybe<Array<CountryCode>>;
-  /** Whether the price rule is applicable to countries that haven't been defined in the shop's shipping zones. */
-  includeRestOfWorld?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Whether the price rule applies to all shipping lines. */
-  targetAllShippingLines?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 /** The shipping lines to which the price rule applies to. */
 export type PriceRuleShippingLineEntitlements = {
   __typename?: 'PriceRuleShippingLineEntitlements';
@@ -35200,27 +37871,6 @@ export type PriceRuleShippingLineEntitlements = {
   /** Whether the price rule applies to all shipping lines. */
   targetAllShippingLines: Scalars['Boolean']['output'];
 };
-
-/** The set of valid sort keys for the PriceRule query. */
-export enum PriceRuleSortKeys {
-  /** Sort by the `created_at` value. */
-  CreatedAt = 'CREATED_AT',
-  /** Sort by the `ends_at` value. */
-  EndsAt = 'ENDS_AT',
-  /** Sort by the `id` value. */
-  Id = 'ID',
-  /**
-   * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
-   * Don't use this sort key when no search query is specified.
-   */
-  Relevance = 'RELEVANCE',
-  /** Sort by the `starts_at` value. */
-  StartsAt = 'STARTS_AT',
-  /** Sort by the `title` value. */
-  Title = 'TITLE',
-  /** Sort by the `updated_at` value. */
-  UpdatedAt = 'UPDATED_AT'
-}
 
 /** The status of the price rule. */
 export enum PriceRuleStatus {
@@ -35254,33 +37904,6 @@ export enum PriceRuleTrait {
   SpecificCustomers = 'SPECIFIC_CUSTOMERS'
 }
 
-/** Return type for `priceRuleUpdate` mutation. */
-export type PriceRuleUpdatePayload = {
-  __typename?: 'PriceRuleUpdatePayload';
-  /** The updated price rule. */
-  priceRule?: Maybe<PriceRule>;
-  /** The updated discount code. */
-  priceRuleDiscountCode?: Maybe<PriceRuleDiscountCode>;
-  /** The list of errors that occurred from executing the mutation. */
-  priceRuleUserErrors: Array<PriceRuleUserError>;
-  /**
-   * The list of errors that occurred from executing the mutation.
-   * @deprecated Use `priceRuleUserErrors` instead.
-   */
-  userErrors: Array<UserError>;
-};
-
-/** Represents an error that happens during execution of a price rule mutation. */
-export type PriceRuleUserError = DisplayableError & {
-  __typename?: 'PriceRuleUserError';
-  /** Error code to uniquely identify the error. */
-  code?: Maybe<PriceRuleErrorCode>;
-  /** The path to the input field that caused the error. */
-  field?: Maybe<Array<Scalars['String']['output']>>;
-  /** The error message. */
-  message: Scalars['String']['output'];
-};
-
 /** A time period during which a price rule is applicable. */
 export type PriceRuleValidityPeriod = {
   __typename?: 'PriceRuleValidityPeriod';
@@ -35290,24 +37913,8 @@ export type PriceRuleValidityPeriod = {
   start: Scalars['DateTime']['output'];
 };
 
-/** The input fields to update the validity period of a price rule. */
-export type PriceRuleValidityPeriodInput = {
-  /** The time after which the price rule becomes invalid. */
-  end?: InputMaybe<Scalars['DateTime']['input']>;
-  /** The time after which the price rule is valid. */
-  start: Scalars['DateTime']['input'];
-};
-
 /** The type of the price rule value. The price rule value might be a percentage value, or a fixed amount. */
 export type PriceRuleValue = PriceRuleFixedAmountValue | PriceRulePercentValue;
-
-/** The input fields to update a price rule. */
-export type PriceRuleValueInput = {
-  /** The fixed amount value of the price rule. */
-  fixedAmountValue?: InputMaybe<Scalars['Money']['input']>;
-  /** The percentage value of the price rule. */
-  percentageValue?: InputMaybe<Scalars['Float']['input']>;
-};
 
 /**
  * One type of value given to a customer when a discount is applied to an order.
@@ -35352,11 +37959,11 @@ export type PrivateMetafield = Node & {
 /** An auto-generated type for paginating through multiple PrivateMetafields. */
 export type PrivateMetafieldConnection = {
   __typename?: 'PrivateMetafieldConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PrivateMetafieldEdge>;
-  /** A list of the nodes contained in PrivateMetafieldEdge. */
+  /** A list of nodes that are contained in PrivateMetafieldEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<PrivateMetafield>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -35382,7 +37989,7 @@ export type PrivateMetafieldDeletePayload = {
 /** An auto-generated type which holds one PrivateMetafield and a cursor during pagination. */
 export type PrivateMetafieldEdge = {
   __typename?: 'PrivateMetafieldEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PrivateMetafieldEdge. */
   node: PrivateMetafield;
@@ -35427,42 +38034,87 @@ export enum PrivateMetafieldValueType {
   String = 'STRING'
 }
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
-export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & LegacyInteroperability & Navigable & Node & OnlineStorePreviewable & Publishable & {
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
+export type Product = HasEvents & HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & LegacyInteroperability & Navigable & Node & OnlineStorePreviewable & Publishable & {
   __typename?: 'Product';
-  /** The number of publications a resource is published to without feedback errors. */
+  /**
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
+   */
   availablePublicationsCount?: Maybe<Count>;
   /**
-   * The description of the product, complete with HTML formatting.
+   * The description of the product, with
+   * HTML tags. For example, the description might include
+   * bold `<strong></strong>` and italic `<i></i>` text.
    * @deprecated Use `descriptionHtml` instead.
    */
   bodyHtml?: Maybe<Scalars['String']['output']>;
-  /** A list of product components that are connected to this product via group relationships. */
+  /**
+   * A list of [components](https://shopify.dev/docs/apps/build/product-merchandising/bundles/add-product-fixed-bundle)
+   * that are associated with a product in a bundle.
+   */
   bundleComponents: ProductBundleComponentConnection;
-  /** The taxonomy category specified by the merchant. */
+  /**
+   * The category of a product
+   * from [Shopify's Standard Product Taxonomy](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17).
+   */
   category?: Maybe<TaxonomyCategory>;
-  /** A list of the collections that include the product. */
+  /**
+   * A list of [collections](https://shopify.dev/docs/api/admin-graphql/latest/objects/Collection)
+   * that include the product.
+   */
   collections: CollectionConnection;
-  /** The combined listing. */
+  /**
+   * A special product type that combines separate products from a store into a single product listing.
+   * [Combined listings](https://shopify.dev/apps/build/product-merchandising/combined-listings) are connected
+   * by a shared option, such as color, model, or dimension.
+   */
   combinedListing?: Maybe<CombinedListing>;
-  /** The role of the product in a combined listing. If null, the product not a part of any combined_listing. */
+  /**
+   * The [role of the product](https://shopify.dev/docs/apps/build/product-merchandising/combined-listings/build-for-combined-listings)
+   * in a combined listing.
+   *
+   * If `null`, then the product isn't part of any combined listing.
+   */
   combinedListingRole?: Maybe<CombinedListingsRole>;
-  /** The compare-at price range of the product in the default shop currency. */
+  /**
+   * The [compare-at price range](https://help.shopify.com/manual/products/details/product-pricing/sale-pricing)
+   * of the product in the shop's default currency.
+   */
   compareAtPriceRange?: Maybe<ProductCompareAtPriceRange>;
-  /** The pricing that applies for a customer in a given context. */
+  /** The pricing that applies to a customer in a specific context. For example, a price might vary depending on the customer's location. */
   contextualPricing: ProductContextualPricing;
-  /** The date and time ([ISO 8601 format](http://en.wikipedia.org/wiki/ISO_8601)) when the product was created. */
+  /** The date and time when the product was created. */
   createdAt: Scalars['DateTime']['output'];
   /**
    * The custom product type specified by the merchant.
    * @deprecated Deprecated in API version 2022-10. Use `productType` instead.
    */
   customProductType?: Maybe<Scalars['String']['output']>;
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
-  /** A stripped description of the product, single line with HTML tags removed. */
+  /**
+   * A single-line description of the product,
+   * with [HTML tags](https://developer.mozilla.org/en-US/docs/Web/HTML) removed.
+   */
   description: Scalars['String']['output'];
-  /** The description of the product, complete with HTML formatting. */
+  /**
+   * The description of the product, with
+   * HTML tags. For example, the description might include
+   * bold `<strong></strong>` and italic `<i></i>` text.
+   */
   descriptionHtml: Scalars['HTML']['output'];
   /**
    * Stripped description of the product, single line with HTML tags removed.
@@ -35470,24 +38122,45 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
    * @deprecated Use `description` instead.
    */
   descriptionPlainSummary: Scalars['String']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
   /**
    * The featured image for the product.
    * @deprecated Use `featuredMedia` instead.
    */
   featuredImage?: Maybe<Image>;
-  /** The featured media for the product. */
+  /**
+   * The featured [media](https://shopify.dev/docs/apps/build/online-store/product-media)
+   * associated with the product.
+   */
   featuredMedia?: Maybe<Media>;
-  /** Information about the product that's provided through resource feedback. */
+  /**
+   * The information that lets merchants know what steps they need to take
+   * to make sure that the app is set up correctly.
+   *
+   * For example, if a merchant hasn't set up a product correctly in the app,
+   * then the feedback might include a message that says "You need to add a price
+   * to this product".
+   */
   feedback?: Maybe<ResourceFeedback>;
-  /** The theme template used when viewing the gift card in a store. */
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view the gift card in a store. */
   giftCardTemplateSuffix?: Maybe<Scalars['String']['output']>;
-  /** A unique human-friendly string of the product's title. */
+  /**
+   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * The handle is used in the online store URL for the product.
+   */
   handle: Scalars['String']['output'];
   /** Whether the product has only a single variant with the default option and value. */
   hasOnlyDefaultVariant: Scalars['Boolean']['output'];
-  /** Whether the product has out of stock variants. */
+  /** Whether the product has variants that are out of stock. */
   hasOutOfStockVariants: Scalars['Boolean']['output'];
-  /** Determines if at least one of the product variant requires components. The default value is `false`. */
+  /**
+   * Whether at least one of the product variants requires
+   * [bundle components](https://shopify.dev/docs/apps/build/product-merchandising/bundles/add-product-fixed-bundle).
+   *
+   * Learn more about
+   * [store eligibility for bundles](https://shopify.dev/docs/apps/build/product-merchandising/bundles#store-eligibility).
+   */
   hasVariantsThatRequiresComponents: Scalars['Boolean']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
@@ -35496,40 +38169,61 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
    * @deprecated Use `media` instead.
    */
   images: ImageConnection;
-  /** Whether the product is in a given collection. */
+  /**
+   * Whether the product
+   * is in a specified
+   * [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+   */
   inCollection: Scalars['Boolean']['output'];
   /** Whether the product is a gift card. */
   isGiftCard: Scalars['Boolean']['output'];
   /** The ID of the corresponding resource in the REST Admin API. */
   legacyResourceId: Scalars['UnsignedInt64']['output'];
-  /** The media associated with the product. This can include images, 3D models, or videos. */
+  /** The [media](https://shopify.dev/docs/apps/build/online-store/product-media) associated with the product. Valid media are images, 3D models, videos. */
   media: MediaConnection;
-  /** Total count of media belonging to a product. */
+  /**
+   * The total count of [media](https://shopify.dev/docs/apps/build/online-store/product-media)
+   * that's associated with a product.
+   */
   mediaCount?: Maybe<Count>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
-  /** The online store preview URL. */
+  /** The [preview URL](https://help.shopify.com/manual/online-store/setting-up#preview-your-store) for the online store. */
   onlineStorePreviewUrl?: Maybe<Scalars['URL']['output']>;
   /**
-   * The online store URL for the product.
-   * A value of `null` indicates that the product isn't published to the Online Store sales channel.
+   * The product's URL on the online store.
+   * If `null`, then the product isn't published to the online store sales channel.
    */
   onlineStoreUrl?: Maybe<Scalars['URL']['output']>;
-  /** A list of product options. The limit is specified by Shop.resourceLimits.maxProductOptions. */
+  /**
+   * A list of product options. The limit is defined by the
+   * [shop's resource limits for product options](https://shopify.dev/docs/api/admin-graphql/latest/objects/Shop#field-resourcelimits) (`Shop.resourceLimits.maxProductOptions`).
+   */
   options: Array<ProductOption>;
   /**
    * The price range of the product.
    * @deprecated Deprecated in API version 2020-10. Use `priceRangeV2` instead.
    */
   priceRange: ProductPriceRange;
-  /** The price range of the product with prices formatted as decimals. */
+  /**
+   * The minimum and maximum prices of a product, expressed in decimal numbers.
+   * For example, if the product is priced between $10.00 and $50.00,
+   * then the price range is $10.00 - $50.00.
+   */
   priceRangeV2: ProductPriceRangeV2;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -35555,10 +38249,16 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
    * @deprecated Use `resourcePublications` instead.
    */
   productPublications: ProductPublicationConnection;
-  /** The product type specified by the merchant. */
+  /**
+   * The [product type](https://help.shopify.com/manual/products/details/product-type)
+   * that merchants define.
+   */
   productType: Scalars['String']['output'];
   /**
-   * The number of publications a resource is published on.
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
    * @deprecated Use `resourcePublicationsCount` instead.
    */
   publicationCount: Scalars['Int']['output'];
@@ -35567,51 +38267,99 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
    * @deprecated Use `resourcePublications` instead.
    */
   publications: ProductPublicationConnection;
-  /** The date and time ([ISO 8601 format](http://en.wikipedia.org/wiki/ISO_8601)) when the product was published to the Online Store. */
+  /** The date and time when the product was published to the online store. */
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** Whether or not the product is published for a customer in the given context. */
+  /** Whether the product is published for a customer only in a specified context. For example, a product might be published for a customer only in a specific location. */
   publishedInContext: Scalars['Boolean']['output'];
   /**
-   * Check to see whether the resource is published to a given channel.
+   * Whether the resource is published to a specific channel.
    * @deprecated Use `publishedOnPublication` instead.
    */
   publishedOnChannel: Scalars['Boolean']['output'];
   /**
-   * Check to see whether the resource is published to the calling app's channel.
+   * Whether the resource is published to a
+   * [channel](https://shopify.dev/docs/api/admin-graphql/latest/objects/Channel).
+   * For example, the resource might be published to the online store channel.
    * @deprecated Use `publishedOnCurrentPublication` instead.
    */
   publishedOnCurrentChannel: Scalars['Boolean']['output'];
-  /** Check to see whether the resource is published to the calling app's publication. */
+  /**
+   * Whether the resource is published to the app's
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   * For example, the resource might be published to the app's online store channel.
+   */
   publishedOnCurrentPublication: Scalars['Boolean']['output'];
-  /** Check to see whether the resource is published to a given publication. */
+  /**
+   * Whether the resource is published to a specified
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   publishedOnPublication: Scalars['Boolean']['output'];
-  /** Whether the product can only be purchased with a selling plan (subscription). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription only, then the product is unpublished from all channels except the online store. */
+  /**
+   * Whether the product can only be purchased with
+   * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
+   * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
+   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels, except the online store.
+   */
   requiresSellingPlan: Scalars['Boolean']['output'];
-  /** The resource that's either published or staged to be published to the calling app's publication. Requires the `read_product_listings` scope. */
+  /**
+   * The resource that's either published or staged to be published to
+   * the [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublicationOnCurrentPublication?: Maybe<ResourcePublicationV2>;
-  /** The list of resources that are published to a publication. */
+  /**
+   * The list of resources that are published to a
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublications: ResourcePublicationConnection;
-  /** The number of publications a resource is published on. */
+  /**
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
+   */
   resourcePublicationsCount?: Maybe<Count>;
-  /** The list of resources that are either published or staged to be published to a publication. */
+  /**
+   * The list of resources that are either published or staged to be published to a
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublicationsV2: ResourcePublicationV2Connection;
   /**
-   * Count of selling plan groups associated with the product.
+   * Whether the merchant can make changes to the product when they
+   * [edit the order](https://shopify.dev/docs/apps/build/orders-fulfillment/order-management-apps/edit-orders)
+   * associated with the product. For example, a merchant might be restricted from changing product details when they
+   * edit an order.
+   */
+  restrictedForResource?: Maybe<RestrictedForResource>;
+  /**
+   * A count of [selling plan groups](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans/build-a-selling-plan)
+   * that are associated with the product.
    * @deprecated Use `sellingPlanGroupsCount` instead.
    */
   sellingPlanGroupCount: Scalars['Int']['output'];
-  /** A list of all selling plan groups defined in the current shop associated with the product either directly or through any of its variants. */
+  /**
+   * A list of all [selling plan groups](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans/build-a-selling-plan)
+   * that are associated with the product either directly, or through the product's variants.
+   */
   sellingPlanGroups: SellingPlanGroupConnection;
-  /** Count of selling plan groups associated with the product. */
+  /**
+   * A count of [selling plan groups](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans/build-a-selling-plan)
+   * that are associated with the product.
+   */
   sellingPlanGroupsCount?: Maybe<Count>;
-  /** SEO information of the product. */
+  /**
+   * The [SEO title and description](https://help.shopify.com/manual/promoting-marketing/seo/adding-keywords)
+   * that are associated with a product.
+   */
   seo: Seo;
   /**
    * The standardized product type in the Shopify product taxonomy.
    * @deprecated Deprecated in API version 2022-10. Use `productCategory` instead.
    */
   standardizedProductType?: Maybe<StandardizedProductType>;
-  /** The product status. This controls visibility across all channels. */
+  /**
+   * The [product status](https://help.shopify.com/manual/products/details/product-details-page#product-status),
+   * which controls visibility across all sales channels.
+   */
   status: ProductStatus;
   /**
    * The Storefront GraphQL API ID of the `Product`.
@@ -35621,33 +38369,47 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
    */
   storefrontId: Scalars['StorefrontID']['output'];
   /**
-   * A comma separated list of tags associated with the product. Updating `tags` overwrites
+   * A comma-separated list of searchable keywords that are
+   * associated with the product. For example, a merchant might apply the `sports`
+   * and `summer` tags to products that are associated with sportwear for summer.
+   *
+   * Updating `tags` overwrites
    * any existing tags that were previously added to the product. To add new tags without overwriting
-   * existing tags, use the [tagsAdd](https://shopify.dev/api/admin-graphql/latest/mutations/tagsadd)
+   * existing tags, use the [`tagsAdd`](https://shopify.dev/api/admin-graphql/latest/mutations/tagsadd)
    * mutation.
    */
   tags: Array<Scalars['String']['output']>;
-  /** The theme template used when viewing the product in a store. */
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view the product in a store. */
   templateSuffix?: Maybe<Scalars['String']['output']>;
-  /** The title of the product. */
+  /**
+   * The name for the product that displays to customers. The title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
   title: Scalars['String']['output'];
-  /** The quantity of inventory in stock. */
+  /** The quantity of inventory that's in stock. */
   totalInventory: Scalars['Int']['output'];
   /**
-   * The number of variants that are associated with the product.
+   * The number of [variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant)
+   * that are associated with the product.
    * @deprecated Use `variantsCount` instead.
    */
   totalVariants: Scalars['Int']['output'];
-  /** Whether inventory tracking has been enabled for the product. */
+  /**
+   * Whether [inventory tracking](https://help.shopify.com/manual/products/inventory/getting-started-with-inventory/set-up-inventory-tracking)
+   * has been enabled for the product.
+   */
   tracksInventory: Scalars['Boolean']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
   /**
    * The list of channels that the resource is not published to.
    * @deprecated Use `unpublishedPublications` instead.
    */
   unpublishedChannels: ChannelConnection;
-  /** The list of publications that the resource is not published to. */
+  /**
+   * The list of [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that the resource isn't published to.
+   */
   unpublishedPublications: PublicationConnection;
   /**
    * The date and time when the product was last modified.
@@ -35656,16 +38418,29 @@ export type Product = HasMetafieldDefinitions & HasMetafields & HasPublishedTran
    * is counted as an update.
    */
   updatedAt: Scalars['DateTime']['output'];
-  /** A list of variants associated with the product. */
+  /** A list of [variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant) associated with the product. */
   variants: ProductVariantConnection;
-  /** The number of variants that are associated with the product. */
+  /**
+   * The number of [variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant)
+   * that are associated with the product.
+   */
   variantsCount?: Maybe<Count>;
   /** The name of the product's vendor. */
   vendor: Scalars['String']['output'];
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductBundleComponentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35675,7 +38450,17 @@ export type ProductBundleComponentsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductCollectionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35687,19 +38472,71 @@ export type ProductCollectionsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductContextualPricingArgs = {
   context: ContextualPricingContext;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductDescriptionArgs = {
   truncateAt?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
+export type ProductEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
+};
+
+
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductImagesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35710,13 +38547,33 @@ export type ProductImagesArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductInCollectionArgs = {
   id: Scalars['ID']['input'];
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductMediaArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35728,14 +38585,34 @@ export type ProductMediaArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductMetafieldArgs = {
   key: Scalars['String']['input'];
   namespace?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductMetafieldDefinitionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35749,7 +38626,17 @@ export type ProductMetafieldDefinitionsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductMetafieldsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35761,20 +38648,50 @@ export type ProductMetafieldsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductOptionsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPrivateMetafieldArgs = {
   key: Scalars['String']['input'];
   namespace: Scalars['String']['input'];
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPrivateMetafieldsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35785,7 +38702,17 @@ export type ProductPrivateMetafieldsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductProductPublicationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35795,13 +38722,33 @@ export type ProductProductPublicationsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPublicationCountArgs = {
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPublicationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35812,25 +38759,65 @@ export type ProductPublicationsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPublishedInContextArgs = {
   context: ContextualPublicationContext;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPublishedOnChannelArgs = {
   channelId: Scalars['ID']['input'];
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductPublishedOnPublicationArgs = {
   publicationId: Scalars['ID']['input'];
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductResourcePublicationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35841,13 +38828,33 @@ export type ProductResourcePublicationsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductResourcePublicationsCountArgs = {
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductResourcePublicationsV2Args = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35859,7 +38866,33 @@ export type ProductResourcePublicationsV2Args = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
+export type ProductRestrictedForResourceArgs = {
+  calculatedOrderId: Scalars['ID']['input'];
+};
+
+
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductSellingPlanGroupsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35869,14 +38902,34 @@ export type ProductSellingPlanGroupsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductTranslationsArgs = {
   locale: Scalars['String']['input'];
   marketId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductUnpublishedChannelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35886,7 +38939,17 @@ export type ProductUnpublishedChannelsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductUnpublishedPublicationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35896,7 +38959,17 @@ export type ProductUnpublishedPublicationsArgs = {
 };
 
 
-/** The Product resource lets you manage products in a merchant’s store. You can use [ProductVariants](https://shopify.dev/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product. You can also add or update product [Media](https://shopify.dev/api/admin-graphql/latest/interfaces/media). Products can be organized by grouping them into a [Collection](https://shopify.dev/api/admin-graphql/latest/objects/collection). */
+/**
+ * The `Product` object lets you manage products in a merchant’s store.
+ *
+ * Products are the goods and services that merchants offer to customers. They can include various details such as title, description, price, images, and options such as size or color.
+ * You can use [product variants](https://shopify.dev/docs/api/admin-graphql/latest/objects/productvariant) to create or update different versions of the same product.
+ * You can also add or update product [media](https://shopify.dev/docs/api/admin-graphql/latest/interfaces/media).
+ * Products can be organized by grouping them into a [collection](https://shopify.dev/docs/api/admin-graphql/latest/objects/collection).
+ *
+ * Learn more about working with [Shopify's product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/product-model-components),
+ * including limitations and considerations.
+ */
 export type ProductVariantsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -35904,25 +38977,6 @@ export type ProductVariantsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   sortKey?: InputMaybe<ProductVariantSortKeys>;
-};
-
-/** The input fields for specifying product images to append. */
-export type ProductAppendImagesInput = {
-  /** The ID of the product. */
-  id: Scalars['ID']['input'];
-  /** A list of images to be appended to the product. */
-  images: Array<ImageInput>;
-};
-
-/** Return type for `productAppendImages` mutation. */
-export type ProductAppendImagesPayload = {
-  __typename?: 'ProductAppendImagesPayload';
-  /** List of new images appended to the product. */
-  newImages?: Maybe<Array<Image>>;
-  /** The product object. */
-  product?: Maybe<Product>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
 };
 
 /** The product's component information. */
@@ -35961,18 +39015,18 @@ export type ProductBundleComponentComponentVariantsArgs = {
 /** An auto-generated type for paginating through multiple ProductBundleComponents. */
 export type ProductBundleComponentConnection = {
   __typename?: 'ProductBundleComponentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductBundleComponentEdge>;
-  /** A list of the nodes contained in ProductBundleComponentEdge. */
+  /** A list of nodes that are contained in ProductBundleComponentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ProductBundleComponent>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ProductBundleComponent and a cursor during pagination. */
 export type ProductBundleComponentEdge = {
   __typename?: 'ProductBundleComponentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductBundleComponentEdge. */
   node: ProductBundleComponent;
@@ -36164,12 +39218,6 @@ export type ProductCategory = {
   productTaxonomyNode?: Maybe<ProductTaxonomyNode>;
 };
 
-/** The input fields to use when adding a product category to a product. The [Shopify product taxonomy](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17) contains the full list of available values. */
-export type ProductCategoryInput = {
-  /** The ID of the node in the Shopify taxonomy that represents the product category. */
-  productTaxonomyNodeId: Scalars['ID']['input'];
-};
-
 /** Return type for `productChangeStatus` mutation. */
 export type ProductChangeStatusPayload = {
   __typename?: 'ProductChangeStatusPayload';
@@ -36247,11 +39295,11 @@ export type ProductCompareAtPriceRange = {
 /** An auto-generated type for paginating through multiple Products. */
 export type ProductConnection = {
   __typename?: 'ProductConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductEdge>;
-  /** A list of the nodes contained in ProductEdge. */
+  /** A list of nodes that are contained in ProductEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Product>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -36269,8 +39317,97 @@ export type ProductContextualPricing = {
   maxVariantPricing?: Maybe<ProductVariantContextualPricing>;
   /** The pricing of the variant with the lowest price in the given context. */
   minVariantPricing?: Maybe<ProductVariantContextualPricing>;
-  /** The price range of the product with prices formatted as decimals. */
+  /**
+   * The minimum and maximum prices of a product, expressed in decimal numbers.
+   * For example, if the product is priced between $10.00 and $50.00,
+   * then the price range is $10.00 - $50.00.
+   */
   priceRange: ProductPriceRangeV2;
+};
+
+/** The input fields required to create a product. */
+export type ProductCreateInput = {
+  /**
+   * The ID of the [category](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17)
+   * that's associated with the product.
+   */
+  category?: InputMaybe<Scalars['ID']['input']>;
+  /**
+   * The input field to enable an app to provide additional product features.
+   * For example, you can specify
+   * [`bundles: true`](https://shopify.dev/docs/api/admin-graphql/latest/input-objects/ProductClaimOwnershipInput#field-bundles)
+   * in the `claimOwnership` field to let an app add a
+   * [product configuration extension](https://shopify.dev/docs/apps/build/product-merchandising/bundles/add-merchant-config-ui).
+   */
+  claimOwnership?: InputMaybe<ProductClaimOwnershipInput>;
+  /** A list of collection IDs to associate with the product. */
+  collectionsToJoin?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** The role of the product in a [combined listing](https://shopify.dev/apps/build/product-merchandising/combined-listings). */
+  combinedListingRole?: InputMaybe<CombinedListingsRole>;
+  /**
+   * The description of the product, with HTML tags.
+   * For example, the description might include bold `<strong></strong>` and italic `<i></i>` text.
+   */
+  descriptionHtml?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the product is a gift card. */
+  giftCard?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
+  giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * The handle is used in the online store URL for the product.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The [custom fields](https://shopify.dev/docs/apps/build/custom-data) to associate with the product
+   * for the purposes of adding and storing additional information.
+   */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /** A list of product options and option values. Maximum product options: three. There's no limit on the number of option values. */
+  productOptions?: InputMaybe<Array<OptionCreateInput>>;
+  /**
+   * The [product type](https://help.shopify.com/manual/products/details/product-type)
+   * that merchants define.
+   */
+  productType?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Whether the product can only be purchased with
+   * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
+   * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
+   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels except the online store.
+   */
+  requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * The [SEO title and description](https://help.shopify.com/manual/promoting-marketing/seo/adding-keywords)
+   * that are associated with a product.
+   */
+  seo?: InputMaybe<SeoInput>;
+  /**
+   * The [product status](https://help.shopify.com/manual/products/details/product-details-page#product-status),
+   * which controls visibility across all sales channels.
+   */
+  status?: InputMaybe<ProductStatus>;
+  /**
+   * A comma-separated list of searchable keywords that are
+   * associated with the product. For example, a merchant might apply the `sports`
+   * and `summer` tags to products that are associated with sportwear for summer.
+   *
+   * Updating `tags` overwrites any existing tags that were previously added to the product.
+   * To add new tags without overwriting existing tags, use the
+   * [`tagsAdd`](https://shopify.dev/api/admin-graphql/latest/mutations/tagsadd)
+   * mutation.
+   */
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The name for the product that displays to customers. The title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
+  title?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the product's vendor. */
+  vendor?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Return type for `productCreateMedia` mutation. */
@@ -36300,28 +39437,6 @@ export type ProductCreatePayload = {
   userErrors: Array<UserError>;
 };
 
-/** Return type for `productDeleteAsync` mutation. */
-export type ProductDeleteAsyncPayload = {
-  __typename?: 'ProductDeleteAsyncPayload';
-  /** The ID of the product that was requested to be deleted. */
-  deleteProductId?: Maybe<Scalars['ID']['output']>;
-  /** The background job that will delete the product and its associated variants and media. */
-  job?: Maybe<Job>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<ProductDeleteUserError>;
-};
-
-/** Return type for `productDeleteImages` mutation. */
-export type ProductDeleteImagesPayload = {
-  __typename?: 'ProductDeleteImagesPayload';
-  /** The array of image IDs to delete. */
-  deletedImageIds: Array<Scalars['ID']['output']>;
-  /** The product object. */
-  product?: Maybe<Product>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
-};
-
 /** The input fields for specifying the product to delete. */
 export type ProductDeleteInput = {
   /** The ID of the product. */
@@ -36346,59 +39461,45 @@ export type ProductDeleteMediaPayload = {
   userErrors: Array<UserError>;
 };
 
+/**
+ * An entity that represents details of an asynchronous
+ * [ProductDelete](https://shopify.dev/api/admin-graphql/current/mutations/productDelete) mutation.
+ *
+ * By querying this entity with the
+ * [productOperation](https://shopify.dev/api/admin-graphql/current/queries/productOperation) query
+ * using the ID that was returned when the product was deleted, this can be used to check the status of an operation.
+ *
+ * The `status` field indicates whether the operation is `CREATED`, `ACTIVE`, or `COMPLETE`.
+ *
+ * The `deletedProductId` field provides the ID of the deleted product.
+ *
+ * The `userErrors` field provides mutation errors that occurred during the operation.
+ */
+export type ProductDeleteOperation = Node & ProductOperation & {
+  __typename?: 'ProductDeleteOperation';
+  /** The ID of the deleted product. */
+  deletedProductId?: Maybe<Scalars['ID']['output']>;
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** The product on which the operation is being performed. */
+  product?: Maybe<Product>;
+  /** The status of this operation. */
+  status: ProductOperationStatus;
+  /** Returns mutation errors occurred during background mutation processing. */
+  userErrors: Array<UserError>;
+};
+
 /** Return type for `productDelete` mutation. */
 export type ProductDeletePayload = {
   __typename?: 'ProductDeletePayload';
   /** The ID of the deleted product. */
   deletedProductId?: Maybe<Scalars['ID']['output']>;
+  /** The product delete operation, returned when run in asynchronous mode. */
+  productDeleteOperation?: Maybe<ProductDeleteOperation>;
   /** The shop associated with the product. */
   shop: Shop;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<UserError>;
-};
-
-/** An error that occurred while setting the activation status of an inventory item. */
-export type ProductDeleteUserError = DisplayableError & {
-  __typename?: 'ProductDeleteUserError';
-  /** The error code. */
-  code?: Maybe<ProductDeleteUserErrorCode>;
-  /** The path to the input field that caused the error. */
-  field?: Maybe<Array<Scalars['String']['output']>>;
-  /** The error message. */
-  message: Scalars['String']['output'];
-};
-
-/** Possible error codes that can be returned by `ProductDeleteUserError`. */
-export enum ProductDeleteUserErrorCode {
-  /** Something went wrong, please try again. */
-  GenericError = 'GENERIC_ERROR',
-  /** Product does not exist. */
-  ProductDoesNotExist = 'PRODUCT_DOES_NOT_EXIST'
-}
-
-/** The input fields for the product async duplicate mutation. */
-export type ProductDuplicateAsyncInput = {
-  /** Specifies whether or not to duplicate images. */
-  includeImages?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Specifies whether or not to duplicate translations. */
-  includeTranslations?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The new status of the product. If no value is provided the status will be inherited from the original product. */
-  newStatus?: InputMaybe<ProductStatus>;
-  /** The new title of the product. */
-  newTitle: Scalars['String']['input'];
-  /** The ID of the product to be duplicated. */
-  productId: Scalars['ID']['input'];
-};
-
-/** Return type for `productDuplicateAsyncV2` mutation. */
-export type ProductDuplicateAsyncV2Payload = {
-  __typename?: 'ProductDuplicateAsyncV2Payload';
-  /** The duplicated product ID. */
-  duplicatedProductId?: Maybe<Scalars['ID']['output']>;
-  /** The asynchronous job for duplicating the product. */
-  productDuplicateJobId?: Maybe<Scalars['ID']['output']>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<ProductDuplicateUserError>;
 };
 
 /** Represents a product duplication job. */
@@ -36410,6 +39511,38 @@ export type ProductDuplicateJob = {
   id: Scalars['ID']['output'];
 };
 
+/**
+ * An entity that represents details of an asynchronous
+ * [ProductDuplicate](https://shopify.dev/api/admin-graphql/current/mutations/productDuplicate) mutation.
+ *
+ * By querying this entity with the
+ * [productOperation](https://shopify.dev/api/admin-graphql/current/queries/productOperation) query
+ * using the ID that was returned
+ * [when the product was duplicated](https://shopify.dev/api/admin/migrate/new-product-model/sync-data#create-a-product-with-variants-and-options-asynchronously),
+ * this can be used to check the status of an operation.
+ *
+ * The `status` field indicates whether the operation is `CREATED`, `ACTIVE`, or `COMPLETE`.
+ *
+ * The `product` field provides the details of the original product.
+ *
+ * The `newProduct` field provides the details of the new duplicate of the product.
+ *
+ * The `userErrors` field provides mutation errors that occurred during the operation.
+ */
+export type ProductDuplicateOperation = Node & ProductOperation & {
+  __typename?: 'ProductDuplicateOperation';
+  /** A globally-unique ID. */
+  id: Scalars['ID']['output'];
+  /** The newly created duplicate of the original product. */
+  newProduct?: Maybe<Product>;
+  /** The product on which the operation is being performed. */
+  product?: Maybe<Product>;
+  /** The status of this operation. */
+  status: ProductOperationStatus;
+  /** Returns mutation errors occurred during background mutation processing. */
+  userErrors: Array<UserError>;
+};
+
 /** Return type for `productDuplicate` mutation. */
 export type ProductDuplicatePayload = {
   __typename?: 'ProductDuplicatePayload';
@@ -36417,43 +39550,18 @@ export type ProductDuplicatePayload = {
   imageJob?: Maybe<Job>;
   /** The duplicated product. */
   newProduct?: Maybe<Product>;
+  /** The product duplicate operation, returned when run in asynchronous mode. */
+  productDuplicateOperation?: Maybe<ProductDuplicateOperation>;
   /** The user's shop. */
   shop: Shop;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<UserError>;
 };
 
-/** An error that occurred while duplicating the product. */
-export type ProductDuplicateUserError = DisplayableError & {
-  __typename?: 'ProductDuplicateUserError';
-  /** The error code. */
-  code?: Maybe<ProductDuplicateUserErrorCode>;
-  /** The path to the input field that caused the error. */
-  field?: Maybe<Array<Scalars['String']['output']>>;
-  /** The error message. */
-  message: Scalars['String']['output'];
-};
-
-/** Possible error codes that can be returned by `ProductDuplicateUserError`. */
-export enum ProductDuplicateUserErrorCode {
-  /** Cannot duplicate a bundle product. */
-  BundlesError = 'BUNDLES_ERROR',
-  /** The title cannot be empty. */
-  EmptyTitle = 'EMPTY_TITLE',
-  /** Cannot duplicate a product which has no variants. */
-  EmptyVariant = 'EMPTY_VARIANT',
-  /** Something went wrong when saving the product, please try again. */
-  FailedToSave = 'FAILED_TO_SAVE',
-  /** Something went wrong, please try again. */
-  GenericError = 'GENERIC_ERROR',
-  /** The product does not exist. */
-  ProductDoesNotExist = 'PRODUCT_DOES_NOT_EXIST'
-}
-
 /** An auto-generated type which holds one Product and a cursor during pagination. */
 export type ProductEdge = {
   __typename?: 'ProductEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductEdge. */
   node: Product;
@@ -36475,11 +39583,11 @@ export type ProductFeed = Node & {
 /** An auto-generated type for paginating through multiple ProductFeeds. */
 export type ProductFeedConnection = {
   __typename?: 'ProductFeedConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductFeedEdge>;
-  /** A list of the nodes contained in ProductFeedEdge. */
+  /** A list of nodes that are contained in ProductFeedEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ProductFeed>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -36540,7 +39648,7 @@ export enum ProductFeedDeleteUserErrorCode {
 /** An auto-generated type which holds one ProductFeed and a cursor during pagination. */
 export type ProductFeedEdge = {
   __typename?: 'ProductFeedEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductFeedEdge. */
   node: ProductFeed;
@@ -36601,67 +39709,110 @@ export enum ProductImageSortKeys {
   Relevance = 'RELEVANCE'
 }
 
-/** Return type for `productImageUpdate` mutation. */
-export type ProductImageUpdatePayload = {
-  __typename?: 'ProductImageUpdatePayload';
-  /** The image that has been updated. */
-  image?: Maybe<Image>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
-};
-
-/** The input fields required to create a product. */
+/** The input fields for creating or updating a product. */
 export type ProductInput = {
-  /** The ID of the category associated with the product. */
+  /**
+   * The ID of the [category](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17)
+   * that's associated with the product.
+   */
   category?: InputMaybe<Scalars['ID']['input']>;
-  /** Claim ownership of a product. */
+  /**
+   * The input field to enable an app to provide additional product features.
+   * For example, you can specify
+   * [`bundles: true`](https://shopify.dev/docs/api/admin-graphql/latest/input-objects/ProductClaimOwnershipInput#field-bundles)
+   * in the `claimOwnership` field to let an app add a
+   * [product configuration extension](https://shopify.dev/docs/apps/build/product-merchandising/bundles/add-merchant-config-ui).
+   */
   claimOwnership?: InputMaybe<ProductClaimOwnershipInput>;
-  /** The IDs of the collections that this product will be added to. */
+  /** A list of collection IDs to associate with the product. */
   collectionsToJoin?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** The IDs of collections that will no longer include the existing product. */
+  /** The collection IDs to disassociate from the product. */
   collectionsToLeave?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** The role of the product in a product grouping. It can only be set during creation. */
+  /**
+   * The role of the product in a [combined listing](https://shopify.dev/apps/build/product-merchandising/combined-listings).
+   * You can specify this field only when you create a product.
+   */
   combinedListingRole?: InputMaybe<CombinedListingsRole>;
-  /** The custom product type specified by the merchant. */
-  customProductType?: InputMaybe<Scalars['String']['input']>;
-  /** The description of the product, complete with HTML formatting. */
+  /**
+   * The description of the product, with HTML tags.
+   * For example, the description might include bold `<strong></strong>` and italic `<i></i>` text.
+   */
   descriptionHtml?: InputMaybe<Scalars['String']['input']>;
   /** Whether the product is a gift card. */
   giftCard?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The theme template used when viewing the gift card in a store. */
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
   giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * A unique, human-friendly string for the product.
-   * Automatically generated from the product's title unless otherwise specified.
+   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * The handle is used in the online store URL for the product.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
    */
   handle?: InputMaybe<Scalars['String']['input']>;
-  /** Specifies the product to update in productUpdate or creates a new product if absent in productCreate. */
+  /**
+   * The product's ID.
+   *
+   * If you're creating a product, then you don't need to pass the `id` as input to the
+   * [`productCreate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate) mutation.
+   * If you're updating a product, then you do need to pass the `id` as input to the
+   * [`productUpdate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productUpdate) mutation
+   * to identify which product you want to update.
+   */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** The metafields to associate with this product. */
+  /**
+   * The [custom fields](https://shopify.dev/docs/apps/build/custom-data) to associate with the product
+   * for the purposes of adding and storing additional information.
+   */
   metafields?: InputMaybe<Array<MetafieldInput>>;
   /**
-   * List of custom product options and option values (maximum of 3 per product).
-   * Supported as input with the `productCreate` mutation only.
+   * A list of product options and option values. Maximum product options: three. There's no limit on the number of option values.
+   * This input is supported only with the [`productCreate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate)
+   * mutation.
    */
   productOptions?: InputMaybe<Array<OptionCreateInput>>;
-  /** The product type specified by the merchant. */
+  /**
+   * The [product type](https://help.shopify.com/manual/products/details/product-type)
+   * that merchants define.
+   */
   productType?: InputMaybe<Scalars['String']['input']>;
   /**
    * Whether a redirect is required after a new handle has been provided.
-   * If true, then the old handle is redirected to the new one automatically.
+   * If `true`, then the old handle is redirected to the new one automatically.
    */
   redirectNewHandle?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Whether the product can only be purchased with a selling plan (subscription). Products that are sold exclusively on subscription can only be created on online stores. If set to `true` on an already existing product, then the product will be marked unavailable on channels that don't support subscriptions. */
+  /**
+   * Whether the product can only be purchased with
+   * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
+   * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
+   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels except the online store.
+   */
   requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The SEO information associated with the product. */
+  /**
+   * The [SEO title and description](https://help.shopify.com/manual/promoting-marketing/seo/adding-keywords)
+   * that are associated with a product.
+   */
   seo?: InputMaybe<SeoInput>;
-  /** The status of the product. */
+  /**
+   * The [product status](https://help.shopify.com/manual/products/details/product-details-page#product-status),
+   * which controls visibility across all sales channels.
+   */
   status?: InputMaybe<ProductStatus>;
-  /** A comma separated list of tags that have been added to the product. */
+  /**
+   * A comma-separated list of searchable keywords that are
+   * associated with the product. For example, a merchant might apply the `sports`
+   * and `summer` tags to products that are associated with sportwear for summer.
+   *
+   * Updating `tags` overwrites any existing tags that were previously added to the product.
+   * To add new tags without overwriting existing tags, use the
+   * [`tagsAdd`](https://shopify.dev/api/admin-graphql/latest/mutations/tagsadd)
+   * mutation.
+   */
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
-  /** The theme template used when viewing the product in a store. */
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
   templateSuffix?: InputMaybe<Scalars['String']['input']>;
-  /** The title of the product. */
+  /**
+   * The name for the product that displays to customers. The title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
   title?: InputMaybe<Scalars['String']['input']>;
   /** The name of the product's vendor. */
   vendor?: InputMaybe<Scalars['String']['input']>;
@@ -36733,7 +39884,7 @@ export type ProductOption = HasPublishedTranslations & Node & {
   optionValues: Array<ProductOptionValue>;
   /** The product option's position. */
   position: Scalars['Int']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
   /** The corresponding value to the product option name. */
   values: Array<Scalars['String']['output']>;
@@ -36749,6 +39900,20 @@ export type ProductOptionTranslationsArgs = {
   locale: Scalars['String']['input'];
   marketId?: InputMaybe<Scalars['ID']['input']>;
 };
+
+/** The set of variant strategies available for use in the `productOptionsCreate` mutation. */
+export enum ProductOptionCreateVariantStrategy {
+  /**
+   * Existing variants are updated with the first option value of each added option. New variants are
+   * created for each combination of existing variant option values and new option values.
+   */
+  Create = 'CREATE',
+  /**
+   * No additional variants are created in response to the added options. Existing variants are updated with the
+   * first option value of each option added.
+   */
+  LeaveAsIs = 'LEAVE_AS_IS'
+}
 
 /** The set of strategies available for use on the `productOptionDelete` mutation. */
 export enum ProductOptionDeleteStrategy {
@@ -36838,6 +40003,8 @@ export enum ProductOptionUpdateUserErrorCode {
   ProductDoesNotExist = 'PRODUCT_DOES_NOT_EXIST',
   /** Product is suspended. */
   ProductSuspended = 'PRODUCT_SUSPENDED',
+  /** The number of option values created with the MANAGE strategy would exceed the variant limit. */
+  TooManyVariantsCreated = 'TOO_MANY_VARIANTS_CREATED',
   /** Operation is not supported for a combined listing parent product. */
   UnsupportedCombinedListingParentOperation = 'UNSUPPORTED_COMBINED_LISTING_PARENT_OPERATION'
 }
@@ -36875,7 +40042,7 @@ export type ProductOptionValue = HasPublishedTranslations & Node & {
   name: Scalars['String']['output'];
   /** The swatch associated with the product option value. */
   swatch?: Maybe<ProductOptionValueSwatch>;
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
 };
 
@@ -36933,6 +40100,8 @@ export enum ProductOptionsCreateUserErrorCode {
   InvalidName = 'INVALID_NAME',
   /** No valid metafield definition found for linked option. */
   LinkedMetafieldDefinitionNotFound = 'LINKED_METAFIELD_DEFINITION_NOT_FOUND',
+  /** Cannot specify 'linkedMetafieldValue' for an option that is not linked to a metafield. */
+  LinkedMetafieldValueWithoutLinkedOption = 'LINKED_METAFIELD_VALUE_WITHOUT_LINKED_OPTION',
   /** Linked options are currently not supported for this shop. */
   LinkedOptionsNotSupportedForShop = 'LINKED_OPTIONS_NOT_SUPPORTED_FOR_SHOP',
   /** Missing metafield values for linked option. */
@@ -36959,6 +40128,8 @@ export enum ProductOptionsCreateUserErrorCode {
   ProductDoesNotExist = 'PRODUCT_DOES_NOT_EXIST',
   /** Product is suspended. */
   ProductSuspended = 'PRODUCT_SUSPENDED',
+  /** The number of option values created with the CREATE strategy would exceed the variant limit. */
+  TooManyVariantsCreated = 'TOO_MANY_VARIANTS_CREATED',
   /** Operation is not supported for a combined listing parent product. */
   UnsupportedCombinedListingParentOperation = 'UNSUPPORTED_COMBINED_LISTING_PARENT_OPERATION'
 }
@@ -37087,18 +40258,18 @@ export type ProductPublication = {
 /** An auto-generated type for paginating through multiple ProductPublications. */
 export type ProductPublicationConnection = {
   __typename?: 'ProductPublicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductPublicationEdge>;
-  /** A list of the nodes contained in ProductPublicationEdge. */
+  /** A list of nodes that are contained in ProductPublicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ProductPublication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ProductPublication and a cursor during pagination. */
 export type ProductPublicationEdge = {
   __typename?: 'ProductPublicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductPublicationEdge. */
   node: ProductPublication;
@@ -37132,15 +40303,6 @@ export type ProductPublishPayload = {
   productPublications?: Maybe<Array<ProductPublication>>;
   /** The user's shop. */
   shop: Shop;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
-};
-
-/** Return type for `productReorderImages` mutation. */
-export type ProductReorderImagesPayload = {
-  __typename?: 'ProductReorderImagesPayload';
-  /** The asynchronous job which reorders the images. */
-  job?: Maybe<Job>;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<UserError>;
 };
@@ -37228,56 +40390,105 @@ export type ProductSale = Sale & {
 
 /** The input fields required to create or update a product via ProductSet mutation. */
 export type ProductSetInput = {
-  /** The ID of the category associated with the product. */
+  /**
+   * The ID of the [category](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17)
+   * that's associated with the product.
+   */
   category?: InputMaybe<Scalars['ID']['input']>;
-  /** Claim ownership of a product. */
+  /**
+   * The input field to enable an app to provide additional product features.
+   * For example, you can specify
+   * [`bundles: true`](https://shopify.dev/docs/api/admin-graphql/latest/input-objects/ProductClaimOwnershipInput#field-bundles)
+   * in the `claimOwnership` field to let an app add a
+   * [product configuration extension](https://shopify.dev/docs/apps/build/product-merchandising/bundles/add-merchant-config-ui).
+   */
   claimOwnership?: InputMaybe<ProductClaimOwnershipInput>;
   /** The IDs of collections that this product will be a member of. */
   collections?: InputMaybe<Array<Scalars['ID']['input']>>;
   /** The role of the product in a product grouping. It can only be set during creation. */
   combinedListingRole?: InputMaybe<CombinedListingsRole>;
-  /** The custom product type specified by the merchant. */
-  customProductType?: InputMaybe<Scalars['String']['input']>;
-  /** The description of the product, complete with HTML formatting. */
+  /**
+   * The description of the product, with HTML tags.
+   * For example, the description might include bold `<strong></strong>` and italic `<i></i>` text.
+   */
   descriptionHtml?: InputMaybe<Scalars['String']['input']>;
+  /** The files to associate with the product. */
+  files?: InputMaybe<Array<FileSetInput>>;
   /** Whether the product is a gift card. */
   giftCard?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The theme template used when viewing the gift card in a store. */
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
   giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * A unique, human-friendly string for the product.
-   * Automatically generated from the product's title unless otherwise specified.
+   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * The handle is used in the online store URL for the product.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
    */
   handle?: InputMaybe<Scalars['String']['input']>;
-  /** Specifies the product to update. If absent, a new product is created. */
+  /**
+   * The product's ID.
+   *
+   * If you're creating a product, then you don't need to pass the `id` as input to the
+   * [`productCreate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate) mutation.
+   * If you're updating a product, then you do need to pass the `id` as input to the
+   * [`productUpdate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productUpdate) mutation
+   * to identify which product you want to update.
+   */
   id?: InputMaybe<Scalars['ID']['input']>;
   /** The metafields to associate with this product. */
   metafields?: InputMaybe<Array<MetafieldInput>>;
   /** List of custom product options and option values (maximum of 3 per product). */
   productOptions?: InputMaybe<Array<OptionSetInput>>;
-  /** The product type specified by the merchant. */
+  /**
+   * The [product type](https://help.shopify.com/manual/products/details/product-type)
+   * that merchants define.
+   */
   productType?: InputMaybe<Scalars['String']['input']>;
   /**
    * Whether a redirect is required after a new handle has been provided.
-   * If true, then the old handle is redirected to the new one automatically.
+   * If `true`, then the old handle is redirected to the new one automatically.
    */
   redirectNewHandle?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the product can only be purchased with a selling plan (subscription). Products that are sold exclusively on subscription can only be created on online stores. If set to `true` on an already existing product, then the product will be marked unavailable on channels that don't support subscriptions. */
   requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The SEO information associated with the product. */
+  /**
+   * The [SEO title and description](https://help.shopify.com/manual/promoting-marketing/seo/adding-keywords)
+   * that are associated with a product.
+   */
   seo?: InputMaybe<SeoInput>;
   /** The status of the product. */
   status?: InputMaybe<ProductStatus>;
-  /** A comma separated list of tags that have been added to the product. */
+  /**
+   * A comma-separated list of searchable keywords that are
+   * associated with the product. For example, a merchant might apply the `sports`
+   * and `summer` tags to products that are associated with sportwear for summer.
+   *
+   * Updating `tags` overwrites any existing tags that were previously added to the product.
+   * To add new tags without overwriting existing tags, use the
+   * [`tagsAdd`](https://shopify.dev/api/admin-graphql/latest/mutations/tagsadd)
+   * mutation.
+   */
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
-  /** The theme template used when viewing the product in a store. */
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
   templateSuffix?: InputMaybe<Scalars['String']['input']>;
-  /** The title of the product. */
+  /**
+   * The name for the product that displays to customers. The title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
   title?: InputMaybe<Scalars['String']['input']>;
   /** A list of variants associated with the product. */
   variants?: InputMaybe<Array<ProductVariantSetInput>>;
   /** The name of the product's vendor. */
   vendor?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The input fields required to set inventory quantities using `productSet` mutation. */
+export type ProductSetInventoryInput = {
+  /** The ID of the location of the inventory quantity being set. */
+  locationId: Scalars['ID']['input'];
+  /** The name of the inventory quantity being set. Must be one of `available` or `on_hand`. */
+  name: Scalars['String']['input'];
+  /** The values to which each quantities will be set. */
+  quantity: Scalars['Int']['input'];
 };
 
 /**
@@ -37332,6 +40543,8 @@ export type ProductSetUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `ProductSetUserError`. */
 export enum ProductSetUserErrorCode {
+  /** An option cannot have both metafield linked and nonlinked option values. */
+  CannotCombineLinkedAndNonlinkedOptionValues = 'CANNOT_COMBINE_LINKED_AND_NONLINKED_OPTION_VALUES',
   /** The metafield violates a capability restriction. */
   CapabilityViolation = 'CAPABILITY_VIOLATION',
   /** Duplicated option name. */
@@ -37340,6 +40553,8 @@ export enum ProductSetUserErrorCode {
   DuplicatedOptionValue = 'DUPLICATED_OPTION_VALUE',
   /** Duplicated value. */
   DuplicatedValue = 'DUPLICATED_VALUE',
+  /** Cannot link multiple options to the same metafield. */
+  DuplicateLinkedOption = 'DUPLICATE_LINKED_OPTION',
   /** Something went wrong, please try again. */
   GenericError = 'GENERIC_ERROR',
   /** Gift card products can only be created after they have been activated. */
@@ -37350,12 +40565,18 @@ export enum ProductSetUserErrorCode {
   InvalidInput = 'INVALID_INPUT',
   /** Metafield is not valid. */
   InvalidMetafield = 'INVALID_METAFIELD',
+  /** Invalid metafield value for linked option. */
+  InvalidMetafieldValueForLinkedOption = 'INVALID_METAFIELD_VALUE_FOR_LINKED_OPTION',
   /** Product is not valid. */
   InvalidProduct = 'INVALID_PRODUCT',
   /** Product variant is not valid. */
   InvalidVariant = 'INVALID_VARIANT',
   /** Error processing request in the background job. */
   JobError = 'JOB_ERROR',
+  /** No valid metafield definition found for linked option. */
+  LinkedMetafieldDefinitionNotFound = 'LINKED_METAFIELD_DEFINITION_NOT_FOUND',
+  /** Linked options are currently not supported for this shop. */
+  LinkedOptionsNotSupportedForShop = 'LINKED_OPTIONS_NOT_SUPPORTED_FOR_SHOP',
   /** Options over limit. */
   OptionsOverLimit = 'OPTIONS_OVER_LIMIT',
   /** Option does not exist. */
@@ -37393,7 +40614,7 @@ export enum ProductSortKeys {
   /**
    * Sort by relevance to the search terms when the `query` parameter is specified on the connection.
    * Don't use this sort key when no search query is specified.
-   * Pagination isn't supported when using this sort key.
+   * [Pagination](https://shopify.dev/api/usage/pagination-graphql) isn't supported when using this sort key.
    */
   Relevance = 'RELEVANCE',
   /** Sort by the `title` value. */
@@ -37448,6 +40669,86 @@ export type ProductUnpublishPayload = {
   userErrors: Array<UserError>;
 };
 
+/** The input fields for updating a product. */
+export type ProductUpdateInput = {
+  /**
+   * The ID of the [category](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17)
+   * that's associated with the product.
+   */
+  category?: InputMaybe<Scalars['ID']['input']>;
+  /** A list of collection IDs to associate with the product. */
+  collectionsToJoin?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** The collection IDs to disassociate from the product. */
+  collectionsToLeave?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /**
+   * The description of the product, with HTML tags.
+   * For example, the description might include bold `<strong></strong>` and italic `<i></i>` text.
+   */
+  descriptionHtml?: InputMaybe<Scalars['String']['input']>;
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
+  giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * The handle is used in the online store URL for the product.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
+  handle?: InputMaybe<Scalars['String']['input']>;
+  /** The product's ID. */
+  id?: InputMaybe<Scalars['ID']['input']>;
+  /**
+   * The [custom fields](https://shopify.dev/docs/apps/build/custom-data) to associate with the product
+   * for the purposes of adding and storing additional information.
+   */
+  metafields?: InputMaybe<Array<MetafieldInput>>;
+  /**
+   * The [product type](https://help.shopify.com/manual/products/details/product-type)
+   * that merchants define.
+   */
+  productType?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Whether a redirect is required after a new handle has been provided.
+   * If `true`, then the old handle is redirected to the new one automatically.
+   */
+  redirectNewHandle?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * Whether the product can only be purchased with
+   * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
+   * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
+   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels except the online store.
+   */
+  requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * The [SEO title and description](https://help.shopify.com/manual/promoting-marketing/seo/adding-keywords)
+   * that are associated with a product.
+   */
+  seo?: InputMaybe<SeoInput>;
+  /**
+   * The [product status](https://help.shopify.com/manual/products/details/product-details-page#product-status),
+   * which controls visibility across all sales channels.
+   */
+  status?: InputMaybe<ProductStatus>;
+  /**
+   * A comma-separated list of searchable keywords that are
+   * associated with the product. For example, a merchant might apply the `sports`
+   * and `summer` tags to products that are associated with sportwear for summer.
+   *
+   * Updating `tags` overwrites any existing tags that were previously added to the product.
+   * To add new tags without overwriting existing tags, use the
+   * [`tagsAdd`](https://shopify.dev/api/admin-graphql/latest/mutations/tagsadd)
+   * mutation.
+   */
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
+  templateSuffix?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The name for the product that displays to customers. The title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   */
+  title?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the product's vendor. */
+  vendor?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Return type for `productUpdateMedia` mutation. */
 export type ProductUpdateMediaPayload = {
   __typename?: 'ProductUpdateMediaPayload';
@@ -37474,7 +40775,7 @@ export type ProductUpdatePayload = {
 };
 
 /** Represents a product variant. */
-export type ProductVariant = HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & LegacyInteroperability & Navigable & Node & {
+export type ProductVariant = HasEvents & HasMetafieldDefinitions & HasMetafields & HasPublishedTranslations & LegacyInteroperability & Navigable & Node & {
   __typename?: 'ProductVariant';
   /** Whether the product variant is available for sale. */
   availableForSale: Scalars['Boolean']['output'];
@@ -37486,12 +40787,14 @@ export type ProductVariant = HasMetafieldDefinitions & HasMetafields & HasPublis
   contextualPricing: ProductVariantContextualPricing;
   /** The date and time when the variant was created. */
   createdAt: Scalars['DateTime']['output'];
-  /** A default cursor that returns the single next record, sorted ascending by ID. */
+  /** A default [cursor](https://shopify.dev/api/usage/pagination-graphql) that returns the single next record, sorted ascending by ID. */
   defaultCursor: Scalars['String']['output'];
-  /** The delivery profile for the variant. */
+  /** The [delivery profile](https://shopify.dev/api/admin-graphql/latest/objects/DeliveryProfile) for the variant. */
   deliveryProfile?: Maybe<DeliveryProfile>;
   /** Display name of the variant, based on product's title + variant's title. */
   displayName: Scalars['String']['output'];
+  /** The paginated list of events associated with the host subject. */
+  events: EventConnection;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
   /** The featured image for the variant. */
@@ -37506,14 +40809,21 @@ export type ProductVariant = HasMetafieldDefinitions & HasMetafields & HasPublis
   legacyResourceId: Scalars['UnsignedInt64']['output'];
   /** The media associated with the product variant. */
   media: MediaConnection;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The order of the product variant in the list of product variants. The first position in the list is 1. */
   position: Scalars['Int']['output'];
@@ -37583,8 +40893,10 @@ export type ProductVariant = HasMetafieldDefinitions & HasMetafields & HasPublis
   taxable: Scalars['Boolean']['output'];
   /** The title of the product variant. */
   title: Scalars['String']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
+  /** The unit price measurement for the variant. */
+  unitPriceMeasurement?: Maybe<UnitPriceMeasurement>;
   /** The date and time (ISO 8601 format) when the product variant was last modified. */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -37593,6 +40905,18 @@ export type ProductVariant = HasMetafieldDefinitions & HasMetafields & HasPublis
 /** Represents a product variant. */
 export type ProductVariantContextualPricingArgs = {
   context: ContextualPricingContext;
+};
+
+
+/** Represents a product variant. */
+export type ProductVariantEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
 };
 
 
@@ -37727,18 +41051,18 @@ export type ProductVariantComponent = Node & {
 /** An auto-generated type for paginating through multiple ProductVariantComponents. */
 export type ProductVariantComponentConnection = {
   __typename?: 'ProductVariantComponentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductVariantComponentEdge>;
-  /** A list of the nodes contained in ProductVariantComponentEdge. */
+  /** A list of nodes that are contained in ProductVariantComponentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ProductVariantComponent>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ProductVariantComponent and a cursor during pagination. */
 export type ProductVariantComponentEdge = {
   __typename?: 'ProductVariantComponentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductVariantComponentEdge. */
   node: ProductVariantComponent;
@@ -37747,11 +41071,11 @@ export type ProductVariantComponentEdge = {
 /** An auto-generated type for paginating through multiple ProductVariants. */
 export type ProductVariantConnection = {
   __typename?: 'ProductVariantConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductVariantEdge>;
-  /** A list of the nodes contained in ProductVariantEdge. */
+  /** A list of nodes that are contained in ProductVariantEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ProductVariant>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -37785,28 +41109,6 @@ export type ProductVariantContextualPricingQuantityPriceBreaksArgs = {
   sortKey?: InputMaybe<QuantityPriceBreakSortKeys>;
 };
 
-/** Return type for `productVariantCreate` mutation. */
-export type ProductVariantCreatePayload = {
-  __typename?: 'ProductVariantCreatePayload';
-  /** The product associated with the variant. */
-  product?: Maybe<Product>;
-  /** The successfully created variant. */
-  productVariant?: Maybe<ProductVariant>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
-};
-
-/** Return type for `productVariantDelete` mutation. */
-export type ProductVariantDeletePayload = {
-  __typename?: 'ProductVariantDeletePayload';
-  /** The ID of the deleted product variant. */
-  deletedProductVariantId?: Maybe<Scalars['ID']['output']>;
-  /** The product associated with the deleted product variant. */
-  product?: Maybe<Product>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
-};
-
 /** The input fields required to detach media from a single variant. */
 export type ProductVariantDetachMediaInput = {
   /** Specifies the media to detach from the variant. */
@@ -37829,7 +41131,7 @@ export type ProductVariantDetachMediaPayload = {
 /** An auto-generated type which holds one ProductVariant and a cursor during pagination. */
 export type ProductVariantEdge = {
   __typename?: 'ProductVariantEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductVariantEdge. */
   node: ProductVariant;
@@ -37841,46 +41143,6 @@ export type ProductVariantGroupRelationshipInput = {
   id: Scalars['ID']['input'];
   /** The number of units of the product variant required to construct one unit of the bundle. */
   quantity: Scalars['Int']['input'];
-};
-
-/** The input fields for specifying a product variant to create or update. */
-export type ProductVariantInput = {
-  /** The value of the barcode associated with the product. */
-  barcode?: InputMaybe<Scalars['String']['input']>;
-  /** The compare-at price of the variant. */
-  compareAtPrice?: InputMaybe<Scalars['Money']['input']>;
-  /** Specifies the product variant to update or create a new variant if absent. */
-  id?: InputMaybe<Scalars['ID']['input']>;
-  /** The inventory item associated with the variant. Used for unit cost. */
-  inventoryItem?: InputMaybe<InventoryItemInput>;
-  /** Whether customers are allowed to place an order for the product variant when it's out of stock. */
-  inventoryPolicy?: InputMaybe<ProductVariantInventoryPolicy>;
-  /** The inventory quantities at each location where the variant is stocked. Supported as input with the `productVariantCreate` mutation only. */
-  inventoryQuantities?: InputMaybe<Array<InventoryLevelInput>>;
-  /** The ID of the media to associate with the variant. This field can only be used in mutations that create media images and must match one of the IDs being created on the product. This field only accepts one value. */
-  mediaId?: InputMaybe<Scalars['ID']['input']>;
-  /** The URL of the media to associate with the variant. This field can only be used in mutations that create media images and must match one of the URLs being created on the product. This field only accepts one value. */
-  mediaSrc?: InputMaybe<Array<Scalars['String']['input']>>;
-  /** Additional customizable information about the product variant. */
-  metafields?: InputMaybe<Array<MetafieldInput>>;
-  /** The custom properties that a shop owner uses to define product variants. */
-  options?: InputMaybe<Array<Scalars['String']['input']>>;
-  /** The order of the product variant in the list of product variants. The first position in the list is 1. */
-  position?: InputMaybe<Scalars['Int']['input']>;
-  /** The price of the variant. */
-  price?: InputMaybe<Scalars['Money']['input']>;
-  /** The product to create the variant for. Used as input only to the `productVariantCreate` mutation. */
-  productId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * Whether a product variant requires components. The default value is `false`.
-   * If `true`, then the product variant can only be purchased as a parent bundle with components and it will be omitted
-   * from channels that don't support bundles.
-   */
-  requiresComponents?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The tax code associated with the variant. */
-  taxCode?: InputMaybe<Scalars['String']['input']>;
-  /** Whether the variant is taxable. */
-  taxable?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** The valid values for the inventory policy of a product variant once it is out of stock. */
@@ -37929,18 +41191,18 @@ export type ProductVariantPricePair = {
 /** An auto-generated type for paginating through multiple ProductVariantPricePairs. */
 export type ProductVariantPricePairConnection = {
   __typename?: 'ProductVariantPricePairConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ProductVariantPricePairEdge>;
-  /** A list of the nodes contained in ProductVariantPricePairEdge. */
+  /** A list of nodes that are contained in ProductVariantPricePairEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ProductVariantPricePair>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ProductVariantPricePair and a cursor during pagination. */
 export type ProductVariantPricePairEdge = {
   __typename?: 'ProductVariantPricePairEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ProductVariantPricePairEdge. */
   node: ProductVariantPricePair;
@@ -38038,10 +41300,14 @@ export type ProductVariantSetInput = {
   barcode?: InputMaybe<Scalars['String']['input']>;
   /** The compare-at price of the variant. */
   compareAtPrice?: InputMaybe<Scalars['Money']['input']>;
+  /** The file to associate with the variant. */
+  file?: InputMaybe<FileSetInput>;
   /** Specifies the product variant to update or create a new variant if absent. */
   id?: InputMaybe<Scalars['ID']['input']>;
   /** Whether customers are allowed to place an order for the product variant when it's out of stock. */
   inventoryPolicy?: InputMaybe<ProductVariantInventoryPolicy>;
+  /** The inventory quantities at each location where the variant is stocked. */
+  inventoryQuantities?: InputMaybe<Array<ProductSetInventoryInput>>;
   /** Additional customizable information about the product variant. */
   metafields?: InputMaybe<Array<MetafieldInput>>;
   /** The custom properties that a shop owner uses to define product variants. */
@@ -38097,17 +41363,6 @@ export enum ProductVariantSortKeys {
   /** Sort by the `title` value. */
   Title = 'TITLE'
 }
-
-/** Return type for `productVariantUpdate` mutation. */
-export type ProductVariantUpdatePayload = {
-  __typename?: 'ProductVariantUpdatePayload';
-  /** The product associated with the variant. */
-  product?: Maybe<Product>;
-  /** The updated variant. */
-  productVariant?: Maybe<ProductVariant>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<UserError>;
-};
 
 /** Return type for `productVariantsBulkCreate` mutation. */
 export type ProductVariantsBulkCreatePayload = {
@@ -38237,6 +41492,12 @@ export type ProductVariantsBulkInput = {
   optionValues?: InputMaybe<Array<VariantOptionValueInput>>;
   /** The price of the variant. */
   price?: InputMaybe<Scalars['Money']['input']>;
+  /**
+   * Whether a product variant requires components. The default value is `false`.
+   * If `true`, then the product variant can only be purchased as a parent bundle with components and it will be
+   * omitted from channels that don't support bundles.
+   */
+  requiresComponents?: InputMaybe<Scalars['Boolean']['input']>;
   /** The tax code associated with the variant. */
   taxCode?: InputMaybe<Scalars['String']['input']>;
   /** Whether the variant is taxable. */
@@ -38403,7 +41664,7 @@ export enum PubSubWebhookSubscriptionCreateUserErrorCode {
 
 /** The input fields for a PubSub webhook subscription. */
 export type PubSubWebhookSubscriptionInput = {
-  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. */
+  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. See our [guide on filters](https://shopify.dev/docs/apps/build/webhooks/customize/filters) for more details. */
   filter?: InputMaybe<Scalars['String']['input']>;
   /** The format in which the webhook subscription should send the data. */
   format?: InputMaybe<WebhookSubscriptionFormat>;
@@ -38527,11 +41788,11 @@ export type PublicationProductsArgs = {
 /** An auto-generated type for paginating through multiple Publications. */
 export type PublicationConnection = {
   __typename?: 'PublicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<PublicationEdge>;
-  /** A list of the nodes contained in PublicationEdge. */
+  /** A list of nodes that are contained in PublicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Publication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -38574,7 +41835,7 @@ export type PublicationDeletePayload = {
 /** An auto-generated type which holds one Publication and a cursor during pagination. */
 export type PublicationEdge = {
   __typename?: 'PublicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of PublicationEdge. */
   node: Publication;
@@ -38679,39 +41940,70 @@ export enum PublicationUserErrorCode {
  * A publishable resource can be either a Product or Collection.
  */
 export type Publishable = {
-  /** The number of publications a resource is published to without feedback errors. */
+  /**
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
+   */
   availablePublicationsCount?: Maybe<Count>;
   /**
-   * The number of publications a resource is published on.
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
    * @deprecated Use `resourcePublicationsCount` instead.
    */
   publicationCount: Scalars['Int']['output'];
   /**
-   * Check to see whether the resource is published to a given channel.
+   * Whether the resource is published to a specific channel.
    * @deprecated Use `publishedOnPublication` instead.
    */
   publishedOnChannel: Scalars['Boolean']['output'];
   /**
-   * Check to see whether the resource is published to the calling app's channel.
+   * Whether the resource is published to a
+   * [channel](https://shopify.dev/docs/api/admin-graphql/latest/objects/Channel).
+   * For example, the resource might be published to the online store channel.
    * @deprecated Use `publishedOnCurrentPublication` instead.
    */
   publishedOnCurrentChannel: Scalars['Boolean']['output'];
-  /** Check to see whether the resource is published to the calling app's publication. */
+  /**
+   * Whether the resource is published to the app's
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   * For example, the resource might be published to the app's online store channel.
+   */
   publishedOnCurrentPublication: Scalars['Boolean']['output'];
-  /** Check to see whether the resource is published to a given publication. */
+  /**
+   * Whether the resource is published to a specified
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   publishedOnPublication: Scalars['Boolean']['output'];
-  /** The list of resources that are published to a publication. */
+  /**
+   * The list of resources that are published to a
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublications: ResourcePublicationConnection;
-  /** The number of publications a resource is published on. */
+  /**
+   * The number of
+   * [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that a resource is published to, without
+   * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
+   */
   resourcePublicationsCount?: Maybe<Count>;
-  /** The list of resources that are either published or staged to be published to a publication. */
+  /**
+   * The list of resources that are either published or staged to be published to a
+   * [publication](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication).
+   */
   resourcePublicationsV2: ResourcePublicationV2Connection;
   /**
    * The list of channels that the resource is not published to.
    * @deprecated Use `unpublishedPublications` instead.
    */
   unpublishedChannels: ChannelConnection;
-  /** The list of publications that the resource is not published to. */
+  /**
+   * The list of [publications](https://shopify.dev/docs/api/admin-graphql/latest/objects/Publication)
+   * that the resource isn't published to.
+   */
   unpublishedPublications: PublicationConnection;
 };
 
@@ -38903,18 +42195,18 @@ export type QuantityPriceBreak = Node & {
 /** An auto-generated type for paginating through multiple QuantityPriceBreaks. */
 export type QuantityPriceBreakConnection = {
   __typename?: 'QuantityPriceBreakConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<QuantityPriceBreakEdge>;
-  /** A list of the nodes contained in QuantityPriceBreakEdge. */
+  /** A list of nodes that are contained in QuantityPriceBreakEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<QuantityPriceBreak>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one QuantityPriceBreak and a cursor during pagination. */
 export type QuantityPriceBreakEdge = {
   __typename?: 'QuantityPriceBreakEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of QuantityPriceBreakEdge. */
   node: QuantityPriceBreak;
@@ -39085,18 +42377,18 @@ export type QuantityRule = {
 /** An auto-generated type for paginating through multiple QuantityRules. */
 export type QuantityRuleConnection = {
   __typename?: 'QuantityRuleConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<QuantityRuleEdge>;
-  /** A list of the nodes contained in QuantityRuleEdge. */
+  /** A list of nodes that are contained in QuantityRuleEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<QuantityRule>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one QuantityRule and a cursor during pagination. */
 export type QuantityRuleEdge = {
   __typename?: 'QuantityRuleEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of QuantityRuleEdge. */
   node: QuantityRule;
@@ -39188,6 +42480,10 @@ export type QuantityRulesDeletePayload = {
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRoot = {
   __typename?: 'QueryRoot';
+  /** List of abandoned checkouts. Includes checkouts that were recovered after being abandoned. */
+  abandonedCheckouts: AbandonedCheckoutConnection;
+  /** Returns the count of abandoned checkouts for the given shop. Limited to a maximum of 10000. */
+  abandonedCheckoutsCount?: Maybe<Count>;
   /** Returns an abandonment by ID. */
   abandonment?: Maybe<Abandonment>;
   /** Returns an Abandonment by the Abandoned Checkout ID. */
@@ -39212,6 +42508,12 @@ export type QueryRoot = {
   appInstallation?: Maybe<AppInstallation>;
   /** A list of app installations. To use this query, you need to contact [Shopify Support](https://partners.shopify.com/current/support/) to grant your custom app the `read_apps` access scope. Public apps can't be granted this access scope. */
   appInstallations: AppInstallationConnection;
+  /** Returns an Article resource by ID. */
+  article?: Maybe<Article>;
+  /** List of all article tags. */
+  articleTags: Array<Scalars['String']['output']>;
+  /** List of the shop's articles. */
+  articles: ArticleConnection;
   /**
    * The paginated list of fulfillment orders assigned to the shop locations owned by the app.
    *
@@ -39254,6 +42556,16 @@ export type QueryRoot = {
   availableCarrierServices: Array<DeliveryCarrierServiceAndLocations>;
   /** A list of available locales. */
   availableLocales: Array<Locale>;
+  /** Returns a Blog resource by ID. */
+  blog?: Maybe<Blog>;
+  /** List of the shop's blogs. */
+  blogs: BlogConnection;
+  /** Count of blogs. */
+  blogsCount?: Maybe<Count>;
+  /** Returns a list of Business Entities associated with the shop. */
+  businessEntities: Array<BusinessEntity>;
+  /** Returns a Business Entity by ID. */
+  businessEntity?: Maybe<BusinessEntity>;
   /** Returns a `DeliveryCarrierService` object by ID. */
   carrierService?: Maybe<DeliveryCarrierService>;
   /** Retrieve a list of CarrierServices. */
@@ -39293,18 +42605,11 @@ export type QueryRoot = {
    * To learn more about updating checkout branding settings, refer to the
    * [checkoutBrandingUpsert](https://shopify.dev/api/admin-graphql/unstable/mutations/checkoutBrandingUpsert)
    * mutation and the checkout branding [tutorial](https://shopify.dev/docs/apps/checkout/styling).
-   * @deprecated To be replaced with checkoutAndAccountsConfiguration.
    */
   checkoutBranding?: Maybe<CheckoutBranding>;
-  /**
-   * A checkout profile on a shop.
-   * @deprecated To be replaced with checkoutAndAccountsConfiguration.
-   */
+  /** A checkout profile on a shop. */
   checkoutProfile?: Maybe<CheckoutProfile>;
-  /**
-   * List of checkout profiles on a shop.
-   * @deprecated To be replaced with checkoutAndAccountsConfigurations.
-   */
+  /** List of checkout profiles on a shop. */
   checkoutProfiles: CheckoutProfileConnection;
   /** Returns a code discount resource by ID. */
   codeDiscountNode?: Maybe<DiscountCodeNode>;
@@ -39328,6 +42633,12 @@ export type QueryRoot = {
   collectionSavedSearches: SavedSearchConnection;
   /** Returns a list of collections. */
   collections: CollectionConnection;
+  /** Count of collections. Limited to a maximum of 10000. */
+  collectionsCount?: Maybe<Count>;
+  /** Returns a Comment resource by ID. */
+  comment?: Maybe<Comment>;
+  /** List of the shop's comments. */
+  comments: CommentConnection;
   /** Returns the list of companies in the shop. */
   companies: CompanyConnection;
   /** The number of companies for a shop. */
@@ -39346,8 +42657,14 @@ export type QueryRoot = {
   currentAppInstallation: AppInstallation;
   /** Returns the current app's most recent BulkOperation. Apps can run one bulk query and one bulk mutation operation at a time, by shop. */
   currentBulkOperation?: Maybe<BulkOperation>;
+  /** The staff member making the API request. */
+  currentStaffMember?: Maybe<StaffMember>;
   /** Returns a Customer resource by ID. */
   customer?: Maybe<Customer>;
+  /** Returns a customer account page. */
+  customerAccountPage?: Maybe<CustomerAccountPage>;
+  /** List of the shop's customer account pages. */
+  customerAccountPages?: Maybe<CustomerAccountPageConnection>;
   /** Returns the status of a customer merge request job. */
   customerMergeJobStatus?: Maybe<CustomerMergeRequest>;
   /** Returns a preview of a customer merge request. */
@@ -39363,7 +42680,7 @@ export type QueryRoot = {
   customerSegmentMembersQuery?: Maybe<CustomerSegmentMembersQuery>;
   /** Whether a member, which is a customer, belongs to a segment. */
   customerSegmentMembership: SegmentMembershipResponse;
-  /** List of customers. */
+  /** Returns a list of customers. */
   customers: CustomerConnection;
   /** The number of customers. */
   customersCount?: Maybe<Count>;
@@ -39390,6 +42707,8 @@ export type QueryRoot = {
   discountNode?: Maybe<DiscountNode>;
   /** List of discounts. */
   discountNodes: DiscountNodeConnection;
+  /** The total number of discounts for the shop. Limited to a maximum of 10000. */
+  discountNodesCount?: Maybe<Count>;
   /** Returns a bulk code creation resource by ID. */
   discountRedeemCodeBulkCreation?: Maybe<DiscountRedeemCodeBulkCreation>;
   /** List of the shop's redeemed discount code saved searches. */
@@ -39398,6 +42717,8 @@ export type QueryRoot = {
   dispute?: Maybe<ShopifyPaymentsDispute>;
   /** Returns dispute evidence details based on ID. */
   disputeEvidence?: Maybe<ShopifyPaymentsDisputeEvidence>;
+  /** All disputes related to the Shop. */
+  disputes: ShopifyPaymentsDisputeConnection;
   /** Lookup a Domain by ID. */
   domain?: Maybe<Domain>;
   /** Returns a DraftOrder resource by ID. */
@@ -39408,6 +42729,12 @@ export type QueryRoot = {
   draftOrderTag?: Maybe<DraftOrderTag>;
   /** List of saved draft orders. */
   draftOrders: DraftOrderConnection;
+  /** Get a single event by its id. */
+  event?: Maybe<Event>;
+  /** The paginated list of events associated with the store. */
+  events?: Maybe<EventConnection>;
+  /** Count of events. Limited to a maximum of 10000. */
+  eventsCount?: Maybe<Count>;
   /** A list of the shop's file saved searches. */
   fileSavedSearches: SavedSearchConnection;
   /** Returns a paginated list of files that have been uploaded to Shopify. */
@@ -39497,7 +42824,7 @@ export type QueryRoot = {
   menu?: Maybe<Menu>;
   /** The shop's menus. */
   menus: MenuConnection;
-  /** Returns a metafield definition by ID. */
+  /** Returns a metafield definition by identifier. */
   metafieldDefinition?: Maybe<MetafieldDefinition>;
   /**
    * Each metafield definition has a type, which defines the type of information that it can store.
@@ -39506,7 +42833,7 @@ export type QueryRoot = {
    * Refer to the [list of supported metafield types](https://shopify.dev/apps/metafields/types).
    */
   metafieldDefinitionTypes: Array<MetafieldDefinitionType>;
-  /** List of metafield definitions. */
+  /** Returns a list of metafield definitions. */
   metafieldDefinitions: MetafieldDefinitionConnection;
   /**
    * List of the `MetafieldStorefrontVisibility` records.
@@ -39560,10 +42887,16 @@ export type QueryRoot = {
   orderPaymentStatus?: Maybe<OrderPaymentStatus>;
   /** List of the shop's order saved searches. */
   orderSavedSearches: SavedSearchConnection;
-  /** Returns a list of orders placed. */
+  /** Returns a list of orders placed in the store. */
   orders: OrderConnection;
   /** Returns the count of orders for the given shop. Limited to a maximum of 10000. */
   ordersCount?: Maybe<Count>;
+  /** Returns a Page resource by ID. */
+  page?: Maybe<Page>;
+  /** List of the shop's pages. */
+  pages: PageConnection;
+  /** Count of pages. */
+  pagesCount?: Maybe<Count>;
   /** The payment customization. */
   paymentCustomization?: Maybe<PaymentCustomization>;
   /** The payment customizations. */
@@ -39576,18 +42909,6 @@ export type QueryRoot = {
   priceList?: Maybe<PriceList>;
   /** All price lists for a shop. */
   priceLists: PriceListConnection;
-  /**
-   * Returns a code price rule resource by ID.
-   * @deprecated Use `codeDiscountNode` instead.
-   */
-  priceRule?: Maybe<PriceRule>;
-  /** List of the shop's price rule saved searches. */
-  priceRuleSavedSearches: SavedSearchConnection;
-  /**
-   * Returns a list of price rule resources that have at least one associated discount code.
-   * @deprecated Use `codeDiscountNodes` instead.
-   */
-  priceRules: PriceRuleConnection;
   /** The primary market of the shop. */
   primaryMarket: Market;
   /**
@@ -39640,9 +42961,11 @@ export type QueryRoot = {
   productSavedSearches: SavedSearchConnection;
   /** Returns a ProductVariant resource by ID. */
   productVariant?: Maybe<ProductVariant>;
-  /** List of the product variants. */
+  /** Returns a list of product variants. */
   productVariants: ProductVariantConnection;
-  /** List of products. */
+  /** Count of product variants. */
+  productVariantsCount?: Maybe<Count>;
+  /** Returns a list of products. */
   products: ProductConnection;
   /** Count of products. Limited to a maximum of 10000. */
   productsCount?: Maybe<Count>;
@@ -39729,6 +43052,8 @@ export type QueryRoot = {
   shopifyPaymentsAccount?: Maybe<ShopifyPaymentsAccount>;
   /** The StaffMember resource, by ID. */
   staffMember?: Maybe<StaffMember>;
+  /** The shop staff members. */
+  staffMembers?: Maybe<StaffMemberConnection>;
   /**
    * Standard metafield definitions are intended for specific, common use cases. Their namespace and keys reflect these use cases and are reserved.
    *
@@ -39760,6 +43085,10 @@ export type QueryRoot = {
   taxonomy?: Maybe<Taxonomy>;
   /** Returns a list of TenderTransactions associated with the shop. */
   tenderTransactions: TenderTransactionConnection;
+  /** Returns a particular theme for the shop. */
+  theme?: Maybe<OnlineStoreTheme>;
+  /** Returns a paginated list of themes for the shop. */
+  themes?: Maybe<OnlineStoreThemeConnection>;
   /** A resource that can have localized values for different languages. */
   translatableResource?: Maybe<TranslatableResource>;
   /** Resources that can have localized values for different languages. */
@@ -39774,18 +43103,53 @@ export type QueryRoot = {
   urlRedirectSavedSearches: SavedSearchConnection;
   /** A list of redirects for a shop. */
   urlRedirects: UrlRedirectConnection;
+  /** Count of redirects. Limited to a maximum of 10000. */
+  urlRedirectsCount?: Maybe<Count>;
   /** Validation available on the shop. */
   validation?: Maybe<Validation>;
   /** Validations available on the shop. */
   validations: ValidationConnection;
   /** The web pixel configured by the app. */
   webPixel?: Maybe<WebPixel>;
-  /** Returns a webhook subscription by ID. */
+  /**
+   * Returns a webhook subscription by ID.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   webhookSubscription?: Maybe<WebhookSubscription>;
-  /** Returns a list of webhook subscriptions. */
+  /**
+   * Returns a list of webhook subscriptions.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   */
   webhookSubscriptions: WebhookSubscriptionConnection;
-  /** The count of webhook subscriptions. Limited to a maximum of 10000. */
+  /**
+   * The count of webhook subscriptions.
+   *
+   * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe). Limited to a maximum of 10000.
+   */
   webhookSubscriptionsCount?: Maybe<Count>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootAbandonedCheckoutsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
+  sortKey?: InputMaybe<AbandonedCheckoutSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootAbandonedCheckoutsCountArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -39841,6 +43205,31 @@ export type QueryRootAppInstallationsArgs = {
   privacy?: InputMaybe<AppInstallationPrivacy>;
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   sortKey?: InputMaybe<AppInstallationSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootArticleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootArticleTagsArgs = {
+  limit: Scalars['Int']['input'];
+  sort?: InputMaybe<ArticleTagSort>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootArticlesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<ArticleSortKeys>;
 };
 
 
@@ -39902,6 +43291,36 @@ export type QueryRootAutomaticDiscountsArgs = {
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   savedSearchId?: InputMaybe<Scalars['ID']['input']>;
   sortKey?: InputMaybe<AutomaticDiscountSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootBlogArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootBlogsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<BlogSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootBlogsCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootBusinessEntityArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -40088,6 +43507,31 @@ export type QueryRootCollectionsArgs = {
 
 
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootCollectionsCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
+  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootCommentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootCommentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<CommentSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootCompaniesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -40144,6 +43588,22 @@ export type QueryRootCurrentBulkOperationArgs = {
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootCustomerArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootCustomerAccountPageArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootCustomerAccountPagesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -40293,6 +43753,13 @@ export type QueryRootDiscountNodesArgs = {
 
 
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootDiscountNodesCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
+  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootDiscountRedeemCodeBulkCreationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -40319,6 +43786,17 @@ export type QueryRootDisputeArgs = {
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootDisputeEvidenceArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootDisputesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -40360,6 +43838,30 @@ export type QueryRootDraftOrdersArgs = {
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   savedSearchId?: InputMaybe<Scalars['ID']['input']>;
   sortKey?: InputMaybe<DraftOrderSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootEventArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootEventsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<EventSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootEventsCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -40788,6 +44290,22 @@ export type QueryRootOrdersCountArgs = {
 
 
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootPageArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootPagesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootPaymentCustomizationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -40824,35 +44342,6 @@ export type QueryRootPriceListsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   sortKey?: InputMaybe<PriceListSortKeys>;
-};
-
-
-/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
-export type QueryRootPriceRuleArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
-export type QueryRootPriceRuleSavedSearchesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
-export type QueryRootPriceRulesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  query?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
-  sortKey?: InputMaybe<PriceRuleSortKeys>;
 };
 
 
@@ -40946,6 +44435,12 @@ export type QueryRootProductVariantsArgs = {
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   savedSearchId?: InputMaybe<Scalars['ID']['input']>;
   sortKey?: InputMaybe<ProductVariantSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootProductVariantsCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -41170,6 +44665,18 @@ export type QueryRootStaffMemberArgs = {
 
 
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootStaffMembersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  sortKey?: InputMaybe<StaffMembersSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootStandardMetafieldDefinitionTemplatesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -41272,6 +44779,24 @@ export type QueryRootTenderTransactionsArgs = {
 
 
 /** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootThemeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootThemesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  names?: InputMaybe<Array<Scalars['String']['input']>>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+  roles?: InputMaybe<Array<ThemeRole>>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
 export type QueryRootTranslatableResourceArgs = {
   resourceId: Scalars['ID']['input'];
 };
@@ -41331,6 +44856,13 @@ export type QueryRootUrlRedirectsArgs = {
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   savedSearchId?: InputMaybe<Scalars['ID']['input']>;
   sortKey?: InputMaybe<UrlRedirectSortKeys>;
+};
+
+
+/** The schema's entry-point for queries. This acts as the public, top-level API from which all queries must start. */
+export type QueryRootUrlRedirectsCountArgs = {
+  query?: InputMaybe<Scalars['String']['input']>;
+  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -41398,6 +44930,8 @@ export type Refund = LegacyInteroperability & Node & {
   note?: Maybe<Scalars['String']['output']>;
   /** The order associated with the refund. */
   order: Order;
+  /** The order adjustments that are attached with the refund. */
+  orderAdjustments: OrderAdjustmentConnection;
   /** The `RefundLineItem` resources attached to the refund. */
   refundLineItems: RefundLineItemConnection;
   /** The `RefundShippingLine` resources attached to the refund. */
@@ -41417,6 +44951,16 @@ export type Refund = LegacyInteroperability & Node & {
   transactions: OrderTransactionConnection;
   /** The date and time when the refund was updated. */
   updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** The record of the line items and transactions that were refunded to a customer, along with restocking instructions for refunded line items. */
+export type RefundOrderAdjustmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -41481,11 +45025,11 @@ export type RefundAgreementSalesArgs = {
 /** An auto-generated type for paginating through multiple Refunds. */
 export type RefundConnection = {
   __typename?: 'RefundConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<RefundEdge>;
-  /** A list of the nodes contained in RefundEdge. */
+  /** A list of nodes that are contained in RefundEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Refund>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -41528,7 +45072,7 @@ export enum RefundDutyRefundType {
 /** An auto-generated type which holds one Refund and a cursor during pagination. */
 export type RefundEdge = {
   __typename?: 'RefundEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of RefundEdge. */
   node: Refund;
@@ -41538,6 +45082,8 @@ export type RefundEdge = {
 export type RefundInput = {
   /** The currency that is used to refund the order. This must be the presentment currency, which is the currency used by the customer. This is a required field for orders where the currency and presentment currency differ. */
   currency?: InputMaybe<CurrencyCode>;
+  /** An optional reason for a discrepancy between calculated and actual refund amounts. */
+  discrepancyReason?: InputMaybe<OrderAdjustmentInputDiscrepancyReason>;
   /** An optional note that's attached to the refund. */
   note?: InputMaybe<Scalars['String']['input']>;
   /** Whether to send a refund notification to the customer. */
@@ -41595,18 +45141,18 @@ export type RefundLineItem = {
 /** An auto-generated type for paginating through multiple RefundLineItems. */
 export type RefundLineItemConnection = {
   __typename?: 'RefundLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<RefundLineItemEdge>;
-  /** A list of the nodes contained in RefundLineItemEdge. */
+  /** A list of nodes that are contained in RefundLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<RefundLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one RefundLineItem and a cursor during pagination. */
 export type RefundLineItemEdge = {
   __typename?: 'RefundLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of RefundLineItemEdge. */
   node: RefundLineItem;
@@ -41654,23 +45200,27 @@ export type RefundShippingLine = Node & {
   id: Scalars['ID']['output'];
   /** The `ShippingLine` resource associated to the refunded shipping line item. */
   shippingLine: ShippingLine;
+  /** The subtotal amount of the refund shipping line in shop and presentment currencies. */
+  subtotalAmountSet: MoneyBag;
+  /** The tax amount of the refund shipping line in shop and presentment currencies. */
+  taxAmountSet: MoneyBag;
 };
 
 /** An auto-generated type for paginating through multiple RefundShippingLines. */
 export type RefundShippingLineConnection = {
   __typename?: 'RefundShippingLineConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<RefundShippingLineEdge>;
-  /** A list of the nodes contained in RefundShippingLineEdge. */
+  /** A list of nodes that are contained in RefundShippingLineEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<RefundShippingLine>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one RefundShippingLine and a cursor during pagination. */
 export type RefundShippingLineEdge = {
   __typename?: 'RefundShippingLineEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of RefundShippingLineEdge. */
   node: RefundShippingLine;
@@ -41678,7 +45228,10 @@ export type RefundShippingLineEdge = {
 
 /** The input fields for a remote Authorize.net customer payment profile. */
 export type RemoteAuthorizeNetCustomerPaymentProfileInput = {
-  /** The customerPaymentProfileId value from the Authorize.net API. */
+  /**
+   * The customerPaymentProfileId value from the Authorize.net API. Starting on 2025,
+   * customer_payment_profile_id will become mandatory for all API versions.
+   */
   customerPaymentProfileId?: InputMaybe<Scalars['String']['input']>;
   /** The customerProfileId value from the Authorize.net API. */
   customerProfileId: Scalars['String']['input'];
@@ -41688,7 +45241,10 @@ export type RemoteAuthorizeNetCustomerPaymentProfileInput = {
 export type RemoteBraintreePaymentMethodInput = {
   /** The `customer_id` value from the Braintree API. */
   customerId: Scalars['String']['input'];
-  /** The `payment_method_token` value from the Braintree API. */
+  /**
+   * The `payment_method_token` value from the Braintree API. Starting on 2025,
+   * payment_method_token will become mandatory for all API versions.
+   */
   paymentMethodToken?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -41696,7 +45252,10 @@ export type RemoteBraintreePaymentMethodInput = {
 export type RemoteStripePaymentMethodInput = {
   /** The customer_id value from the Stripe API. */
   customerId: Scalars['String']['input'];
-  /** The payment_method_id value from the Stripe API. */
+  /**
+   * The payment_method_id value from the Stripe API. Starting on 2025,
+   * payment_method_id will become mandatory for all API versions.
+   */
   paymentMethodId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -41862,18 +45421,18 @@ export type ResourcePublication = {
 /** An auto-generated type for paginating through multiple ResourcePublications. */
 export type ResourcePublicationConnection = {
   __typename?: 'ResourcePublicationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ResourcePublicationEdge>;
-  /** A list of the nodes contained in ResourcePublicationEdge. */
+  /** A list of nodes that are contained in ResourcePublicationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ResourcePublication>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ResourcePublication and a cursor during pagination. */
 export type ResourcePublicationEdge = {
   __typename?: 'ResourcePublicationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ResourcePublicationEdge. */
   node: ResourcePublication;
@@ -41903,18 +45462,18 @@ export type ResourcePublicationV2 = {
 /** An auto-generated type for paginating through multiple ResourcePublicationV2s. */
 export type ResourcePublicationV2Connection = {
   __typename?: 'ResourcePublicationV2Connection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ResourcePublicationV2Edge>;
-  /** A list of the nodes contained in ResourcePublicationV2Edge. */
+  /** A list of nodes that are contained in ResourcePublicationV2Edge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ResourcePublicationV2>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ResourcePublicationV2 and a cursor during pagination. */
 export type ResourcePublicationV2Edge = {
   __typename?: 'ResourcePublicationV2Edge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ResourcePublicationV2Edge. */
   node: ResourcePublicationV2;
@@ -41938,6 +45497,15 @@ export type RestockingFee = Fee & {
 export type RestockingFeeInput = {
   /** The value of the fee as a percentage. */
   percentage: Scalars['Float']['input'];
+};
+
+/** Information about product is restricted for a given resource. */
+export type RestrictedForResource = {
+  __typename?: 'RestrictedForResource';
+  /** Returns true when the product is restricted for the given resource. */
+  restricted: Scalars['Boolean']['output'];
+  /** Restriction reason for the given resource. */
+  restrictedReason: Scalars['String']['output'];
 };
 
 /** Represents a return. */
@@ -42051,6 +45619,11 @@ export type ReturnAgreementSalesArgs = {
 export type ReturnApproveRequestInput = {
   /** The ID of the return that's being approved. */
   id: Scalars['ID']['input'];
+  /**
+   * Notify the customer when a return request is approved.
+   * The customer will only receive a notification if `Order.email` is present.
+   */
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Return type for `returnApproveRequest` mutation. */
@@ -42083,11 +45656,11 @@ export type ReturnClosePayload = {
 /** An auto-generated type for paginating through multiple Returns. */
 export type ReturnConnection = {
   __typename?: 'ReturnConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReturnEdge>;
-  /** A list of the nodes contained in ReturnEdge. */
+  /** A list of nodes that are contained in ReturnEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Return>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -42124,10 +45697,20 @@ export enum ReturnDeclineReason {
 
 /** The input fields for declining a customer's return request. */
 export type ReturnDeclineRequestInput = {
+  /**
+   * The notification message that's sent to a customer about their declined return request.
+   * Maximum length: 500 characters.
+   */
+  declineNote?: InputMaybe<Scalars['String']['input']>;
   /** The reason why the merchant declined the customer's return request. */
   declineReason: ReturnDeclineReason;
   /** The ID of the return that's being declined. */
   id: Scalars['ID']['input'];
+  /**
+   * Notify the customer when a return request is declined.
+   * The customer will only receive a notification if `Order.email` is present.
+   */
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Return type for `returnDeclineRequest` mutation. */
@@ -42142,7 +45725,7 @@ export type ReturnDeclineRequestPayload = {
 /** An auto-generated type which holds one Return and a cursor during pagination. */
 export type ReturnEdge = {
   __typename?: 'ReturnEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReturnEdge. */
   node: Return;
@@ -42301,18 +45884,18 @@ export type ReturnLineItemType = {
 /** An auto-generated type for paginating through multiple ReturnLineItemTypes. */
 export type ReturnLineItemTypeConnection = {
   __typename?: 'ReturnLineItemTypeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReturnLineItemTypeEdge>;
-  /** A list of the nodes contained in ReturnLineItemTypeEdge. */
+  /** A list of nodes that are contained in ReturnLineItemTypeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReturnLineItemType>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ReturnLineItemType and a cursor during pagination. */
 export type ReturnLineItemTypeEdge = {
   __typename?: 'ReturnLineItemTypeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReturnLineItemTypeEdge. */
   node: ReturnLineItemType;
@@ -42502,18 +46085,18 @@ export type ReturnableFulfillmentReturnableFulfillmentLineItemsArgs = {
 /** An auto-generated type for paginating through multiple ReturnableFulfillments. */
 export type ReturnableFulfillmentConnection = {
   __typename?: 'ReturnableFulfillmentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReturnableFulfillmentEdge>;
-  /** A list of the nodes contained in ReturnableFulfillmentEdge. */
+  /** A list of nodes that are contained in ReturnableFulfillmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReturnableFulfillment>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ReturnableFulfillment and a cursor during pagination. */
 export type ReturnableFulfillmentEdge = {
   __typename?: 'ReturnableFulfillmentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReturnableFulfillmentEdge. */
   node: ReturnableFulfillment;
@@ -42531,18 +46114,18 @@ export type ReturnableFulfillmentLineItem = {
 /** An auto-generated type for paginating through multiple ReturnableFulfillmentLineItems. */
 export type ReturnableFulfillmentLineItemConnection = {
   __typename?: 'ReturnableFulfillmentLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReturnableFulfillmentLineItemEdge>;
-  /** A list of the nodes contained in ReturnableFulfillmentLineItemEdge. */
+  /** A list of nodes that are contained in ReturnableFulfillmentLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReturnableFulfillmentLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ReturnableFulfillmentLineItem and a cursor during pagination. */
 export type ReturnableFulfillmentLineItemEdge = {
   __typename?: 'ReturnableFulfillmentLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReturnableFulfillmentLineItemEdge. */
   node: ReturnableFulfillmentLineItem;
@@ -42584,11 +46167,11 @@ export type ReverseDeliveryReverseDeliveryLineItemsArgs = {
 /** An auto-generated type for paginating through multiple ReverseDeliveries. */
 export type ReverseDeliveryConnection = {
   __typename?: 'ReverseDeliveryConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReverseDeliveryEdge>;
-  /** A list of the nodes contained in ReverseDeliveryEdge. */
+  /** A list of nodes that are contained in ReverseDeliveryEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReverseDelivery>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -42604,34 +46187,10 @@ export type ReverseDeliveryCreateWithShippingPayload = {
 /** The delivery method and artifacts associated with a reverse delivery. */
 export type ReverseDeliveryDeliverable = ReverseDeliveryShippingDeliverable;
 
-/** The input fields to dispose a reverse delivery line item. */
-export type ReverseDeliveryDisposeInput = {
-  /** The final arrangement for the reverse delivery line item. */
-  dispositionType: ReverseFulfillmentOrderDispositionType;
-  /**
-   * The ID of the location where the reverse delivery line item is to be disposed. This is required
-   *           when the disposition type is RESTOCKED.
-   */
-  locationId?: InputMaybe<Scalars['ID']['input']>;
-  /** The quantity of the reverse delivery line item to dispose. */
-  quantity: Scalars['Int']['input'];
-  /** The ID of the reverse delivery line item. */
-  reverseDeliveryLineItemId: Scalars['ID']['input'];
-};
-
-/** Return type for `reverseDeliveryDispose` mutation. */
-export type ReverseDeliveryDisposePayload = {
-  __typename?: 'ReverseDeliveryDisposePayload';
-  /** The disposed reverse delivery line items. */
-  reverseDeliveryLineItems?: Maybe<Array<ReverseDeliveryLineItem>>;
-  /** The list of errors that occurred from executing the mutation. */
-  userErrors: Array<ReturnUserError>;
-};
-
 /** An auto-generated type which holds one ReverseDelivery and a cursor during pagination. */
 export type ReverseDeliveryEdge = {
   __typename?: 'ReverseDeliveryEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReverseDeliveryEdge. */
   node: ReverseDelivery;
@@ -42670,18 +46229,18 @@ export type ReverseDeliveryLineItem = Node & {
 /** An auto-generated type for paginating through multiple ReverseDeliveryLineItems. */
 export type ReverseDeliveryLineItemConnection = {
   __typename?: 'ReverseDeliveryLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReverseDeliveryLineItemEdge>;
-  /** A list of the nodes contained in ReverseDeliveryLineItemEdge. */
+  /** A list of nodes that are contained in ReverseDeliveryLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReverseDeliveryLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ReverseDeliveryLineItem and a cursor during pagination. */
 export type ReverseDeliveryLineItemEdge = {
   __typename?: 'ReverseDeliveryLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReverseDeliveryLineItemEdge. */
   node: ReverseDeliveryLineItem;
@@ -42784,11 +46343,11 @@ export type ReverseFulfillmentOrderReverseDeliveriesArgs = {
 /** An auto-generated type for paginating through multiple ReverseFulfillmentOrders. */
 export type ReverseFulfillmentOrderConnection = {
   __typename?: 'ReverseFulfillmentOrderConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReverseFulfillmentOrderEdge>;
-  /** A list of the nodes contained in ReverseFulfillmentOrderEdge. */
+  /** A list of nodes that are contained in ReverseFulfillmentOrderEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReverseFulfillmentOrder>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -42844,7 +46403,7 @@ export enum ReverseFulfillmentOrderDispositionType {
 /** An auto-generated type which holds one ReverseFulfillmentOrder and a cursor during pagination. */
 export type ReverseFulfillmentOrderEdge = {
   __typename?: 'ReverseFulfillmentOrderEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReverseFulfillmentOrderEdge. */
   node: ReverseFulfillmentOrder;
@@ -42855,11 +46414,8 @@ export type ReverseFulfillmentOrderLineItem = Node & {
   __typename?: 'ReverseFulfillmentOrderLineItem';
   /** The dispositions of the item. */
   dispositions: Array<ReverseFulfillmentOrderDisposition>;
-  /**
-   * The corresponding fulfillment line item for a reverse fulfillment order line item.
-   * @deprecated FulfillmentLineItem will be nullable as of API version 2024-10. Older version will return error when FulfillmentLineItem is null.
-   */
-  fulfillmentLineItem: FulfillmentLineItem;
+  /** The corresponding fulfillment line item for a reverse fulfillment order line item. */
+  fulfillmentLineItem?: Maybe<FulfillmentLineItem>;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
   /** The total number of units to be processed. */
@@ -42869,18 +46425,18 @@ export type ReverseFulfillmentOrderLineItem = Node & {
 /** An auto-generated type for paginating through multiple ReverseFulfillmentOrderLineItems. */
 export type ReverseFulfillmentOrderLineItemConnection = {
   __typename?: 'ReverseFulfillmentOrderLineItemConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ReverseFulfillmentOrderLineItemEdge>;
-  /** A list of the nodes contained in ReverseFulfillmentOrderLineItemEdge. */
+  /** A list of nodes that are contained in ReverseFulfillmentOrderLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ReverseFulfillmentOrderLineItem>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ReverseFulfillmentOrderLineItem and a cursor during pagination. */
 export type ReverseFulfillmentOrderLineItemEdge = {
   __typename?: 'ReverseFulfillmentOrderLineItemEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ReverseFulfillmentOrderLineItemEdge. */
   node: ReverseFulfillmentOrderLineItem;
@@ -43028,18 +46584,18 @@ export type SaleAdditionalFee = Node & {
 /** An auto-generated type for paginating through multiple Sales. */
 export type SaleConnection = {
   __typename?: 'SaleConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SaleEdge>;
-  /** A list of the nodes contained in SaleEdge. */
+  /** A list of nodes that are contained in SaleEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Sale>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one Sale and a cursor during pagination. */
 export type SaleEdge = {
   __typename?: 'SaleEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SaleEdge. */
   node: Sale;
@@ -43107,18 +46663,18 @@ export type SalesAgreementSalesArgs = {
 /** An auto-generated type for paginating through multiple SalesAgreements. */
 export type SalesAgreementConnection = {
   __typename?: 'SalesAgreementConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SalesAgreementEdge>;
-  /** A list of the nodes contained in SalesAgreementEdge. */
+  /** A list of nodes that are contained in SalesAgreementEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SalesAgreement>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SalesAgreement and a cursor during pagination. */
 export type SalesAgreementEdge = {
   __typename?: 'SalesAgreementEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SalesAgreementEdge. */
   node: SalesAgreement;
@@ -43146,11 +46702,11 @@ export type SavedSearch = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple SavedSearches. */
 export type SavedSearchConnection = {
   __typename?: 'SavedSearchConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SavedSearchEdge>;
-  /** A list of the nodes contained in SavedSearchEdge. */
+  /** A list of nodes that are contained in SavedSearchEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SavedSearch>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -43193,7 +46749,7 @@ export type SavedSearchDeletePayload = {
 /** An auto-generated type which holds one SavedSearch and a cursor during pagination. */
 export type SavedSearchEdge = {
   __typename?: 'SavedSearchEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SavedSearchEdge. */
   node: SavedSearch;
@@ -43297,11 +46853,11 @@ export type ScriptTag = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple ScriptTags. */
 export type ScriptTagConnection = {
   __typename?: 'ScriptTagConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ScriptTagEdge>;
-  /** A list of the nodes contained in ScriptTagEdge. */
+  /** A list of nodes that are contained in ScriptTagEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ScriptTag>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -43336,7 +46892,7 @@ export enum ScriptTagDisplayScope {
 /** An auto-generated type which holds one ScriptTag and a cursor during pagination. */
 export type ScriptTagEdge = {
   __typename?: 'ScriptTagEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ScriptTagEdge. */
   node: ScriptTag;
@@ -43404,12 +46960,12 @@ export type SearchResult = {
 /** The connection type for SearchResult. */
 export type SearchResultConnection = {
   __typename?: 'SearchResultConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SearchResultEdge>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
   /**
-   * Information to aid in pagination.
+   * An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.
    * @deprecated The provided information is not accurate.
    */
   resultsAfterCount: Scalars['Int']['output'];
@@ -43418,7 +46974,7 @@ export type SearchResultConnection = {
 /** An auto-generated type which holds one SearchResult and a cursor during pagination. */
 export type SearchResultEdge = {
   __typename?: 'SearchResultEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SearchResultEdge. */
   node: SearchResult;
@@ -43426,8 +46982,12 @@ export type SearchResultEdge = {
 
 /** Specifies the type of resources to be returned from a search. */
 export enum SearchResultType {
+  /** An article. */
+  Article = 'ARTICLE',
   /** A balance transaction. */
   BalanceTransaction = 'BALANCE_TRANSACTION',
+  /** A blog. */
+  Blog = 'BLOG',
   Collection = 'COLLECTION',
   Customer = 'CUSTOMER',
   /** A code discount redeem code. */
@@ -43435,10 +46995,9 @@ export enum SearchResultType {
   DraftOrder = 'DRAFT_ORDER',
   /** A file. */
   File = 'FILE',
-  OnlineStoreArticle = 'ONLINE_STORE_ARTICLE',
-  OnlineStoreBlog = 'ONLINE_STORE_BLOG',
-  OnlineStorePage = 'ONLINE_STORE_PAGE',
   Order = 'ORDER',
+  /** A page. */
+  Page = 'PAGE',
   PriceRule = 'PRICE_RULE',
   Product = 'PRODUCT',
   /** A URL redirect. */
@@ -43494,11 +47053,11 @@ export type SegmentBooleanFilter = SegmentFilter & {
 /** An auto-generated type for paginating through multiple Segments. */
 export type SegmentConnection = {
   __typename?: 'SegmentConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SegmentEdge>;
-  /** A list of the nodes contained in SegmentEdge. */
+  /** A list of nodes that are contained in SegmentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Segment>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -43534,7 +47093,7 @@ export type SegmentDeletePayload = {
 /** An auto-generated type which holds one Segment and a cursor during pagination. */
 export type SegmentEdge = {
   __typename?: 'SegmentEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SegmentEdge. */
   node: Segment;
@@ -43596,18 +47155,18 @@ export type SegmentFilter = {
 /** An auto-generated type for paginating through multiple SegmentFilters. */
 export type SegmentFilterConnection = {
   __typename?: 'SegmentFilterConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SegmentFilterEdge>;
-  /** A list of the nodes contained in SegmentFilterEdge. */
+  /** A list of nodes that are contained in SegmentFilterEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SegmentFilter>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SegmentFilter and a cursor during pagination. */
 export type SegmentFilterEdge = {
   __typename?: 'SegmentFilterEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SegmentFilterEdge. */
   node: SegmentFilter;
@@ -43668,18 +47227,18 @@ export type SegmentMigration = {
 /** An auto-generated type for paginating through multiple SegmentMigrations. */
 export type SegmentMigrationConnection = {
   __typename?: 'SegmentMigrationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SegmentMigrationEdge>;
-  /** A list of the nodes contained in SegmentMigrationEdge. */
+  /** A list of nodes that are contained in SegmentMigrationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SegmentMigration>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SegmentMigration and a cursor during pagination. */
 export type SegmentMigrationEdge = {
   __typename?: 'SegmentMigrationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SegmentMigrationEdge. */
   node: SegmentMigration;
@@ -43749,18 +47308,18 @@ export type SegmentValue = {
 /** An auto-generated type for paginating through multiple SegmentValues. */
 export type SegmentValueConnection = {
   __typename?: 'SegmentValueConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SegmentValueEdge>;
-  /** A list of the nodes contained in SegmentValueEdge. */
+  /** A list of nodes that are contained in SegmentValueEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SegmentValue>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SegmentValue and a cursor during pagination. */
 export type SegmentValueEdge = {
   __typename?: 'SegmentValueEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SegmentValueEdge. */
   node: SegmentValue;
@@ -43814,14 +47373,21 @@ export type SellingPlan = HasMetafieldDefinitions & HasMetafields & HasPublished
   id: Scalars['ID']['output'];
   /** When to reserve inventory for a selling plan. */
   inventoryPolicy?: Maybe<SellingPlanInventoryPolicy>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * A customer-facing description of the selling plan.
@@ -43849,7 +47415,7 @@ export type SellingPlan = HasMetafieldDefinitions & HasMetafields & HasPublished
    *
    */
   privateMetafields: PrivateMetafieldConnection;
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
 };
 
@@ -43953,11 +47519,23 @@ export type SellingPlanTranslationsArgs = {
   marketId?: InputMaybe<Scalars['ID']['input']>;
 };
 
-/** Represents a selling plan policy anchor. */
+/**
+ * Specifies the date when delivery or fulfillment is completed by a merchant for a given time cycle. You can also
+ * define a cutoff for which customers are eligible to enter this cycle and the desired behavior for customers who
+ * start their subscription inside the cutoff period.
+ *
+ * Some example scenarios where anchors can be useful to implement advanced delivery behavior:
+ * - A merchant starts fulfillment on a specific date every month.
+ * - A merchant wants to bill the 1st of every quarter.
+ * - A customer expects their delivery every Tuesday.
+ *
+ * For more details, see [About Selling Plans](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans#anchors).
+ */
 export type SellingPlanAnchor = {
   __typename?: 'SellingPlanAnchor';
   /**
-   * The cutoff day for the anchor.
+   * The cutoff day for the anchor. Specifies a buffer period before the anchor date for orders to be included in a
+   * delivery or fulfillment cycle.
    *
    * If `type` is WEEKDAY, then the value must be between 1-7. Shopify interprets
    * the days of the week according to ISO 8601, where 1 is Monday.
@@ -44106,11 +47684,11 @@ export type SellingPlanCheckoutChargeValueInput = {
 /** An auto-generated type for paginating through multiple SellingPlans. */
 export type SellingPlanConnection = {
   __typename?: 'SellingPlanConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SellingPlanEdge>;
-  /** A list of the nodes contained in SellingPlanEdge. */
+  /** A list of nodes that are contained in SellingPlanEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SellingPlan>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -44133,7 +47711,7 @@ export type SellingPlanDeliveryPolicyInput = {
 /** An auto-generated type which holds one SellingPlan and a cursor during pagination. */
 export type SellingPlanEdge = {
   __typename?: 'SellingPlanEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SellingPlanEdge. */
   node: SellingPlan;
@@ -44303,7 +47881,7 @@ export type SellingPlanGroup = HasPublishedTranslations & Node & {
   sellingPlans: SellingPlanConnection;
   /** A summary of the policies associated to the selling plan group. */
   summary?: Maybe<Scalars['String']['output']>;
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
 };
 
@@ -44422,11 +48000,11 @@ export type SellingPlanGroupAddProductsPayload = {
 /** An auto-generated type for paginating through multiple SellingPlanGroups. */
 export type SellingPlanGroupConnection = {
   __typename?: 'SellingPlanGroupConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SellingPlanGroupEdge>;
-  /** A list of the nodes contained in SellingPlanGroupEdge. */
+  /** A list of nodes that are contained in SellingPlanGroupEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SellingPlanGroup>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -44451,7 +48029,7 @@ export type SellingPlanGroupDeletePayload = {
 /** An auto-generated type which holds one SellingPlanGroup and a cursor during pagination. */
 export type SellingPlanGroupEdge = {
   __typename?: 'SellingPlanGroupEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SellingPlanGroupEdge. */
   node: SellingPlanGroup;
@@ -44968,6 +48546,8 @@ export type ShippingLine = {
   carrierIdentifier?: Maybe<Scalars['String']['output']>;
   /** A reference to the shipping method. */
   code?: Maybe<Scalars['String']['output']>;
+  /** The current shipping price after applying refunds, after applying discounts. If the parent `order.taxesIncluded`` field is true, then this price includes taxes. Otherwise, this field is the pre-tax price. */
+  currentDiscountedPriceSet: MoneyBag;
   /** Whether the shipping line is custom or not. */
   custom: Scalars['Boolean']['output'];
   /** The general classification of the delivery method. */
@@ -45021,18 +48601,18 @@ export type ShippingLine = {
 /** An auto-generated type for paginating through multiple ShippingLines. */
 export type ShippingLineConnection = {
   __typename?: 'ShippingLineConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ShippingLineEdge>;
-  /** A list of the nodes contained in ShippingLineEdge. */
+  /** A list of nodes that are contained in ShippingLineEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ShippingLine>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ShippingLine and a cursor during pagination. */
 export type ShippingLineEdge = {
   __typename?: 'ShippingLineEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ShippingLineEdge. */
   node: ShippingLine;
@@ -45076,18 +48656,6 @@ export type ShippingLineSale = Sale & {
   totalDiscountAmountBeforeTaxes: MoneyBag;
   /** The total amount of taxes for the sale. */
   totalTaxAmount: MoneyBag;
-};
-
-/** The shipping method for the delivery. Customers will see applicable shipping methods in the shipping section of checkout. */
-export type ShippingMethod = {
-  __typename?: 'ShippingMethod';
-  /** A unique code associated with the rate. For example: `expedited_mail` */
-  code: Scalars['String']['output'];
-  /**
-   * A description of the rate, which customers will see at checkout.
-   * For example: `Local delivery`, `Free Express Worldwide`, `Includes tracking and insurance`.
-   */
-  label: Scalars['String']['output'];
 };
 
 /** Return type for `shippingPackageDelete` mutation. */
@@ -45173,6 +48741,8 @@ export type ShippingRefundInput = {
 /** Represents a collection of general settings and information about the shop. */
 export type Shop = HasMetafields & HasPublishedTranslations & Node & {
   __typename?: 'Shop';
+  /** Account owner information. */
+  accountOwner: StaffMember;
   /** A list of the shop's active alert messages that appear in the Shopify admin. */
   alerts: Array<ShopAlert>;
   /**
@@ -45333,9 +48903,16 @@ export type Shop = HasMetafields & HasPublishedTranslations & Node & {
   marketingSmsConsentEnabledAtCheckout: Scalars['Boolean']['output'];
   /** The approval signals for a shop to support onboarding to channel apps. */
   merchantApprovalSignals?: Maybe<MerchantApprovalSignals>;
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /** The shop's .myshopify.com domain name. */
   myshopifyDomain: Scalars['String']['output'];
@@ -45363,16 +48940,6 @@ export type Shop = HasMetafields & HasPublishedTranslations & Node & {
   paymentSettings: PaymentSettings;
   /** The shop's billing plan. */
   plan: ShopPlan;
-  /**
-   * List of the shop's price rule saved searches.
-   * @deprecated Use `QueryRoot.priceRuleSavedSearches` instead.
-   */
-  priceRuleSavedSearches: SavedSearchConnection;
-  /**
-   * List of the shop’s price rules.
-   * @deprecated Use `QueryRoot.priceRules` instead.
-   */
-  priceRules: PriceRuleConnection;
   /** The primary domain of the shop's online store. */
   primaryDomain: Domain;
   /**
@@ -45437,6 +49004,8 @@ export type Shop = HasMetafields & HasPublishedTranslations & Node & {
   setupRequired: Scalars['Boolean']['output'];
   /** The list of countries that the shop ships to. */
   shipsToCountries: Array<CountryCode>;
+  /** The name of the shop owner. */
+  shopOwnerName: Scalars['String']['output'];
   /** The list of all legal policies associated with a shop. */
   shopPolicies: Array<ShopPolicy>;
   /**
@@ -45463,7 +49032,7 @@ export type Shop = HasMetafields & HasPublishedTranslations & Node & {
   timezoneOffsetMinutes: Scalars['Int']['output'];
   /** Whether transactional SMS sent by Shopify have been disabled for a shop. */
   transactionalSmsDisabled: Scalars['Boolean']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
   /** The shop's unit system for weights and measures. */
   unitSystem: UnitSystem;
@@ -45706,29 +49275,6 @@ export type ShopOrdersArgs = {
   query?: InputMaybe<Scalars['String']['input']>;
   reverse?: InputMaybe<Scalars['Boolean']['input']>;
   sortKey?: InputMaybe<OrderSortKeys>;
-};
-
-
-/** Represents a collection of general settings and information about the shop. */
-export type ShopPriceRuleSavedSearchesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/** Represents a collection of general settings and information about the shop. */
-export type ShopPriceRulesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  query?: InputMaybe<Scalars['String']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-  savedSearchId?: InputMaybe<Scalars['ID']['input']>;
-  sortKey?: InputMaybe<PriceRuleSortKeys>;
 };
 
 
@@ -46047,7 +49593,10 @@ export type ShopFeatures = {
    *
    */
   multiLocation: Scalars['Boolean']['output'];
-  /** Whether a shop has access to the onboarding visual. */
+  /**
+   * Whether a shop has access to the onboarding visual.
+   * @deprecated No longer supported.
+   */
   onboardingVisual: Scalars['Boolean']['output'];
   /** Whether a shop is configured to sell subscriptions with PayPal Express. */
   paypalExpressSubscriptionGatewayStatus: PaypalExpressSubscriptionsGatewayStatus;
@@ -46147,7 +49696,7 @@ export type ShopPolicy = HasPublishedTranslations & Node & {
   id: Scalars['ID']['output'];
   /** The translated title of the policy. For example, Refund Policy or Politique de remboursement. */
   title: Scalars['String']['output'];
-  /** The translations associated with the resource. */
+  /** The published translations associated with the resource. */
   translations: Array<Translation>;
   /** The shop policy type. */
   type: ShopPolicyType;
@@ -46190,7 +49739,7 @@ export enum ShopPolicyType {
   RefundPolicy = 'REFUND_POLICY',
   /** The shipping policy. */
   ShippingPolicy = 'SHIPPING_POLICY',
-  /** The purchase options cancellation policy. */
+  /** The cancellation policy. */
   SubscriptionPolicy = 'SUBSCRIPTION_POLICY',
   /** The terms of sale. */
   TermsOfSale = 'TERMS_OF_SALE',
@@ -46299,18 +49848,18 @@ export type ShopifyFunction = {
 /** An auto-generated type for paginating through multiple ShopifyFunctions. */
 export type ShopifyFunctionConnection = {
   __typename?: 'ShopifyFunctionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ShopifyFunctionEdge>;
-  /** A list of the nodes contained in ShopifyFunctionEdge. */
+  /** A list of nodes that are contained in ShopifyFunctionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ShopifyFunction>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ShopifyFunction and a cursor during pagination. */
 export type ShopifyFunctionEdge = {
   __typename?: 'ShopifyFunctionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ShopifyFunctionEdge. */
   node: ShopifyFunction;
@@ -46351,12 +49900,8 @@ export type ShopifyPaymentsAccount = Node & {
   defaultCurrency: CurrencyCode;
   /** All disputes that originated from a transaction made with the Shopify Payments account. */
   disputes: ShopifyPaymentsDisputeConnection;
-  /** The fraud settings of the Shopify Payments account. */
-  fraudSettings: ShopifyPaymentsFraudSettings;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** The notifications settings for the account. */
-  notificationSettings: ShopifyPaymentsNotificationSettings;
   /** Whether the Shopify Payments account can be onboarded. */
   onboardable: Scalars['Boolean']['output'];
   /** The payout schedule for the account. */
@@ -46369,10 +49914,6 @@ export type ShopifyPaymentsAccount = Node & {
   payoutStatementDescriptor?: Maybe<Scalars['String']['output']>;
   /** All current and previous payouts made between the account and the bank account. */
   payouts: ShopifyPaymentsPayoutConnection;
-  /** The permitted documents for identity verification. */
-  permittedVerificationDocuments: Array<ShopifyPaymentsVerificationDocument>;
-  /** The verifications necessary for this account. */
-  verifications: Array<ShopifyPaymentsVerification>;
 };
 
 
@@ -46519,18 +50060,18 @@ export type ShopifyPaymentsBalanceTransactionAssociatedPayout = {
 /** An auto-generated type for paginating through multiple ShopifyPaymentsBalanceTransactions. */
 export type ShopifyPaymentsBalanceTransactionConnection = {
   __typename?: 'ShopifyPaymentsBalanceTransactionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ShopifyPaymentsBalanceTransactionEdge>;
-  /** A list of the nodes contained in ShopifyPaymentsBalanceTransactionEdge. */
+  /** A list of nodes that are contained in ShopifyPaymentsBalanceTransactionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ShopifyPaymentsBalanceTransaction>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ShopifyPaymentsBalanceTransaction and a cursor during pagination. */
 export type ShopifyPaymentsBalanceTransactionEdge = {
   __typename?: 'ShopifyPaymentsBalanceTransactionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ShopifyPaymentsBalanceTransactionEdge. */
   node: ShopifyPaymentsBalanceTransaction;
@@ -46599,18 +50140,18 @@ export type ShopifyPaymentsBankAccountPayoutsArgs = {
 /** An auto-generated type for paginating through multiple ShopifyPaymentsBankAccounts. */
 export type ShopifyPaymentsBankAccountConnection = {
   __typename?: 'ShopifyPaymentsBankAccountConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ShopifyPaymentsBankAccountEdge>;
-  /** A list of the nodes contained in ShopifyPaymentsBankAccountEdge. */
+  /** A list of nodes that are contained in ShopifyPaymentsBankAccountEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ShopifyPaymentsBankAccount>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ShopifyPaymentsBankAccount and a cursor during pagination. */
 export type ShopifyPaymentsBankAccountEdge = {
   __typename?: 'ShopifyPaymentsBankAccountEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ShopifyPaymentsBankAccountEdge. */
   node: ShopifyPaymentsBankAccount;
@@ -46675,18 +50216,18 @@ export type ShopifyPaymentsDispute = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple ShopifyPaymentsDisputes. */
 export type ShopifyPaymentsDisputeConnection = {
   __typename?: 'ShopifyPaymentsDisputeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ShopifyPaymentsDisputeEdge>;
-  /** A list of the nodes contained in ShopifyPaymentsDisputeEdge. */
+  /** A list of nodes that are contained in ShopifyPaymentsDisputeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ShopifyPaymentsDispute>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ShopifyPaymentsDispute and a cursor during pagination. */
 export type ShopifyPaymentsDisputeEdge = {
   __typename?: 'ShopifyPaymentsDisputeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ShopifyPaymentsDisputeEdge. */
   node: ShopifyPaymentsDispute;
@@ -46885,15 +50426,6 @@ export type ShopifyPaymentsExtendedAuthorization = {
   standardAuthorizationExpiresAt: Scalars['DateTime']['output'];
 };
 
-/** The fraud settings of a payments account. */
-export type ShopifyPaymentsFraudSettings = {
-  __typename?: 'ShopifyPaymentsFraudSettings';
-  /** Decline a charge if there's an AVS failure. */
-  declineChargeOnAvsFailure: Scalars['Boolean']['output'];
-  /** Decline a charge if there's an CVC failure. */
-  declineChargeOnCvcFailure: Scalars['Boolean']['output'];
-};
-
 /** The charge descriptors for a Japanese payments account. */
 export type ShopifyPaymentsJpChargeStatementDescriptor = ShopifyPaymentsChargeStatementDescriptor & {
   __typename?: 'ShopifyPaymentsJpChargeStatementDescriptor';
@@ -46907,13 +50439,6 @@ export type ShopifyPaymentsJpChargeStatementDescriptor = ShopifyPaymentsChargeSt
   prefix: Scalars['String']['output'];
 };
 
-/** The notification settings for the account. */
-export type ShopifyPaymentsNotificationSettings = {
-  __typename?: 'ShopifyPaymentsNotificationSettings';
-  /** Receive email notifications when new payouts are sent or payouts fail. */
-  payouts: Scalars['Boolean']['output'];
-};
-
 /**
  * Payouts represent the movement of money between a merchant's Shopify
  * Payments balance and their bank account.
@@ -46922,6 +50447,8 @@ export type ShopifyPaymentsPayout = LegacyInteroperability & Node & {
   __typename?: 'ShopifyPaymentsPayout';
   /** The bank account for the payout. */
   bankAccount?: Maybe<ShopifyPaymentsBankAccount>;
+  /** The business entity associated with the payout. */
+  businessEntity: BusinessEntity;
   /**
    * The total amount and currency of the payout.
    * @deprecated Use `net` instead.
@@ -46949,18 +50476,18 @@ export type ShopifyPaymentsPayout = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple ShopifyPaymentsPayouts. */
 export type ShopifyPaymentsPayoutConnection = {
   __typename?: 'ShopifyPaymentsPayoutConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ShopifyPaymentsPayoutEdge>;
-  /** A list of the nodes contained in ShopifyPaymentsPayoutEdge. */
+  /** A list of nodes that are contained in ShopifyPaymentsPayoutEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<ShopifyPaymentsPayout>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one ShopifyPaymentsPayout and a cursor during pagination. */
 export type ShopifyPaymentsPayoutEdge = {
   __typename?: 'ShopifyPaymentsPayoutEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ShopifyPaymentsPayoutEdge. */
   node: ShopifyPaymentsPayout;
@@ -47027,6 +50554,10 @@ export type ShopifyPaymentsPayoutSummary = {
   adjustmentsFee: MoneyV2;
   /** Total gross amount for all adjustments including disputes. */
   adjustmentsGross: MoneyV2;
+  /** Total fees for all advances. */
+  advanceFees: MoneyV2;
+  /** Total gross amount for all advances. */
+  advanceGross: MoneyV2;
   /** Total fees for all charges. */
   chargesFee: MoneyV2;
   /** Total gross amount for all charges. */
@@ -47091,6 +50622,10 @@ export type ShopifyPaymentsTransactionSet = {
 export enum ShopifyPaymentsTransactionType {
   /** The adjustment transaction type. */
   Adjustment = 'ADJUSTMENT',
+  /** The advance transaction type. */
+  Advance = 'ADVANCE',
+  /** The advance funding transaction type. */
+  AdvanceFunding = 'ADVANCE_FUNDING',
   /** The anomaly_credit transaction type. */
   AnomalyCredit = 'ANOMALY_CREDIT',
   /** The anomaly_credit_reversal transaction type. */
@@ -47287,27 +50822,6 @@ export type ShopifyPaymentsVerification = Node & {
   subject: ShopifyPaymentsVerificationSubject;
 };
 
-/** A document which can be used to verify an individual. */
-export type ShopifyPaymentsVerificationDocument = {
-  __typename?: 'ShopifyPaymentsVerificationDocument';
-  /** True if the back side of the document is required. */
-  backRequired: Scalars['Boolean']['output'];
-  /** True if the front side of the document is required. */
-  frontRequired: Scalars['Boolean']['output'];
-  /** The type of the document which can be used for verification. */
-  type: ShopifyPaymentsVerificationDocumentType;
-};
-
-/** The types of possible verification documents. */
-export enum ShopifyPaymentsVerificationDocumentType {
-  /** The subject's driver's license. */
-  DriversLicense = 'DRIVERS_LICENSE',
-  /** A government's identification document of the subject. */
-  GovernmentIdentification = 'GOVERNMENT_IDENTIFICATION',
-  /** The subject's passport. */
-  Passport = 'PASSPORT'
-}
-
 /** The status of a verification. */
 export enum ShopifyPaymentsVerificationStatus {
   /** The verification request has been submitted but a response has not yet been given. */
@@ -47376,6 +50890,8 @@ export enum ShopifyProtectStatus {
 /** Represents the data about a staff member's Shopify account. Merchants can use staff member data to get more information about the staff members in their store. */
 export type StaffMember = Node & {
   __typename?: 'StaffMember';
+  /** The type of account the staff member has. */
+  accountType?: Maybe<AccountType>;
   /** Whether the staff member is active. */
   active: Scalars['Boolean']['output'];
   /** The image used as the staff member's avatar in the Shopify admin. */
@@ -47413,11 +50929,11 @@ export type StaffMemberAvatarArgs = {
 /** An auto-generated type for paginating through multiple StaffMembers. */
 export type StaffMemberConnection = {
   __typename?: 'StaffMemberConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<StaffMemberEdge>;
-  /** A list of the nodes contained in StaffMemberEdge. */
+  /** A list of nodes that are contained in StaffMemberEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<StaffMember>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -47434,7 +50950,7 @@ export enum StaffMemberDefaultImage {
 /** An auto-generated type which holds one StaffMember and a cursor during pagination. */
 export type StaffMemberEdge = {
   __typename?: 'StaffMemberEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of StaffMemberEdge. */
   node: StaffMember;
@@ -47448,10 +50964,14 @@ export enum StaffMemberPermission {
   Channels = 'CHANNELS',
   /** The staff member can create and edit customers. */
   CreateAndEditCustomers = 'CREATE_AND_EDIT_CUSTOMERS',
+  /** The staff member can create and edit gift cards. */
+  CreateAndEditGiftCards = 'CREATE_AND_EDIT_GIFT_CARDS',
   /** The staff member can view customers. */
   Customers = 'CUSTOMERS',
   /** The staff member can view the Shopify Home page, which includes sales information and other shop data. */
   Dashboard = 'DASHBOARD',
+  /** The staff member can deactivate gift cards. */
+  DeactivateGiftCards = 'DEACTIVATE_GIFT_CARDS',
   /** The staff member can delete customers. */
   DeleteCustomers = 'DELETE_CUSTOMERS',
   /** The staff member can view, buy, and manage domains. */
@@ -47464,6 +50984,8 @@ export enum StaffMemberPermission {
   EraseCustomerData = 'ERASE_CUSTOMER_DATA',
   /** The staff member can export customers. */
   ExportCustomers = 'EXPORT_CUSTOMERS',
+  /** The staff member can export gift cards. */
+  ExportGiftCards = 'EXPORT_GIFT_CARDS',
   /**
    * The staff has the same permissions as the [store owner](https://shopify.dev/en/manual/your-account/staff-accounts/staff-permissions#store-owner-permissions) with some exceptions, such as modifying the account billing or deleting staff accounts.
    * @deprecated Use the list of the staff member's explicit permissions returned in the `StaffMember.permissions.userPermissions` field instead of `full` permission.
@@ -47515,10 +51037,22 @@ export type StaffMemberPrivateData = {
   createdAt: Scalars['DateTime']['output'];
   /**
    * Access permissions for the staff member.
-   * @deprecated Use StaffMember.permissions.userPermissions instead
+   * @deprecated There's no alternative field to use instead.
    */
   permissions: Array<StaffMemberPermission>;
 };
+
+/** The set of valid sort keys for the StaffMembers query. */
+export enum StaffMembersSortKeys {
+  /** Sort by the `email` value. */
+  Email = 'EMAIL',
+  /** Sort by the `first_name` value. */
+  FirstName = 'FIRST_NAME',
+  /** Sort by the `id` value. */
+  Id = 'ID',
+  /** Sort by the `last_name` value. */
+  LastName = 'LAST_NAME'
+}
 
 /**
  * An image to be uploaded.
@@ -47763,6 +51297,16 @@ export type StagedUploadsCreatePayload = {
   userErrors: Array<UserError>;
 };
 
+/** The input fields for the access settings for the metafields under the standard definition. */
+export type StandardMetafieldDefinitionAccessInput = {
+  /** The Admin API access setting to use for the metafields under this definition. */
+  admin: MetafieldAdminAccessInput;
+  /** The Customer Account API access setting to use for the metafields under this definition. */
+  customerAccount?: InputMaybe<MetafieldCustomerAccountAccessInput>;
+  /** The Storefront API access setting to use for the metafields under this definition. */
+  storefront?: InputMaybe<MetafieldStorefrontAccessInput>;
+};
+
 /** Return type for `standardMetafieldDefinitionEnable` mutation. */
 export type StandardMetafieldDefinitionEnablePayload = {
   __typename?: 'StandardMetafieldDefinitionEnablePayload';
@@ -47787,6 +51331,8 @@ export type StandardMetafieldDefinitionEnableUserError = DisplayableError & {
 export enum StandardMetafieldDefinitionEnableUserErrorCode {
   /** The input value is invalid. */
   Invalid = 'INVALID',
+  /** The input combination is invalid. */
+  InvalidInputCombination = 'INVALID_INPUT_COMBINATION',
   /** The maximum number of definitions per owner type has been exceeded. */
   LimitExceeded = 'LIMIT_EXCEEDED',
   /** The input value is already taken. */
@@ -47830,18 +51376,18 @@ export type StandardMetafieldDefinitionTemplate = Node & {
 /** An auto-generated type for paginating through multiple StandardMetafieldDefinitionTemplates. */
 export type StandardMetafieldDefinitionTemplateConnection = {
   __typename?: 'StandardMetafieldDefinitionTemplateConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<StandardMetafieldDefinitionTemplateEdge>;
-  /** A list of the nodes contained in StandardMetafieldDefinitionTemplateEdge. */
+  /** A list of nodes that are contained in StandardMetafieldDefinitionTemplateEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<StandardMetafieldDefinitionTemplate>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one StandardMetafieldDefinitionTemplate and a cursor during pagination. */
 export type StandardMetafieldDefinitionTemplateEdge = {
   __typename?: 'StandardMetafieldDefinitionTemplateEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of StandardMetafieldDefinitionTemplateEdge. */
   node: StandardMetafieldDefinitionTemplate;
@@ -47861,12 +51407,6 @@ export type StandardizedProductType = {
   __typename?: 'StandardizedProductType';
   /** The product taxonomy node associated with the standardized product type. */
   productTaxonomyNode?: Maybe<ProductTaxonomyNode>;
-};
-
-/** Provides the fields and values to use when adding a standard product type to a product. The [Shopify product taxonomy](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17) contains the full list of available values. */
-export type StandardizedProductTypeInput = {
-  /** The ID of the node in the Shopify taxonomy that represents the product type. */
-  productTaxonomyNodeId: Scalars['ID']['input'];
 };
 
 /**
@@ -47907,11 +51447,11 @@ export type StoreCreditAccountTransactionsArgs = {
 /** An auto-generated type for paginating through multiple StoreCreditAccounts. */
 export type StoreCreditAccountConnection = {
   __typename?: 'StoreCreditAccountConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<StoreCreditAccountEdge>;
-  /** A list of the nodes contained in StoreCreditAccountEdge. */
+  /** A list of nodes that are contained in StoreCreditAccountEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<StoreCreditAccount>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -48064,7 +51604,7 @@ export enum StoreCreditAccountDebitUserErrorCode {
 /** An auto-generated type which holds one StoreCreditAccount and a cursor during pagination. */
 export type StoreCreditAccountEdge = {
   __typename?: 'StoreCreditAccountEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of StoreCreditAccountEdge. */
   node: StoreCreditAccount;
@@ -48105,18 +51645,18 @@ export type StoreCreditAccountTransaction = {
 /** An auto-generated type for paginating through multiple StoreCreditAccountTransactions. */
 export type StoreCreditAccountTransactionConnection = {
   __typename?: 'StoreCreditAccountTransactionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<StoreCreditAccountTransactionEdge>;
-  /** A list of the nodes contained in StoreCreditAccountTransactionEdge. */
+  /** A list of nodes that are contained in StoreCreditAccountTransactionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<StoreCreditAccountTransaction>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one StoreCreditAccountTransaction and a cursor during pagination. */
 export type StoreCreditAccountTransactionEdge = {
   __typename?: 'StoreCreditAccountTransactionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of StoreCreditAccountTransactionEdge. */
   node: StoreCreditAccountTransaction;
@@ -48150,11 +51690,11 @@ export type StorefrontAccessToken = Node & {
 /** An auto-generated type for paginating through multiple StorefrontAccessTokens. */
 export type StorefrontAccessTokenConnection = {
   __typename?: 'StorefrontAccessTokenConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<StorefrontAccessTokenEdge>;
-  /** A list of the nodes contained in StorefrontAccessTokenEdge. */
+  /** A list of nodes that are contained in StorefrontAccessTokenEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<StorefrontAccessToken>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -48187,7 +51727,7 @@ export type StorefrontAccessTokenDeletePayload = {
 /** An auto-generated type which holds one StorefrontAccessToken and a cursor during pagination. */
 export type StorefrontAccessTokenEdge = {
   __typename?: 'StorefrontAccessTokenEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of StorefrontAccessTokenEdge. */
   node: StorefrontAccessToken;
@@ -48199,19 +51739,19 @@ export type StorefrontAccessTokenInput = {
   title: Scalars['String']['input'];
 };
 
-/** An auto-generated type for paginating through a list of Strings. */
+/** An auto-generated type for paginating through multiple Strings. */
 export type StringConnection = {
   __typename?: 'StringConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<StringEdge>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one String and a cursor during pagination. */
 export type StringEdge = {
   __typename?: 'StringEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of StringEdge. */
   node: Scalars['String']['output'];
@@ -48257,9 +51797,15 @@ export type SubscriptionBillingAttempt = Node & {
   completedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The date and time when the billing attempt was created. */
   createdAt: Scalars['DateTime']['output'];
-  /** A code corresponding to a payment error during processing. */
+  /**
+   * A code corresponding to a payment error during processing.
+   * @deprecated As of API version 2025-01, use `processingError.code` instead to get the errorCode
+   */
   errorCode?: Maybe<SubscriptionBillingAttemptErrorCode>;
-  /** A message describing a payment error during processing. */
+  /**
+   * A message describing a payment error during processing.
+   * @deprecated As of API version 2025-01, use `processingError.message` instead to get the errorMessage
+   */
   errorMessage?: Maybe<Scalars['String']['output']>;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
@@ -48275,20 +51821,40 @@ export type SubscriptionBillingAttempt = Node & {
    * pushed to the next anchor date, this field can override the billing attempt date.
    */
   originTime?: Maybe<Scalars['DateTime']['output']>;
+  /** The reference shared between retried payment attempts. */
+  paymentGroupId?: Maybe<Scalars['String']['output']>;
+  /** The reference shared between payment attempts with similar payment details. */
+  paymentSessionId?: Maybe<Scalars['String']['output']>;
   /** Whether the billing attempt is still processing. */
   ready: Scalars['Boolean']['output'];
   /** The subscription contract. */
   subscriptionContract: SubscriptionContract;
+  /** The transactions created by the billing attempt. */
+  transactions: OrderTransactionConnection;
+};
+
+
+/**
+ * A record of an execution of the subscription billing process. Billing attempts use
+ * idempotency keys to avoid duplicate order creation. A successful billing attempt
+ * will create an order.
+ */
+export type SubscriptionBillingAttemptTransactionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** An auto-generated type for paginating through multiple SubscriptionBillingAttempts. */
 export type SubscriptionBillingAttemptConnection = {
   __typename?: 'SubscriptionBillingAttemptConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SubscriptionBillingAttemptEdge>;
-  /** A list of the nodes contained in SubscriptionBillingAttemptEdge. */
+  /** A list of nodes that are contained in SubscriptionBillingAttemptEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SubscriptionBillingAttempt>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -48304,7 +51870,7 @@ export type SubscriptionBillingAttemptCreatePayload = {
 /** An auto-generated type which holds one SubscriptionBillingAttempt and a cursor during pagination. */
 export type SubscriptionBillingAttemptEdge = {
   __typename?: 'SubscriptionBillingAttemptEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SubscriptionBillingAttemptEdge. */
   node: SubscriptionBillingAttempt;
@@ -48513,11 +52079,11 @@ export type SubscriptionBillingCycleChargePayload = {
 /** An auto-generated type for paginating through multiple SubscriptionBillingCycles. */
 export type SubscriptionBillingCycleConnection = {
   __typename?: 'SubscriptionBillingCycleConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SubscriptionBillingCycleEdge>;
-  /** A list of the nodes contained in SubscriptionBillingCycleEdge. */
+  /** A list of nodes that are contained in SubscriptionBillingCycleEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SubscriptionBillingCycle>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -48551,7 +52117,7 @@ export type SubscriptionBillingCycleContractEditPayload = {
 /** An auto-generated type which holds one SubscriptionBillingCycle and a cursor during pagination. */
 export type SubscriptionBillingCycleEdge = {
   __typename?: 'SubscriptionBillingCycleEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SubscriptionBillingCycleEdge. */
   node: SubscriptionBillingCycle;
@@ -48895,6 +52461,8 @@ export type SubscriptionContract = Node & SubscriptionContractBase & {
   discounts: SubscriptionManualDiscountConnection;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
+  /** The last billing error type of the contract. */
+  lastBillingAttemptErrorType?: Maybe<SubscriptionContractLastBillingErrorType>;
   /** The current status of the last payment. */
   lastPaymentStatus?: Maybe<SubscriptionContractLastPaymentStatus>;
   /**
@@ -49092,11 +52660,11 @@ export type SubscriptionContractCancelPayload = {
 /** An auto-generated type for paginating through multiple SubscriptionContracts. */
 export type SubscriptionContractConnection = {
   __typename?: 'SubscriptionContractConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SubscriptionContractEdge>;
-  /** A list of the nodes contained in SubscriptionContractEdge. */
+  /** A list of nodes that are contained in SubscriptionContractEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SubscriptionContract>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -49124,7 +52692,7 @@ export type SubscriptionContractCreatePayload = {
 /** An auto-generated type which holds one SubscriptionContract and a cursor during pagination. */
 export type SubscriptionContractEdge = {
   __typename?: 'SubscriptionContractEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SubscriptionContractEdge. */
   node: SubscriptionContract;
@@ -49153,6 +52721,18 @@ export type SubscriptionContractFailPayload = {
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<SubscriptionContractStatusUpdateUserError>;
 };
+
+/** The possible values of the last billing error on a subscription contract. */
+export enum SubscriptionContractLastBillingErrorType {
+  /** Subscription billing attempt error due to customer error. */
+  CustomerError = 'CUSTOMER_ERROR',
+  /** Subscription billing attempt error due to inventory error. */
+  InventoryError = 'INVENTORY_ERROR',
+  /** All other billing attempt errors. */
+  Other = 'OTHER',
+  /** Subscription billing attempt error due to payment error. */
+  PaymentError = 'PAYMENT_ERROR'
+}
 
 /** The possible status values of the last payment on a subscription contract. */
 export enum SubscriptionContractLastPaymentStatus {
@@ -49371,7 +52951,7 @@ export type SubscriptionDeliveryMethodPickupOption = {
   code?: Maybe<Scalars['String']['output']>;
   /** The details displayed to the customer to describe the pickup option. */
   description?: Maybe<Scalars['String']['output']>;
-  /** The location where the customer will pickup the merchandise. */
+  /** The location where the customer will pick up the merchandise. */
   location: Location;
   /** The presentment title of the pickup option. */
   presentmentTitle?: Maybe<Scalars['String']['output']>;
@@ -49504,18 +53084,18 @@ export type SubscriptionDiscountAllocation = {
 /** An auto-generated type for paginating through multiple SubscriptionDiscounts. */
 export type SubscriptionDiscountConnection = {
   __typename?: 'SubscriptionDiscountConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SubscriptionDiscountEdge>;
-  /** A list of the nodes contained in SubscriptionDiscountEdge. */
+  /** A list of nodes that are contained in SubscriptionDiscountEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SubscriptionDiscount>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SubscriptionDiscount and a cursor during pagination. */
 export type SubscriptionDiscountEdge = {
   __typename?: 'SubscriptionDiscountEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SubscriptionDiscountEdge. */
   node: SubscriptionDiscount;
@@ -50048,18 +53628,18 @@ export type SubscriptionLine = {
 /** An auto-generated type for paginating through multiple SubscriptionLines. */
 export type SubscriptionLineConnection = {
   __typename?: 'SubscriptionLineConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SubscriptionLineEdge>;
-  /** A list of the nodes contained in SubscriptionLineEdge. */
+  /** A list of nodes that are contained in SubscriptionLineEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SubscriptionLine>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SubscriptionLine and a cursor during pagination. */
 export type SubscriptionLineEdge = {
   __typename?: 'SubscriptionLineEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SubscriptionLineEdge. */
   node: SubscriptionLine;
@@ -50187,18 +53767,18 @@ export type SubscriptionManualDiscount = {
 /** An auto-generated type for paginating through multiple SubscriptionManualDiscounts. */
 export type SubscriptionManualDiscountConnection = {
   __typename?: 'SubscriptionManualDiscountConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<SubscriptionManualDiscountEdge>;
-  /** A list of the nodes contained in SubscriptionManualDiscountEdge. */
+  /** A list of nodes that are contained in SubscriptionManualDiscountEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<SubscriptionManualDiscount>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one SubscriptionManualDiscount and a cursor during pagination. */
 export type SubscriptionManualDiscountEdge = {
   __typename?: 'SubscriptionManualDiscountEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of SubscriptionManualDiscountEdge. */
   node: SubscriptionManualDiscount;
@@ -50669,6 +54249,8 @@ export type TaxLine = {
   rate?: Maybe<Scalars['Float']['output']>;
   /** The proportion of the line item price that the tax represents as a percentage. */
   ratePercentage?: Maybe<Scalars['Float']['output']>;
+  /** The source of the tax. */
+  source?: Maybe<Scalars['String']['output']>;
   /** The name of the tax. */
   title: Scalars['String']['output'];
 };
@@ -50759,18 +54341,18 @@ export type TaxonomyCategoryAttribute = TaxonomyAttribute | TaxonomyChoiceListAt
 /** An auto-generated type for paginating through multiple TaxonomyCategoryAttributes. */
 export type TaxonomyCategoryAttributeConnection = {
   __typename?: 'TaxonomyCategoryAttributeConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<TaxonomyCategoryAttributeEdge>;
-  /** A list of the nodes contained in TaxonomyCategoryAttributeEdge. */
+  /** A list of nodes that are contained in TaxonomyCategoryAttributeEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<TaxonomyCategoryAttribute>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one TaxonomyCategoryAttribute and a cursor during pagination. */
 export type TaxonomyCategoryAttributeEdge = {
   __typename?: 'TaxonomyCategoryAttributeEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of TaxonomyCategoryAttributeEdge. */
   node: TaxonomyCategoryAttribute;
@@ -50779,18 +54361,18 @@ export type TaxonomyCategoryAttributeEdge = {
 /** An auto-generated type for paginating through multiple TaxonomyCategories. */
 export type TaxonomyCategoryConnection = {
   __typename?: 'TaxonomyCategoryConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<TaxonomyCategoryEdge>;
-  /** A list of the nodes contained in TaxonomyCategoryEdge. */
+  /** A list of nodes that are contained in TaxonomyCategoryEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<TaxonomyCategory>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one TaxonomyCategory and a cursor during pagination. */
 export type TaxonomyCategoryEdge = {
   __typename?: 'TaxonomyCategoryEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of TaxonomyCategoryEdge. */
   node: TaxonomyCategory;
@@ -50839,18 +54421,18 @@ export type TaxonomyValue = Node & {
 /** An auto-generated type for paginating through multiple TaxonomyValues. */
 export type TaxonomyValueConnection = {
   __typename?: 'TaxonomyValueConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<TaxonomyValueEdge>;
-  /** A list of the nodes contained in TaxonomyValueEdge. */
+  /** A list of nodes that are contained in TaxonomyValueEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<TaxonomyValue>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one TaxonomyValue and a cursor during pagination. */
 export type TaxonomyValueEdge = {
   __typename?: 'TaxonomyValueEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of TaxonomyValueEdge. */
   node: TaxonomyValue;
@@ -50867,6 +54449,8 @@ export type TenderTransaction = Node & {
   amount: MoneyV2;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
+  /** The order that's related to the tender transaction. This value is null if the order has been deleted. */
+  order?: Maybe<Order>;
   /** Information about the payment method used for the transaction. */
   paymentMethod?: Maybe<Scalars['String']['output']>;
   /** Date and time when the transaction was processed. */
@@ -50884,11 +54468,11 @@ export type TenderTransaction = Node & {
 /** An auto-generated type for paginating through multiple TenderTransactions. */
 export type TenderTransactionConnection = {
   __typename?: 'TenderTransactionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<TenderTransactionEdge>;
-  /** A list of the nodes contained in TenderTransactionEdge. */
+  /** A list of nodes that are contained in TenderTransactionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<TenderTransaction>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -50907,11 +54491,188 @@ export type TenderTransactionDetails = TenderTransactionCreditCardDetails;
 /** An auto-generated type which holds one TenderTransaction and a cursor during pagination. */
 export type TenderTransactionEdge = {
   __typename?: 'TenderTransactionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of TenderTransactionEdge. */
   node: TenderTransaction;
 };
+
+/** Return type for `themeCreate` mutation. */
+export type ThemeCreatePayload = {
+  __typename?: 'ThemeCreatePayload';
+  /** The theme that was created. */
+  theme?: Maybe<OnlineStoreTheme>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ThemeCreateUserError>;
+};
+
+/** An error that occurs during the execution of `ThemeCreate`. */
+export type ThemeCreateUserError = DisplayableError & {
+  __typename?: 'ThemeCreateUserError';
+  /** The error code. */
+  code?: Maybe<ThemeCreateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ThemeCreateUserError`. */
+export enum ThemeCreateUserErrorCode {
+  /** Must be a zip file. */
+  InvalidZip = 'INVALID_ZIP',
+  /** Zip is empty. */
+  ZipIsEmpty = 'ZIP_IS_EMPTY',
+  /**
+   * May not be used to fetch a file bigger
+   *             than 50MB.
+   */
+  ZipTooLarge = 'ZIP_TOO_LARGE'
+}
+
+/** Return type for `themeDelete` mutation. */
+export type ThemeDeletePayload = {
+  __typename?: 'ThemeDeletePayload';
+  /** The ID of the deleted theme. */
+  deletedThemeId?: Maybe<Scalars['ID']['output']>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ThemeDeleteUserError>;
+};
+
+/** An error that occurs during the execution of `ThemeDelete`. */
+export type ThemeDeleteUserError = DisplayableError & {
+  __typename?: 'ThemeDeleteUserError';
+  /** The error code. */
+  code?: Maybe<ThemeDeleteUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ThemeDeleteUserError`. */
+export enum ThemeDeleteUserErrorCode {
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND'
+}
+
+/** The input fields for the file copy. */
+export type ThemeFilesCopyFileInput = {
+  /** The new file where the content is copied to. */
+  dstFilename: Scalars['String']['input'];
+  /** The source file to copy from. */
+  srcFilename: Scalars['String']['input'];
+};
+
+/** Return type for `themeFilesCopy` mutation. */
+export type ThemeFilesCopyPayload = {
+  __typename?: 'ThemeFilesCopyPayload';
+  /** The resulting theme files. */
+  copiedThemeFiles?: Maybe<Array<OnlineStoreThemeFileOperationResult>>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<OnlineStoreThemeFilesUserErrors>;
+};
+
+/** Return type for `themeFilesDelete` mutation. */
+export type ThemeFilesDeletePayload = {
+  __typename?: 'ThemeFilesDeletePayload';
+  /** The resulting theme files. */
+  deletedThemeFiles?: Maybe<Array<OnlineStoreThemeFileOperationResult>>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<OnlineStoreThemeFilesUserErrors>;
+};
+
+/** Return type for `themeFilesUpsert` mutation. */
+export type ThemeFilesUpsertPayload = {
+  __typename?: 'ThemeFilesUpsertPayload';
+  /** The theme files write job triggered by the mutation. */
+  job?: Maybe<Job>;
+  /** The resulting theme files. */
+  upsertedThemeFiles?: Maybe<Array<OnlineStoreThemeFileOperationResult>>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<OnlineStoreThemeFilesUserErrors>;
+};
+
+/** Return type for `themePublish` mutation. */
+export type ThemePublishPayload = {
+  __typename?: 'ThemePublishPayload';
+  /** The theme that was published. */
+  theme?: Maybe<OnlineStoreTheme>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ThemePublishUserError>;
+};
+
+/** An error that occurs during the execution of `ThemePublish`. */
+export type ThemePublishUserError = DisplayableError & {
+  __typename?: 'ThemePublishUserError';
+  /** The error code. */
+  code?: Maybe<ThemePublishUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ThemePublishUserError`. */
+export enum ThemePublishUserErrorCode {
+  /** Theme publishing is not available during install. */
+  CannotPublishThemeDuringInstall = 'CANNOT_PUBLISH_THEME_DURING_INSTALL',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** Theme publishing is not allowed on this plan. */
+  ThemePublishNotAvailableForThemeLimitedPlan = 'THEME_PUBLISH_NOT_AVAILABLE_FOR_THEME_LIMITED_PLAN'
+}
+
+/** The role of the theme. */
+export enum ThemeRole {
+  /** The theme is archived if a merchant changes their plan and exceeds the maximum number of themes allowed. Archived themes can be downloaded by merchant, but can not be customized or published until the plan is upgraded. */
+  Archived = 'ARCHIVED',
+  /** The theme is installed as a trial from the Shopify Theme Store. It can be customized using the theme editor, but access to the code editor and the ability to publish the theme are restricted until it is purchased. */
+  Demo = 'DEMO',
+  /** The theme is automatically created by the CLI for previewing purposes when in a development session. */
+  Development = 'DEVELOPMENT',
+  /** The theme is locked if it is identified as unlicensed. Customization and publishing are restricted until the merchant resolves the licensing issue. */
+  Locked = 'LOCKED',
+  /** TThe currently published theme. There can only be one main theme at any time. */
+  Main = 'MAIN',
+  /**
+   * The currently published theme that is only accessible to a mobile client.
+   * @deprecated The feature for this role has been deprecated.
+   */
+  Mobile = 'MOBILE',
+  /** The theme is currently not published. It can be transitioned to the main role if it is published by the merchant. */
+  Unpublished = 'UNPUBLISHED'
+}
+
+/** Return type for `themeUpdate` mutation. */
+export type ThemeUpdatePayload = {
+  __typename?: 'ThemeUpdatePayload';
+  /** The theme that was updated. */
+  theme?: Maybe<OnlineStoreTheme>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<ThemeUpdateUserError>;
+};
+
+/** An error that occurs during the execution of `ThemeUpdate`. */
+export type ThemeUpdateUserError = DisplayableError & {
+  __typename?: 'ThemeUpdateUserError';
+  /** The error code. */
+  code?: Maybe<ThemeUpdateUserErrorCode>;
+  /** The path to the input field that caused the error. */
+  field?: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `ThemeUpdateUserError`. */
+export enum ThemeUpdateUserErrorCode {
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
+  /** The record with the ID used as the input value couldn't be found. */
+  NotFound = 'NOT_FOUND',
+  /** The input value is too long. */
+  TooLong = 'TOO_LONG'
+}
 
 /** A sale associated with a tip. */
 export type TipSale = Sale & {
@@ -51017,12 +54778,31 @@ export type TranslatableContent = {
 /** A resource that has translatable fields. */
 export type TranslatableResource = {
   __typename?: 'TranslatableResource';
+  /** Nested translatable resources under the current resource. */
+  nestedTranslatableResources: TranslatableResourceConnection;
   /** GID of the resource. */
   resourceId: Scalars['ID']['output'];
   /** Translatable content. */
   translatableContent: Array<TranslatableContent>;
-  /** Translatable content translations. */
+  /** Translatable content translations (includes unpublished locales). */
   translations: Array<Translation>;
+};
+
+
+/** A resource that has translatable fields. */
+export type TranslatableResourceNestedTranslatableResourcesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceType?: InputMaybe<TranslatableResourceType>;
+  reverse?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** A resource that has translatable fields. */
+export type TranslatableResourceTranslatableContentArgs = {
+  marketId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -51036,18 +54816,18 @@ export type TranslatableResourceTranslationsArgs = {
 /** An auto-generated type for paginating through multiple TranslatableResources. */
 export type TranslatableResourceConnection = {
   __typename?: 'TranslatableResourceConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<TranslatableResourceEdge>;
-  /** A list of the nodes contained in TranslatableResourceEdge. */
+  /** A list of nodes that are contained in TranslatableResourceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<TranslatableResource>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
 /** An auto-generated type which holds one TranslatableResource and a cursor during pagination. */
 export type TranslatableResourceEdge = {
   __typename?: 'TranslatableResourceEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of TranslatableResourceEdge. */
   node: TranslatableResource;
@@ -51055,6 +54835,10 @@ export type TranslatableResourceEdge = {
 
 /** Specifies the type of resources that are translatable. */
 export enum TranslatableResourceType {
+  /** A blog post. Translatable fields: `title`, `body_html`, `summary_html`, `handle`, `meta_title`, `meta_description`. */
+  Article = 'ARTICLE',
+  /** A blog. Translatable fields: `title`, `handle`, `meta_title`, `meta_description`. */
+  Blog = 'BLOG',
   /** A product collection. Translatable fields: `title`, `body_html`, `handle`, `meta_title`, `meta_description`. */
   Collection = 'COLLECTION',
   /** The delivery method definition. For example, "Standard", or "Expedited". Translatable fields: `name`. */
@@ -51065,22 +54849,30 @@ export enum TranslatableResourceType {
   Filter = 'FILTER',
   /** A link to direct users. Translatable fields: `title`. */
   Link = 'LINK',
+  /** A category of links. Translatable fields: `title`. */
+  Menu = 'MENU',
   /** A Metafield. Translatable fields: `value`. */
   Metafield = 'METAFIELD',
   /** A Metaobject. Translatable fields are determined by the Metaobject type. */
   Metaobject = 'METAOBJECT',
-  /** An online store article. Translatable fields: `title`, `body_html`, `summary_html`, `handle`, `meta_title`, `meta_description`. */
-  OnlineStoreArticle = 'ONLINE_STORE_ARTICLE',
-  /** An online store blog. Translatable fields: `title`, `handle`, `meta_title`, `meta_description`. */
-  OnlineStoreBlog = 'ONLINE_STORE_BLOG',
-  /** A category of links. Translatable fields: `title`. */
-  OnlineStoreMenu = 'ONLINE_STORE_MENU',
-  /** An online store page. Translatable fields: `title`, `body_html`, `handle`, `meta_title`, `meta_description`. */
-  OnlineStorePage = 'ONLINE_STORE_PAGE',
   /** An online store theme. Translatable fields: `dynamic keys based on theme data`. */
   OnlineStoreTheme = 'ONLINE_STORE_THEME',
+  /** A theme app embed. Translatable fields: `dynamic keys based on theme data`. */
+  OnlineStoreThemeAppEmbed = 'ONLINE_STORE_THEME_APP_EMBED',
+  /** A theme json template. Translatable fields: `dynamic keys based on theme data`. */
+  OnlineStoreThemeJsonTemplate = 'ONLINE_STORE_THEME_JSON_TEMPLATE',
+  /** Locale file content of an online store theme. Translatable fields: `dynamic keys based on theme data`. */
+  OnlineStoreThemeLocaleContent = 'ONLINE_STORE_THEME_LOCALE_CONTENT',
+  /** A theme json section group. Translatable fields: `dynamic keys based on theme data`. */
+  OnlineStoreThemeSectionGroup = 'ONLINE_STORE_THEME_SECTION_GROUP',
+  /** A theme setting category. Translatable fields: `dynamic keys based on theme data`. */
+  OnlineStoreThemeSettingsCategory = 'ONLINE_STORE_THEME_SETTINGS_CATEGORY',
+  /** Shared static sections of an online store theme. Translatable fields: `dynamic keys based on theme data`. */
+  OnlineStoreThemeSettingsDataSections = 'ONLINE_STORE_THEME_SETTINGS_DATA_SECTIONS',
   /** A packing slip template. Translatable fields: `body`. */
   PackingSlipTemplate = 'PACKING_SLIP_TEMPLATE',
+  /** A page. Translatable fields: `title`, `body_html`, `handle`, `meta_title`, `meta_description`. */
+  Page = 'PAGE',
   /** A payment gateway. Translatable fields: `name`, `message`, `before_payment_instructions`. */
   PaymentGateway = 'PAYMENT_GATEWAY',
   /** An online store product. Translatable fields: `title`, `body_html`, `handle`, `product_type`, `meta_title`, `meta_description`. */
@@ -51243,6 +55035,59 @@ export type UtmParameters = {
   /** Paid search terms used by a marketing campaign. */
   term?: Maybe<Scalars['String']['output']>;
 };
+
+/** The measurement used to calculate a unit price for a product variant (e.g. $9.99 / 100ml). */
+export type UnitPriceMeasurement = {
+  __typename?: 'UnitPriceMeasurement';
+  /** The type of unit of measurement for the unit price measurement. */
+  measuredType?: Maybe<UnitPriceMeasurementMeasuredType>;
+  /** The quantity unit for the unit price measurement. */
+  quantityUnit?: Maybe<UnitPriceMeasurementMeasuredUnit>;
+  /** The quantity value for the unit price measurement. */
+  quantityValue: Scalars['Float']['output'];
+  /** The reference unit for the unit price measurement. */
+  referenceUnit?: Maybe<UnitPriceMeasurementMeasuredUnit>;
+  /** The reference value for the unit price measurement. */
+  referenceValue: Scalars['Int']['output'];
+};
+
+/** The accepted types of unit of measurement. */
+export enum UnitPriceMeasurementMeasuredType {
+  /** Unit of measurements representing areas. */
+  Area = 'AREA',
+  /** Unit of measurements representing lengths. */
+  Length = 'LENGTH',
+  /** Unit of measurements representing volumes. */
+  Volume = 'VOLUME',
+  /** Unit of measurements representing weights. */
+  Weight = 'WEIGHT'
+}
+
+/** The valid units of measurement for a unit price measurement. */
+export enum UnitPriceMeasurementMeasuredUnit {
+  /** 100 centiliters equals 1 liter. */
+  Cl = 'CL',
+  /** 100 centimeters equals 1 meter. */
+  Cm = 'CM',
+  /** Metric system unit of weight. */
+  G = 'G',
+  /** 1 kilogram equals 1000 grams. */
+  Kg = 'KG',
+  /** Metric system unit of volume. */
+  L = 'L',
+  /** Metric system unit of length. */
+  M = 'M',
+  /** Metric system unit of area. */
+  M2 = 'M2',
+  /** 1 cubic meter equals 1000 liters. */
+  M3 = 'M3',
+  /** 1000 milligrams equals 1 gram. */
+  Mg = 'MG',
+  /** 1000 milliliters equals 1 liter. */
+  Ml = 'ML',
+  /** 1000 millimeters equals 1 meter. */
+  Mm = 'MM'
+}
 
 /** Systems of weights and measures. */
 export enum UnitSystem {
@@ -51413,11 +55258,11 @@ export enum UrlRedirectBulkDeleteBySearchUserErrorCode {
 /** An auto-generated type for paginating through multiple UrlRedirects. */
 export type UrlRedirectConnection = {
   __typename?: 'UrlRedirectConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<UrlRedirectEdge>;
-  /** A list of the nodes contained in UrlRedirectEdge. */
+  /** A list of nodes that are contained in UrlRedirectEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<UrlRedirect>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -51442,7 +55287,7 @@ export type UrlRedirectDeletePayload = {
 /** An auto-generated type which holds one UrlRedirect and a cursor during pagination. */
 export type UrlRedirectEdge = {
   __typename?: 'UrlRedirectEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of UrlRedirectEdge. */
   node: UrlRedirect;
@@ -51600,14 +55445,21 @@ export type Validation = HasMetafieldDefinitions & HasMetafields & Node & {
   errorHistory?: Maybe<FunctionsErrorHistory>;
   /** Global ID for the validation. */
   id: Scalars['ID']['output'];
-  /** Returns a metafield by namespace and key that belongs to the resource. */
+  /**
+   * A [custom field](https://shopify.dev/docs/apps/build/custom-data),
+   * including its `namespace` and `key`, that's associated with a Shopify resource
+   * for the purposes of adding and storing additional information.
+   */
   metafield?: Maybe<Metafield>;
   /**
    * List of metafield definitions.
    * @deprecated This field will be removed in a future version. Use the root `metafieldDefinitions` field instead.
    */
   metafieldDefinitions: MetafieldDefinitionConnection;
-  /** List of metafields that belong to the resource. */
+  /**
+   * A list of [custom fields](https://shopify.dev/docs/apps/build/custom-data)
+   * that a merchant associates with a Shopify resource.
+   */
   metafields: MetafieldConnection;
   /**
    * Returns a private metafield by namespace and key that belongs to the resource.
@@ -51683,11 +55535,11 @@ export type ValidationPrivateMetafieldsArgs = {
 /** An auto-generated type for paginating through multiple Validations. */
 export type ValidationConnection = {
   __typename?: 'ValidationConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<ValidationEdge>;
-  /** A list of the nodes contained in ValidationEdge. */
+  /** A list of nodes that are contained in ValidationEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<Validation>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -51726,7 +55578,7 @@ export type ValidationDeletePayload = {
 /** An auto-generated type which holds one Validation and a cursor during pagination. */
 export type ValidationEdge = {
   __typename?: 'ValidationEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of ValidationEdge. */
   node: Validation;
@@ -51801,6 +55653,8 @@ export enum ValidationUserErrorCode {
   InvalidType = 'INVALID_TYPE',
   /** The value is invalid for the metafield type or for the definition options. */
   InvalidValue = 'INVALID_VALUE',
+  /** Cannot have more than 5 active validation functions. */
+  MaxValidationsActivated = 'MAX_VALIDATIONS_ACTIVATED',
   /** Validation not found. */
   NotFound = 'NOT_FOUND',
   /** The input value needs to be blank. */
@@ -51821,6 +55675,8 @@ export enum ValidationUserErrorCode {
 export type VariantOptionValueInput = {
   /** Specifies the product option value by ID. */
   id?: InputMaybe<Scalars['ID']['input']>;
+  /** Metafield value associated with an option. */
+  linkedMetafieldValue?: InputMaybe<Scalars['String']['input']>;
   /** Specifies the product option value by name. */
   name?: InputMaybe<Scalars['String']['input']>;
   /** Specifies the product option by ID. */
@@ -52027,7 +55883,7 @@ export type WebhookSubscription = LegacyInteroperability & Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The endpoint to which the webhook subscription will send events. */
   endpoint: WebhookSubscriptionEndpoint;
-  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. */
+  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. See our [guide on filters](https://shopify.dev/docs/apps/build/webhooks/customize/filters) for more details. */
   filter?: Maybe<Scalars['String']['output']>;
   /** The format in which the webhook subscription should send the data. */
   format: WebhookSubscriptionFormat;
@@ -52055,11 +55911,11 @@ export type WebhookSubscription = LegacyInteroperability & Node & {
 /** An auto-generated type for paginating through multiple WebhookSubscriptions. */
 export type WebhookSubscriptionConnection = {
   __typename?: 'WebhookSubscriptionConnection';
-  /** A list of edges. */
+  /** The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node. */
   edges: Array<WebhookSubscriptionEdge>;
-  /** A list of the nodes contained in WebhookSubscriptionEdge. */
+  /** A list of nodes that are contained in WebhookSubscriptionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve. */
   nodes: Array<WebhookSubscription>;
-  /** Information to aid in pagination. */
+  /** An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page. */
   pageInfo: PageInfo;
 };
 
@@ -52084,7 +55940,7 @@ export type WebhookSubscriptionDeletePayload = {
 /** An auto-generated type which holds one WebhookSubscription and a cursor during pagination. */
 export type WebhookSubscriptionEdge = {
   __typename?: 'WebhookSubscriptionEdge';
-  /** A cursor for use in pagination. */
+  /** The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql). */
   cursor: Scalars['String']['output'];
   /** The item at the end of WebhookSubscriptionEdge. */
   node: WebhookSubscription;
@@ -52103,7 +55959,7 @@ export enum WebhookSubscriptionFormat {
 export type WebhookSubscriptionInput = {
   /** URL where the webhook subscription should send the POST request when the event occurs. */
   callbackUrl?: InputMaybe<Scalars['URL']['input']>;
-  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. */
+  /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. See our [guide on filters](https://shopify.dev/docs/apps/build/webhooks/customize/filters) for more details. */
   filter?: InputMaybe<Scalars['String']['input']>;
   /** The format in which the webhook subscription should send the data. */
   format?: InputMaybe<WebhookSubscriptionFormat>;
@@ -52130,7 +55986,7 @@ export enum WebhookSubscriptionSortKeys {
  * The supported topics for webhook subscriptions. You can use webhook subscriptions to receive
  * notifications about particular events in a shop.
  *
- * You create mandatory webhooks either via the
+ * You create [mandatory webhooks](https://shopify.dev/apps/webhooks/configuration/mandatory-webhooks#mandatory-compliance-webhooks) either via the
  * [Partner Dashboard](https://shopify.dev/apps/webhooks/configuration/mandatory-webhooks#subscribe-to-privacy-webhooks)
  * or by updating the [app configuration file](https://shopify.dev/apps/tools/cli/configuration#app-configuration-file-example).
  *
@@ -52140,6 +55996,8 @@ export enum WebhookSubscriptionSortKeys {
 export enum WebhookSubscriptionTopic {
   /** The webhook topic for `app_purchases_one_time/update` events. Occurs whenever a one-time app charge is updated. */
   AppPurchasesOneTimeUpdate = 'APP_PURCHASES_ONE_TIME_UPDATE',
+  /** The webhook topic for `app/scopes_update` events. Occurs whenever the access scopes of any installation are modified. Allows apps to keep track of the granted access scopes of their installations. */
+  AppScopesUpdate = 'APP_SCOPES_UPDATE',
   /** The webhook topic for `app_subscriptions/approaching_capped_amount` events. Occurs when the balance used on an app subscription crosses 90% of the capped amount. */
   AppSubscriptionsApproachingCappedAmount = 'APP_SUBSCRIPTIONS_APPROACHING_CAPPED_AMOUNT',
   /** The webhook topic for `app_subscriptions/update` events. Occurs whenever an app subscription is updated. */
@@ -52290,7 +56148,12 @@ export enum WebhookSubscriptionTopic {
   FulfillmentOrdersFulfillmentRequestSubmitted = 'FULFILLMENT_ORDERS_FULFILLMENT_REQUEST_SUBMITTED',
   /** The webhook topic for `fulfillment_orders/fulfillment_service_failed_to_complete` events. Occurs when a fulfillment service intends to close an in_progress fulfillment order. Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_marketplace_fulfillment_orders. */
   FulfillmentOrdersFulfillmentServiceFailedToComplete = 'FULFILLMENT_ORDERS_FULFILLMENT_SERVICE_FAILED_TO_COMPLETE',
-  /** The webhook topic for `fulfillment_orders/hold_released` events. Occurs whenever a fulfillment order hold is released. Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_marketplace_fulfillment_orders. */
+  /**
+   * The webhook topic for `fulfillment_orders/hold_released` events. Occurs when a fulfillment order is released and is no longer on hold.
+   *
+   * If a fulfillment order has multiple holds then this webhook will only be triggered once when the last hold is released and the status of the fulfillment order is no longer `ON_HOLD`.
+   *  Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_marketplace_fulfillment_orders.
+   */
   FulfillmentOrdersHoldReleased = 'FULFILLMENT_ORDERS_HOLD_RELEASED',
   /** The webhook topic for `fulfillment_orders/line_items_prepared_for_local_delivery` events. Occurs whenever a fulfillment order's line items are prepared for local delivery. Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_marketplace_fulfillment_orders. */
   FulfillmentOrdersLineItemsPreparedForLocalDelivery = 'FULFILLMENT_ORDERS_LINE_ITEMS_PREPARED_FOR_LOCAL_DELIVERY',
@@ -52316,7 +56179,12 @@ export enum WebhookSubscriptionTopic {
   FulfillmentOrdersMoved = 'FULFILLMENT_ORDERS_MOVED',
   /** The webhook topic for `fulfillment_orders/order_routing_complete` events. Occurs when an order has finished being routed and it's fulfillment orders assigned to a fulfillment service's location. Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_buyer_membership_orders, read_marketplace_fulfillment_orders. */
   FulfillmentOrdersOrderRoutingComplete = 'FULFILLMENT_ORDERS_ORDER_ROUTING_COMPLETE',
-  /** The webhook topic for `fulfillment_orders/placed_on_hold` events. Occurs when a fulfillment order is placed on hold. Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_marketplace_fulfillment_orders. */
+  /**
+   * The webhook topic for `fulfillment_orders/placed_on_hold` events. Occurs when a fulfillment order transitions to the `ON_HOLD` status
+   *
+   * For cases where multiple holds are applied to a fulfillment order, this webhook will only trigger once when the first hold is applied and the fulfillment order status changes to `ON_HOLD`.
+   *  Requires at least one of the following scopes: read_merchant_managed_fulfillment_orders, read_assigned_fulfillment_orders, read_third_party_fulfillment_orders, read_marketplace_fulfillment_orders.
+   */
   FulfillmentOrdersPlacedOnHold = 'FULFILLMENT_ORDERS_PLACED_ON_HOLD',
   /**
    * The webhook topic for `fulfillment_orders/rescheduled` events. Triggers when a fulfillment order is rescheduled.
@@ -52363,6 +56231,12 @@ export enum WebhookSubscriptionTopic {
   MarketsDelete = 'MARKETS_DELETE',
   /** The webhook topic for `markets/update` events. Occurs when a market is updated. Requires the `read_markets` scope. */
   MarketsUpdate = 'MARKETS_UPDATE',
+  /** The webhook topic for `metafield_definitions/create` events. Occurs when a metafield definition is created. Requires the `read_content` scope. */
+  MetafieldDefinitionsCreate = 'METAFIELD_DEFINITIONS_CREATE',
+  /** The webhook topic for `metafield_definitions/delete` events. Occurs when a metafield definition is deleted. Requires the `read_content` scope. */
+  MetafieldDefinitionsDelete = 'METAFIELD_DEFINITIONS_DELETE',
+  /** The webhook topic for `metafield_definitions/update` events. Occurs when a metafield definition is updated. Requires the `read_content` scope. */
+  MetafieldDefinitionsUpdate = 'METAFIELD_DEFINITIONS_UPDATE',
   /** The webhook topic for `metaobjects/create` events. Occurs when a metaobject is created. Requires the `read_metaobjects` scope. */
   MetaobjectsCreate = 'METAOBJECTS_CREATE',
   /** The webhook topic for `metaobjects/delete` events. Occurs when a metaobject is deleted. Requires the `read_metaobjects` scope. */
@@ -52387,8 +56261,9 @@ export enum WebhookSubscriptionTopic {
    * The webhook topic for `orders/risk_assessment_changed` events. Triggers when a new risk assessment is available on the order.
    * This can be the first or a subsequent risk assessment.
    * New risk assessments can be provided until the order is marked as fulfilled.
-   * Includes the risk level, risk facts and the provider. Does not include the risk recommendation for the order.
-   * The order and shop are identified in the headers.
+   * Includes the risk level, risk facts, the provider and the order ID.
+   * Does not include the risk recommendation for the order.
+   * The Shop ID is available in the headers.
    *  Requires the `read_orders` scope.
    */
   OrdersRiskAssessmentChanged = 'ORDERS_RISK_ASSESSMENT_CHANGED',
@@ -52428,11 +56303,11 @@ export enum WebhookSubscriptionTopic {
   ProductListingsRemove = 'PRODUCT_LISTINGS_REMOVE',
   /** The webhook topic for `product_listings/update` events. Occurs whenever a product publication is updated. Requires the `read_product_listings` scope. */
   ProductListingsUpdate = 'PRODUCT_LISTINGS_UPDATE',
-  /** The webhook topic for `product_publications/create` events. Occurs whenever a product publication for an active product is created, or whenever an existing product publication is published. Requires the `read_publications` scope. */
+  /** The webhook topic for `product_publications/create` events. Occurs whenever a product publication for an active product is created, or whenever an existing product publication is published on the app that is subscribed to this webhook topic. Note that a webhook is only emitted when there are publishing changes to the app that is subscribed to the topic (ie. no webhook will be emitted if there is a publishing change to the online store and the webhook subscriber of the topic is a third-party app). Requires the `read_publications` scope. */
   ProductPublicationsCreate = 'PRODUCT_PUBLICATIONS_CREATE',
-  /** The webhook topic for `product_publications/delete` events. Occurs whenever a product publication for an active product is removed, or whenever an existing product publication is unpublished. Requires the `read_publications` scope. */
+  /** The webhook topic for `product_publications/delete` events. Occurs whenever a product publication for an active product is removed, or whenever an existing product publication is unpublished from the app that is subscribed to this webhook topic. Note that a webhook is only emitted when there are publishing changes to the app that is subscribed to the topic (ie. no webhook will be emitted if there is a publishing change to the online store and the webhook subscriber of the topic is a third-party app). Requires the `read_publications` scope. */
   ProductPublicationsDelete = 'PRODUCT_PUBLICATIONS_DELETE',
-  /** The webhook topic for `product_publications/update` events. Occurs whenever a product publication is updated. Requires the `read_publications` scope. */
+  /** The webhook topic for `product_publications/update` events. Occurs whenever a product publication is updated from the app that is subscribed to this webhook topic. Note that a webhook is only emitted when there are publishing changes to the app that is subscribed to the topic (ie. no webhook will be emitted if there is a publishing change to the online store and the webhook subscriber of the topic is a third-party app). Requires the `read_publications` scope. */
   ProductPublicationsUpdate = 'PRODUCT_PUBLICATIONS_UPDATE',
   /** The webhook topic for `profiles/create` events. Occurs whenever a delivery profile is created Requires at least one of the following scopes: read_shipping, read_assigned_shipping. */
   ProfilesCreate = 'PROFILES_CREATE',
