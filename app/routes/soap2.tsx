@@ -3,7 +3,7 @@ import type {
   CreateOrdersResponse,
   ICreateUpdateOrdersRequest,
 } from "soap/types";
-import { createOrders } from "soap/NovaPoshtaService";
+import { createOrders } from "soap/NovaPoshtaService.server";
 
 const organization = process.env.NP_ORGANIZATION!;
 const orderData: ICreateUpdateOrdersRequest = {

@@ -4,6 +4,15 @@ export interface ICreateUpdateOrdersRequest {
   Orders: IOrders;
 }
 
+
+export interface IUndoOrderRequest {
+  Organization: string;
+}
+
+export interface IGetCurrentRemainsRequest {
+  Organization: string;
+}
+
 // Define the interface for Orders
 export interface IOrders {
   MessageOrders: IMessageOrders;
@@ -20,40 +29,57 @@ export interface IHeadOrder {
   ExternalNumber: string;
   ExternalDate: string;
   DestWarehouse: string;
-  Adress: IAdress;
-  PayType: string;
-  payer: string;
+  Adress: IAddress;
+  PayType: number;
+  payer: number;
   Contactor: IContactor;
   Description: string;
+  AdditionalInfo: string | null;
   Cost: string;
-  DeliveryType: string;
+  DeliveryAmount: number;
+  DeliveryType: number;
   AdditionalParams: string;
-  OrderType: string;
+  OrderType: number;
 }
 
 // Define the interface for Adress
-export interface IAdress {
+export interface IAddress {
   Region: string;
   City: string;
-  Street: string;
-  House: string;
-  Flat: string;
+}
+
+export interface IBranchAddress extends IAddress {
+  // TODO Uncomment in case if SOAP xml is incorrect
+  // Region: string;
+  // City: string;
   Phone: string;
   NPWarehouse: string;
-  District: string;
+  District: string | null;
 }
+
+export interface IDoorAddress extends IAddress {
+  // TODO Uncomment in case if SOAP xml is incorrect
+  // Region: string;
+  // City: string;
+  Street: string;
+  House: string;
+  Flat: string | null;
+  Phone: string;
+  District: string | null;
+}
+
 
 // Define the interface for Items
 export interface IItems {
-  Item: IItem; // This could be an array if there can be multiple items
+  Item: IItem[]; // This could be an array if there can be multiple items
 }
 
 // Define the interface for Item
 export interface IItem {
   Sku: string;
-  Qty: string;
-  Price: string;
-  Sum: string;
+  Qty: number;
+  Price: number;
+  Sum: number;
   MeasureUnit: string;
 }
 
@@ -83,4 +109,11 @@ export interface MessageOrder {
 
 export interface Info {
   Descr: string[];
+}
+
+export interface FulfillOrdersResult {
+  status: string,
+  waybill: string | null,
+  orderNumber: string | null,
+  errors: string[],
 }

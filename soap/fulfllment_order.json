@@ -1,0 +1,87 @@
+{
+  "id": "gid://shopify/FulfillmentOrder/6934614343818",
+  "orderName": "#1120",
+  "destination": {
+    "firstName": "Юрій",
+    "lastName": "Тестовий",
+    "address1": "Відділення №1: вул. Довженка, 25В",
+    "city": "м. Крихівці, Івано-Франківський, Івано-Франківська",
+    "province": null,
+    "zip": "76493",
+    "countryCode": "UA",
+    "phone": "+380503732206"
+  },
+  "lineItems": {
+    "edges": [
+      {
+        "node": {
+          "id": "gid://shopify/FulfillmentOrderLineItem/14634930798730",
+          "productTitle": "Перемички Eve 280/304/306/314",
+          "sku": "12001",
+          "remainingQuantity": 1
+        }
+      }
+    ]
+  },
+  "order": {
+    "customAttributes": [
+      {
+        "key": "Recipient Name",
+        "value": "Тестовий Юрій"
+      },
+      {
+        "key": "Recipient Phone",
+        "value": "+380503732206"
+      },
+      {
+        "key": "Recipient Email",
+        "value": "yurii.andrusiak@gmail.com"
+      },
+      {
+        "key": "Delivery Method",
+        "value": "Нова пошта"
+      },
+      {
+        "key": "City",
+        "value": "м. Крихівці, Івано-Франківський, Івано-Франківська"
+      },
+      {
+        "key": "Post Office",
+        "value": "Відділення №1: вул. Довженка, 25В"
+      },
+      {
+        "key": "_zip-code",
+        "value": "76493"
+      },
+      {
+        "key": "Payment",
+        "value": "IBAN"
+      },
+      {
+        "key": "Call",
+        "value": "Не телефонувати мені"
+      },
+      {
+        "key": "Shipping",
+        "value": "За тарифами перевізника"
+      },
+      {
+        "key": "Currency rate",
+        "value": "1"
+      },
+      {
+        "key": "Checkout id",
+        "value": "d3cfb79b-0fdc-4116-9dda-32cf26006181"
+      }
+    ]
+  },
+  "merchantRequests": {
+    "edges": [
+      {
+        "node": {
+          "message": ""
+        }
+      }
+    ]
+  }
+}

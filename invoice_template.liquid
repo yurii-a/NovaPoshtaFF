@@ -1,0 +1,766 @@
+<!-- RECEIPT / INVOICE -->
+
+<!-- Document Settings -->
+{% assign SETTING_shop_logo = shop_logo_url %} <!-- Logo uploaded from "Templates" page > "Customize Branding" -->
+{% assign SETTING_shop_logo_width = shop_logo_width %} <!-- Logo width from "Templates" page > "Customize Branding" -->
+{% assign SETTING_shop_accent_color = shop_accent_color %} <!-- Accent color from "Templates" page > "Customize Branding" -->
+{% assign SETTING_date_format = "%b %e, %Y" %} <!-- Adjusts date format used, see: https://shopify.github.io/liquid/filters/date/ -->
+{% assign SETTING_show_product_images = true %} <!-- Display product images? (true/false) -->
+{% assign SETTING_product_image_size = 58 %} <!-- Adjusts size of product images -->
+{% assign SETTING_show_cart_attributes = false %} <!-- Display custom information collected during checkout? (true/false) - Example: Pickup/Delivery date & time. See: http://help.forsbergplustwo.com/en/articles/3825760 -->
+{% assign SETTING_show_order_number_barcode = true %} <!-- Display a barcode of the order number? (true/false) -->
+{% assign SETTING_show_product_barcodes = false %} <!-- Display a barcode of the product variant? (true/false) -->
+
+
+<!-- Shop info -->
+{% assign shop_name_text = "ФОП Андрусяк Юрій Михайлович" %} <!-- Overwrite the default shop name shown. Leave blank to use default from Shopify -->
+{% assign shop_payment_title_text = "Реквізити для оплати" %}
+{% assign shop_address_text = "м.Жидачів, вул. Шкільна 11, кв.27" %} <!-- Overwrite the default shop address shown. Leave blank to use default from Shopify -->
+{% assign shop_tax_number_text = "3408901078" %} <!-- Display your shop tax or VAT number. Example "VAT No. DK12345" -->
+{% assign shop_iban_text = "UA313220010000026005300071483" %} <!-- Display your shop tax or VAT number. Example "VAT No. DK12345" -->
+{% assign shop_bank_text = "АТ «УНІВЕРСАЛ БАНК»" %} <!-- Display your shop tax or VAT number. Example "VAT No. DK12345" -->
+{% assign shop_payment_desc_text = "Призначення: Оплата за акумулятори Eve" %} <!-- Display your shop tax or VAT number. Example "VAT No. DK12345" -->
+
+<!--
+  TRANSLATE TEXT / CHANGE WORDING
+  You can translate or change wording in the document by updating
+  the words below. Only change the words between the quotes "".
+  See: http://help.forsbergplustwo.com/en/articles/5137649
+-->
+
+{% assign TEXT_receipt_tax_invoice = "Рахунок-фактура" %}
+{% assign TEXT_purchase_order = "Номер замовлення" %}
+{% assign TEXT_shipping_address = "Адреса доставки" %}
+{% assign TEXT_customer = "Замовник" %}
+{% assign TEXT_tel = "Тел." %}
+{% assign TEXT_no_customer_information = "Інформація про покупця відсутня" %}
+{% assign TEXT_payment_method = "Метод оплати" %}
+{% assign TEXT_payment_due_on = "Термін оплати до" %}
+{% assign TEXT_payment_overdue = "Прострочено" %}
+{% assign TEXT_shipping_method = "Метод доставки" %}
+{% assign TEXT_pickup_date_and_time = "Самовивіз" %}
+{% assign TEXT_pickup_location = "Місце самовивозу" %}
+{% assign TEXT_delivery_date_and_time = "Доставка" %}
+{% assign TEXT_items = "Товари" %}
+{% assign TEXT_price = "Ціна" %}
+{% assign TEXT_tax = "Податок" %}
+{% assign TEXT_qty = "К-сть" %}
+{% assign TEXT_item_total = "Всього" %}
+{% assign TEXT_sku = "Артикул: " %}
+{% assign TEXT_refunded = "x Повернено" %}
+{% assign TEXT_notes = "Примітки" %}
+{% assign TEXT_discount = "Знижка" %}
+{% assign TEXT_subtotal = "Проміжний підсумок" %}
+{% assign TEXT_shipping = "Доставка" %}
+{% assign TEXT_duties = "Митні збори" %}
+{% assign TEXT_total_excluding_vat = "Разом без ПДВ" %}
+{% assign TEXT_vat = "ПДВ %" %}
+{% assign TEXT_total = "Всього" %}
+{% assign TEXT_total_refund = "Сумарне повернення" %}
+{% assign TEXT_total_paid = "Оплачено" %}
+{% assign TEXT_total_due = "До оплати" %}
+{% assign TEXT_thanks = "Дякуємо за покупку у нас!" %}
+
+<div class="template-889061">
+  <div class="header">
+    <div class="shop-title to-uppercase">
+      {% if SETTING_shop_logo != blank %}
+        {{ SETTING_shop_logo | img_tag: '', 'shop-logo'}}
+      {% else %}
+        {{ shop.name }}
+      {% endif %}
+    </div>
+    <div class="order-title text-align-right">
+      <p>
+        {% if SETTING_show_order_number_barcode == true and name != blank %}
+          <s-barcode type="code128" value="{{ name }}"></s-barcode><br>
+        {% endif %}
+        {{ TEXT_receipt_tax_invoice }} {{ name }}
+        {% if po_number != blank %}<br>{{ TEXT_purchase_order }} {{ po_number }}{% endif %}
+      </p>
+      <p>
+        {{ created_at | date: SETTING_date_format }}
+      </p>
+    </div>
+  </div>
+  <div class="customer-addresses">
+    {% if shipping_address != blank %}
+      <div class="shipping-address">
+        <p class="subtitle-bold to-uppercase">
+          {{ TEXT_customer }}
+        </p>
+        <p class="address-detail">
+            {{ shipping_address | format_address }}
+            {% if shipping_address.phone != blank %}
+              <br>
+              {{ TEXT_tel }} {{ shipping_address.phone }}
+            {% endif %}
+        </p>
+      </div>
+    {% endif %}
+    <div class="billing-address">
+      <p class="subtitle-bold to-uppercase">
+        {{ shop_payment_title_text }}
+      </p>
+      <p class="address-detail">
+        {% if shop_iban_text != blank %}
+          {{ shop_iban_text }}
+        {% endif %}
+        
+        {% if shop_name_text != blank %}
+          <br>
+          {{ shop_name_text }}
+        {% endif %}
+        <!-- 
+        {% if shop_address_text != blank %}
+          <br>
+          {{ shop_address_text }}
+        {% endif %}
+         -->
+        {% if shop_tax_number_text != blank %}
+          <br>
+          {{ shop_tax_number_text }}
+        {% endif %}
+        
+        {% if shop_bank_text != blank %}
+          <br>
+          {{ shop_bank_text }}
+        {% endif %}
+        
+        {% if shop_payment_desc_text != blank %}
+          <br>
+          {{ shop_payment_desc_text }}
+        {% endif %}
+      </p>
+    </div>
+    <div class="order-details">
+      {% if payment_method != blank or payment_terms != blank %}
+        <p class="subtitle-bold to-uppercase">
+          {{ TEXT_payment_method }}
+        </p>
+        <p class="order-detail">
+          {{ payment_method }}
+          {% if payment_terms != blank %}
+            <br>{{ TEXT_payment_due_on }} {{ payment_terms.current_payment_schedule.due_at | date: SETTING_date_format }} ({{ payment_terms.payment_terms_name }})
+            {% if payment_terms.overdue %}
+              <br><span class="label-warning">{{ TEXT_payment_overdue }}</span>
+            {% endif %}
+          {% endif %}
+        </p>
+      {% endif %}
+      {% if shipping_method != blank or fulfillment.tracking_company != blank %}
+        <p class="subtitle-bold to-uppercase">
+          {{ TEXT_shipping_method }}
+        </p>
+        <p class="order-detail">
+          {% if fulfillment.tracking_company == blank or fulfillment.tracking_company == "Other" %}
+            {{ shipping_method.title }}
+            <br>
+            {{ fulfillment.tracking_number }}
+          {% else %}
+            {{ fulfillment.tracking_company }} {{ shipping_method.title }}
+            <br>
+            {{ fulfillment.tracking_number }}
+          {% endif %}
+        </p>
+      {% endif %}
+      {% if attributes.Pickup-Date != blank or attributes.Delivery-Date != blank %}
+        {% include "pickup_and_delivery" %}
+      {% endif %}
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="order-table">
+    <div class="order-table-row order-table-header">
+      <div class="order-table-cell item-image-and-description subtitle-bold to-uppercase">
+        {{ TEXT_items }}
+      </div>
+      <div class="order-table-cell item-price text-align-right subtitle-bold to-uppercase">
+        {{ TEXT_price }}
+      </div>
+      <!-- <div class="order-table-cell item-tax text-align-right subtitle-bold to-uppercase">
+        {{ TEXT_tax }}
+      </div> -->
+      <div class="order-table-cell item-quantity text-align-right subtitle-bold to-uppercase">
+        {{ TEXT_qty }}
+      </div>
+      <div class="order-table-cell item-line-price text-align-right subtitle-bold to-uppercase">
+        {{ TEXT_item_total }}
+      </div>
+    </div>
+
+    {% comment %}
+      These variables make sure your images print at high quality.
+    {% endcomment %}
+    {% assign resolution_adjusted_size = SETTING_product_image_size | times: 200 | divided_by: 72 | ceil %}
+    {% capture effective_image_dimensions %}{{ resolution_adjusted_size }}x{{ resolution_adjusted_size }}{% endcapture %}
+
+    <table>
+      <tbody>
+        {% for line_item in line_items %}
+          {% if line_item.quantity < 1 %}{% continue %}{% endif %}
+          <tr>
+            <td>
+              <div class="order-table-row order-table-body">
+                {% if SETTING_show_product_images == true %}
+                  <div class="order-table-cell item-image">
+                    <div class="aspect-ratio aspect-ratio-square" style="width: {{ SETTING_product_image_size }}px; height: {{ SETTING_product_image_size }}px;">
+                      {% if line_item.image != blank %}
+                        {{ line_item.image | img_url: effective_image_dimensions | img_tag: '', 'aspect-ratio__content' }}
+                      {% else %}
+                        {{ '/product_image_placeholder.svg' | img_tag: '', 'aspect-ratio__content placeholder' }}
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+                <div class="order-table-cell item-description">
+                  <p>
+                    <span class="item-description-line">
+                      {{ line_item.product_title }}
+                    </span>
+                    {% if line_item.variant_title != blank %}
+                      <span class="item-description-line">
+                        {{ line_item.variant_title }}
+                      </span>
+                    {% endif %}
+                    {% if line_item.sku != blank %}
+                      <span class="item-description-line">
+                        {{ TEXT_sku }}{{ line_item.sku }}
+                      </span>
+                    {% endif %}
+                    {% for p in line_item.properties %}
+                      {% assign p_internal = p.first | slice: 0 %}
+                      {% unless p.first contains "builder_id" or p.first contains "builder_info" or p.first contains "master_builder" or p_internal == "_" or p.last == "" or p.last == blank %}
+                        {% if p.last contains "/uploads/" or p.last contains "cdn.shopify.com" %}
+                          <span class="item-description-line"><a href="{{ p.last }}" target="_blank">{{ p.first }}</a></span>
+                        {% else %}
+                          <span class="item-description-line">{{ p.first }}: {{ p.last }}</span>
+                        {% endif %}
+                      {% endunless %}
+                    {% endfor %}
+
+                    {% if line_item.refunded_quantity > 0 %}
+                      <span class="item-description-line">
+                        <span class="label-warning">{{ line_item.refunded_quantity }}{{ TEXT_refunded }}</span>
+                      </span>
+                    {% endif %}
+                    {% if SETTING_show_product_barcodes == true and line_item.variant.barcode != blank %}
+                      <s-barcode type="code128" value="{{ line_item.variant.barcode }}"></s-barcode>
+                    {% endif %}
+                  </p>
+                </div>
+                <div class="order-table-cell item-price text-align-right">
+                  {% if line_item.original_price > line_item.price %}<s>{{ line_item.original_price | money }}</s><br>{% endif %}
+                  {{ line_item.price | money }}
+                </div>
+                <!-- <div class="order-table-cell item-tax text-align-right">
+                  {% for tax in line_item.tax_lines %}
+                    {{ tax.rate | times: 100 }}%<br>
+                  {% else %}
+                    0%<br>
+                  {% endfor %}
+                </div> -->
+                <div class="order-table-cell item-quantity text-align-right">
+                  {{ line_item.quantity }}
+                </div>
+                <div class="order-table-cell item-line-price text-align-right">
+                  {{ line_item.line_price | money }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <div class="notes-and-pricing">
+    <div class="notes">
+      {% if note != blank %}
+        <div class="notes-row">
+          <div class="notes-title subtitle-bold to-uppercase">
+            {{ TEXT_notes }}
+          </div>
+          <div class="notes-details">
+            {{ note | escape | newline_to_br }}
+          </div>
+        </div>
+      {% endif %}
+      {% if SETTING_show_cart_attributes == true %}
+        {% for attribute in attributes %}
+          <div class="notes-row">
+            <div class="notes-title subtitle-bold to-uppercase">
+              {{ attribute.first | escape }}:
+            </div>
+            <div class="notes-details">
+              {{ attribute.last | escape }}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="pricing">
+      {% if total_discounts != 0.0 %}
+        <div class="pricing-row text-align-right">
+          <div class="pricing-title">
+            {{ TEXT_discount }}<br>
+            {% for discount in discounts %}{{ discount.title }} {% endfor %}
+          </div>
+          <div class="pricing-details">
+            -{{ total_discounts | money }}
+          </div>
+        </div>
+      {% endif %}
+      <div class="pricing-row text-align-right">
+        <div class="pricing-title">
+          {{ TEXT_subtotal }}
+        </div>
+        <div class="pricing-details">
+          {{ subtotal_price | money }}
+        </div>
+      </div>
+      <div class="pricing-row text-align-right">
+        <div class="pricing-title">
+          {{ TEXT_shipping }}
+        </div>
+        <div class="pricing-details">
+          {{ shipping_price | default: 0.0 | money }}
+        </div>
+      </div>
+      {% if duties_price != 0.0 %}
+        <div class="pricing-row text-align-right">
+          <div class="pricing-title">
+            {{ TEXT_duties }}
+          </div>
+          <div class="pricing-details">
+            {{ duties_price | money }}
+          </div>
+        </div>
+      {% endif %}
+      <div class="pricing-row text-align-right">
+        <div class="pricing-title">
+          {{ TEXT_total_excluding_vat }}
+        </div>
+        <div class="pricing-details">
+          {{ total_price | minus: total_tax | money }}
+        </div>
+      </div>
+      {% for tax in tax_lines %}
+        <div class="pricing-row text-align-right">
+          <div class="pricing-title">
+            {{ tax.title | replace: "VAT", TEXT_vat | replace: "Tax", TEXT_vat }} {{ tax.rate | times: 100 }}%
+          </div>
+          <div class="pricing-details">
+            {{ tax.price | money }}
+          </div>
+        </div>
+      {% endfor %}
+      <div class="pricing-row text-align-right">
+        <div class="pricing-title subtitle-bold to-uppercase">
+          {{ TEXT_total }} ({{ currency }})
+        </div>
+        <div class="pricing-details subtitle-bold to-uppercase">
+          {{ total_price | money }}
+        </div>
+      </div>
+      {% if total_refunded_amount > 0.0 %}
+        <div class="pricing-row text-align-right">
+          <div class="pricing-title">
+            {{ TEXT_total_refund }}
+          </div>
+          <div class="pricing-details">
+            -{{ order.total_refunded_amount | money }}
+          </div>
+        </div>
+      {% endif %}
+      {% if total_paid != 0.0 %}
+        <div class="pricing-row text-align-right">
+          <div class="pricing-title">
+            {{ TEXT_total_paid }}
+          </div>
+          <div class="pricing-details">
+            {{ total_paid | money }}
+          </div>
+        </div>
+      {% endif %}
+      {% if total_due != 0.0 %}
+        <div class="pricing-row text-align-right">
+          <div class="pricing-title">
+            {{ TEXT_total_due }}
+          </div>
+          <div class="pricing-details">
+            {{ total_due | money }}
+          </div>
+        </div>
+      {% endif %}
+      <hr>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>
+      {{ TEXT_thanks }}
+    </p>
+    <p>
+      <strong>
+        {% if shop_name_text != blank %}
+          {{ shop_name_text }}
+        {% else %}
+          {{ shop.name }}
+        {% endif %}
+      </strong>
+      <br>
+      {% if shop_address_text != blank %}
+        {{ shop_address_text }}
+      {% else %}
+        {% if shop.address1 != blank %}{{ shop.address1 }},{% endif %}{% if shop.address2 != blank %} {{ shop.address2 }},{% endif %}{% if shop.city != blank %} {{ shop.city }},{% endif %}{% if shop.province_code != blank %} {{ shop.province_code }},{% endif %}{% if shop.zip != blank %} {{ shop.zip }},{% endif %} {{ shop.country }}
+      {% endif %}
+      {% if shop_tax_number_text != blank %}
+        <br>{{ shop_tax_number_text }}
+      {% endif %}
+
+      <br>
+      <a href="mailto:{{ shop.customer_email }}" target="_blank">{{ shop.customer_email }}</a>
+      <br>
+      <a href="https://{{ shop.domain }}" target="_blank">{{ shop.domain }}</a>
+    </p>
+  </div>
+</div>
+
+<style>
+
+  
+  .template-889061 * {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+    box-sizing: border-box;
+  }
+
+  .template-889061 {
+    margin: auto;
+    padding: 10px 30px 0 30px;
+    min-height: 600px;
+  }
+
+  .template-889061 p {
+    margin: 0 0 7px 0;
+  }
+
+  .template-889061 a,
+  .template-889061 a:link,
+  .template-889061 a:visited {
+    color: #000;
+    font-weight: 300;
+    text-decoration: none;
+  }
+
+  .template-889061 .header {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    margin-bottom: 30px;
+  }
+
+  .template-889061 .header p {
+    margin: 0
+  }
+
+  .template-889061 .shop-title {
+    color: {{ SETTING_shop_accent_color }};
+    -webkit-box-flex: 6;
+    -webkit-flex: 6;
+    flex: 6;
+    font-size: 30px;
+    line-height: 32px;
+    font-weight: 400;
+  }
+
+  .template-889061 .shop-logo {
+    max-width: {{ SETTING_shop_logo_width }}px;
+  }
+
+  .template-889061 .order-title {
+    -webkit-box-flex: 4;
+    -webkit-flex: 4;
+    flex: 4;
+  }
+
+  .template-889061 .customer-addresses {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    margin-bottom: 15px;
+  }
+
+  .template-889061 .shipping-address {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .template-889061 .billing-address {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .template-889061 .order-details {
+    text-align: right;
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-bottom: 15px;
+  }
+
+  .template-889061 .address-detail,
+  .template-889061 .order-detail {
+    margin: 5px 0 0;
+    line-height: 1.5;
+  }
+
+  .template-889061 .subtitle-bold {
+    font-weight: bold;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .template-889061 .order-detail + .subtitle-bold {
+    margin-top: 15px;
+  }
+
+  .template-889061 .to-uppercase {
+    text-transform: uppercase;
+  }
+
+  .template-889061 .text-align-right {
+    text-align: right;
+  }
+
+  .template-889061 .order-table {
+    display: block;
+  }
+
+  .template-889061 .order-table-row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 15px 0;
+    page-break-inside: avoid;
+  }
+
+  .template-889061 .order-table-header {
+    margin-bottom: 0;
+  }
+
+  {% if SETTING_show_product_images == true %}
+    .template-889061 .order-table-header .item-image-and-description {
+      -webkit-box-flex: 8;
+      -webkit-flex: 8;
+      flex: 8;
+      margin-right: 30px;
+    }
+  {% else %}
+    .template-889061 .order-table-header .item-image-and-description {
+      -webkit-box-flex: 7;
+      -webkit-flex: 7;
+      flex: 7;
+    }
+  {% endif %}
+
+  .template-889061 .order-table-header .order-table-cell {
+    white-space: nowrap;
+  }
+
+  .template-889061 .order-table-cell {
+    -webkit-box-flex: 2;
+    -webkit-flex: 2;
+    flex: 2;
+    margin: 0;
+  }
+
+  .template-889061 .item-image {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    margin-right: 15px;
+    min-width: {{ SETTING_product_image_size | default: 0 }}px;
+  }
+
+  .template-889061 .item-description {
+    -webkit-box-flex: 7;
+    -webkit-flex: 7;
+    flex: 7;
+  }
+
+  .template-889061 .item-description-line {
+    display: block;
+    margin: 0;
+  }
+
+  .template-889061 .item-description p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .template-889061 .item-line-price {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3;
+  }
+
+  .template-889061 .missing-line-items-text {
+    margin: 15px 0;
+    padding: 0 7px;
+  }
+
+  .template-889061 .barcode-image {
+    height: 32px;
+    display: inline-block;
+  }
+
+  .template-889061 .qrcode-image {
+    margin-top: 15px;
+    height: 75px;
+    display: inline-block;
+  }
+
+  .template-889061 .notes-and-pricing {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    margin-bottom: 15px;
+  }
+
+  .template-889061 .notes {
+    flex-grow: 2;
+    flex-basis: 0;
+  }
+
+  .template-889061 .notes-row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    margin: 15px 0;
+    page-break-inside: avoid;
+  }
+
+  .template-889061 .notes-title {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+  }
+
+  .template-889061 .notes-details {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3;
+    margin-right: 30px;
+  }
+
+  .template-889061 .footer {
+    margin-top: 30px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .template-889061 .footer p {
+    margin: 0;
+    margin-bottom: 15px;
+  }
+  .template-889061 .footer p:last-of_type {
+    margin-bottom: 0px;
+  }
+
+  .template-889061 hr {
+    height: 2px;
+    border-bottom: 2px solid {{ SETTING_shop_accent_color | default: "#e1e1e1" }};
+    margin: 0;
+  }
+
+  .template-889061 .aspect-ratio {
+    position: relative;
+    display: block;
+    background: #fafbfc;
+    padding: 0;
+  }
+
+  .template-889061 .aspect-ratio::before {
+    z-index: 1;
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(195,207,216,0.3);
+  }
+
+  .template-889061 .aspect-ratio--square {
+    width: 100%;
+    padding-bottom: 100%;
+  }
+
+  .template-889061 .aspect-ratio__content {
+    position: absolute;
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+  }
+
+
+  .template-889061 .pricing {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .template-889061 .pricing-row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 15px 0;
+    page-break-inside: avoid;
+  }
+
+  .template-889061 .pricing-title {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+  }
+
+  .template-889061 .pricing-details {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+  }
+
+  .template-889061 .label-warning {
+    display: inline-block;
+    background-color: #FFEA8A;
+    border-radius: 10px;padding: 1px 6px;
+    margin-top: 3px;
+  }
+
+</style>

@@ -10,7 +10,7 @@
 					<wms:HeadOrder>
 						<wms:ExternalNumber>240999MO0F4FA261111232</wms:ExternalNumber>
 						<wms:ExternalDate>20240116044543</wms:ExternalDate>
-						<wms:DestWarehouse/>
+						<!-- <wms:DestWarehouse/> -->
 						<wms:Adress>
 							<wms:Region>Харківська область</wms:Region>
 							<wms:City>Харків</wms:City>
