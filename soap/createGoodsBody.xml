@@ -5,19 +5,19 @@
          <wms:Organization>NPL_A1</wms:Organization>
          <wms:Goods>
             <wms:MessageGoods>
-               <wms:Sku>LU-01480</wms:Sku>
-               <wms:GoodsUnitName>1,5*4,0*1,2 сталь/ сепаратор Torlon</wms:GoodsUnitName>
-               <wms:GoodsUnitFullName>1,5*4,0*1,2 сталь/ сепаратор Torlon</wms:GoodsUnitFullName>
+               <wms:Sku>100330</wms:Sku>
+               <wms:GoodsUnitName>Акумулятор Eve MB30 330AH</wms:GoodsUnitName>
+               <wms:GoodsUnitFullName>Акумулятор Eve MB30 330AH</wms:GoodsUnitFullName>
                <wms:BaseMeasureUnit>
-                  <wms:BarCode>00452</wms:BarCode>
-                  <wms:MeasureUnitName>шт.</wms:MeasureUnitName>
-                  <wms:Weight>0.01</wms:Weight>
-                  <wms:Length>1</wms:Length>
-                  <wms:Height>1</wms:Height>
-                  <wms:Width>1</wms:Width>
+                  <wms:BarCode></wms:BarCode>
+                  <wms:MeasureUnitName>уп.</wms:MeasureUnitName>
+                  <wms:Weight>24</wms:Weight>
+                  <wms:Length>30</wms:Length>
+                  <wms:Height>30</wms:Height>
+                  <wms:Width>40</wms:Width>
                </wms:BaseMeasureUnit>
                <wms:ExpirationDateSign>0</wms:ExpirationDateSign>
-               <wms:Price>9</wms:Price>
+               <wms:Price>3697</wms:Price>
             </wms:MessageGoods>
          </wms:Goods>
       </wms:CreateUpdateGoods>

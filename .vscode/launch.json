@@ -9,7 +9,15 @@
         "args": ["dev"],
         "cwd": "${workspaceFolder}",
         "skipFiles": ["<node_internals>/**"],
-        "runtimeArgs": ["--inspect"]
+        "runtimeArgs": ["--inspect"],
+        "sourceMaps": true
+      }, 
+      {
+        "name": "Attach by Process ID",
+        "processId": "${command:PickProcess}",
+        "request": "attach",
+        "skipFiles": ["<node_internals>/**"],
+        "type": "node"
       }
     ]
   }

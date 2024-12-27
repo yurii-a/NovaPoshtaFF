@@ -15,6 +15,7 @@ primary_region = 'ams'
   SHOPIFY_API_KEY = 'c6b25c68afcae95124a8d30598fba535'
   SHOPIFY_APP_URL = 'https://np-ff.fly.dev'
 
+
 [http_service]
   internal_port = 3000
   force_https = true

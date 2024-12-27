@@ -4,13 +4,26 @@ export interface ICreateUpdateOrdersRequest {
   Orders: IOrders;
 }
 
-
 export interface IUndoOrderRequest {
-  Organization: string;
+  UndoOrder: {
+    Organization: string;
+    ExternalNumbers: {
+      MessageExternalNumbers: {
+        ExternalNumber: string;
+      };
+    };
+  };
 }
 
 export interface IGetCurrentRemainsRequest {
-  Organization: string;
+  GetCurrentRemains: {
+    Organization: string;
+    SKU?: string;
+    Warehouse?: string;
+    RemainDate?: string;
+    AdditionalParam: string;
+    batchId?: string;
+  };
 }
 
 // Define the interface for Orders
@@ -68,7 +81,6 @@ export interface IDoorAddress extends IAddress {
   District: string | null;
 }
 
-
 // Define the interface for Items
 export interface IItems {
   Item: IItem[]; // This could be an array if there can be multiple items
@@ -111,9 +123,14 @@ export interface Info {
   Descr: string[];
 }
 
+export enum ResponseStatus {
+  OK = "OK",
+  FAILURE = "FAILURE"
+}
+
 export interface FulfillOrdersResult {
-  status: string,
-  waybill: string | null,
-  orderNumber: string | null,
-  errors: string[],
+  status: ResponseStatus.OK | ResponseStatus.FAILURE;
+  waybill: string | null;
+  orderNumber: string | null;
+  errors: string[];
 }

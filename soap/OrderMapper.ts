@@ -1,10 +1,13 @@
 import type {
   FulfillmentOrder,
   FulfillmentOrderLineItem,
+  FulfillmentOrderLineItemEdge,
 } from "~/types/admin.types";
 import type {
   IAddress,
+  IBranchAddress,
   ICreateUpdateOrdersRequest,
+  IDoorAddress,
   IItem,
   IItems,
 } from "./types";
@@ -30,6 +33,8 @@ interface PaymentConfig {
   payer: Payer;
 }
 
+const IS_SANDBOX = process.env.NP_ENV === "sandbox";
+
 /**
  * Creates CreateUpdateOrders request body from Shopify order
  * @param order Shopify order
@@ -41,7 +46,7 @@ export function mapCreateOrdersRequest(
   const organization = process.env.NP_ORGANIZATION!;
   const customAttributes = order.order.customAttributes.reduce(
     (acc, attr) => {
-      acc[attr.key] = attr.value!;
+      acc[attr.key] = attr.value ?? "";
       return acc;
     },
     {} as Record<string, string>,
@@ -51,15 +56,24 @@ export function mapCreateOrdersRequest(
   const totalCost = order.order.totalPriceSet.presentmentMoney.amount;
   const isPrepaymentType = paymentConfig.type in [PaymentType.CARD, PaymentType.IBAN];
   const isOrderPaid = order.order.fullyPaid;
-  // Контоль оплати for orders
-  const paymentControl = isPrepaymentType && isOrderPaid ? 0 : totalCost;
+  // Контроль оплати for orders. 
+  let returnPayment = isPrepaymentType && isOrderPaid || !IS_SANDBOX ? 0 : totalCost;
+  if (IS_SANDBOX) {
+    //Ignore this param as it's not supported in sandbox 
+    returnPayment = undefined;
+  }
+  
+  // Pass the latest message from merchant
+  const merchantMessage = order.merchantRequests.edges[0].node?.message;
+  const deliveryType = mapDeliveryType(customAttributes);
+  const orderDescription = order.lineItems.edges[0].node.productTitle;
   const orderData: ICreateUpdateOrdersRequest = {
     Organization: organization,
     Orders: {
       MessageOrders: {
         HeadOrder: {
           ExternalNumber: order.orderName,
-          ExternalDate: "20241225044543",
+          // ExternalDate: "20241225044543",
           DestWarehouse: "KyivSkhid",
           Adress: mapAddress(customAttributes),
           PayType: paymentConfig.type,
@@ -69,15 +83,15 @@ export function mapCreateOrdersRequest(
             rcptContact: customAttributes["Recipient Name"],
             RecipientType: "PrivatePerson",
           },
-          Description: order.lineItems.nodes[0].productTitle,
-          AdditionalInfo: order.merchantRequests.nodes.pop()?.message || null,
+          Description: orderDescription,
+          AdditionalInfo: merchantMessage || "",
           Cost: totalCost,
-          DeliveryAmount: paymentControl,
-          DeliveryType: mapDeliveryType(customAttributes),
-          AdditionalParams: "",
+          DeliveryAmount: returnPayment,
+          DeliveryType: deliveryType,
+          // AdditionalParams: "",
           OrderType: 0, //B2C by default
         },
-        Items: mapItems(order.lineItems.nodes),
+        Items: mapItems(order.lineItems.edges),
       },
     },
   };
@@ -85,6 +99,13 @@ export function mapCreateOrdersRequest(
 }
 
 function mapPaymentConfig(attributes: Record<string, string>): PaymentConfig {
+  if(IS_SANDBOX) {
+    // Only cash works in sandbox
+    return {
+      type: PaymentType.CASH,
+      payer: Payer.Buyer,
+    };
+  }
   const freeShippingForCashless = process.env.FREE_SHIPPING_FOR_CASHLESS;
   if (attributes["Payment"] == "IBAN") {
     return {
@@ -123,32 +144,33 @@ function parseAddress(address: string) {
   return { city, district, region };
 }
 
-function mapAddress(attributes: Record<string, string>): IAddress {
+function mapAddress(attributes: Record<string, string>): IBranchAddress | IDoorAddress {
   const { city, district, region } = parseAddress(attributes["City"]);
 
   const phoneNumber = attributes["Recipient Phone"];
   const branchAddress = attributes["Post Office"];
   const branchID = extractBranchId(branchAddress);
-  if(branchID) {
-    return IBranchAddress({
+
+  if (branchID) {
+    // Return a branch address
+    return {
       Region: region + " область",
       City: city!,
       Phone: phoneNumber,
       NPWarehouse: branchID,
       District: district,
-    });
+    };
   } else {
-    throw new Error("Адресна доставка ще не інтегрована. Прохання додати логіку");
-    return IDoorAddress({
+    // Return a door address
+    return {
       Region: region + " область",
       City: city!,
       Street: "",
       House: "",
-      Flat: "",
+      Flat: null,
       Phone: phoneNumber,
-      NPWarehouse: branchID,
       District: district,
-    });
+    };
   }
 }
 
@@ -158,8 +180,9 @@ enum UNITS_IN_PACK {
   LF105 = 16,
 }
 
-function mapItems(lineItems: FulfillmentOrderLineItem[]): IItems {
-  const items = lineItems.map((lineItem) => {
+function mapItems(lineItemEdges: FulfillmentOrderLineItemEdge[]): IItems {
+  const items = lineItemEdges.map((lineItemEdge) => {
+    const lineItem = lineItemEdge.node;
     //TODO pass pack size for each line item via customAttributes field
     const packSize = lineItem.sku == "100330" ? UNITS_IN_PACK.MB30 : 1;
 
@@ -181,8 +204,5 @@ function mapItems(lineItems: FulfillmentOrderLineItem[]): IItems {
     };
   });
   return items;
-}
-function IDoorAddress(arg0: { Region: string; City: string; Street: string; House: string; Flat: string; Phone: string; NPWarehouse: string | null; District: string | null; }): IAddress {
-  throw new Error("Function not implemented.");
 }
 

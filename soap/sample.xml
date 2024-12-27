@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://npl-dev.omnic.solutions/wms" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd1="http://npl-dev.omnic.solutions/wms" xmlns:xsd2="http://v8.1c.ru/8.1/data/core" xmlns:xs1="http://npl-dev.omnic.solutions/wms" xmlns:xs2="http://v8.1c.ru/8.1/data/core" xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/">
+    <soap:Header></soap:Header>
+    <soap:Body>
+        <CreateUpdateOrders xmlns="http://npl-dev.omnic.solutions/wms">
+            <Organization>NPL_A1</Organization>
+            <Orders>
+                <MessageOrders>
+                    <HeadOrder>
+                        <ExternalNumber>#1009</ExternalNumber>
+                        <!-- <ExternalDate>20241225044543</ExternalDate> -->
+                        <DestWarehouse>KyivSkhid</DestWarehouse>
+                        <Adress>
+                            <Region>Івано-Франківська область</Region>
+                            <City>Крихівці</City>
+                            <Phone>+380503732206</Phone>
+                            <NPWarehouse>1</NPWarehouse>
+                            <District>Івано-Франківський</District>
+                        </Adress>
+                        <PayType>1</PayType>
+                        <payer>1</payer>
+                        <Contactor>
+                            <rcptName>Тестовий Юрій</rcptName>
+                            <rcptContact>Тестовий Юрій</rcptContact>
+                            <RecipientType>PrivatePerson</RecipientType>
+                        </Contactor>
+                        <Description>Eve MB30 314AH LiFePo4</Description>
+                        <AdditionalInfo></AdditionalInfo>
+                        <Cost>34376.0</Cost>
+                        <!-- <DeliveryAmount>34376.0</DeliveryAmount> -->
+                        <DeliveryType>0</DeliveryType>
+                        <OrderType>0</OrderType>
+                    </HeadOrder>
+                    <Items>
+                        <Item>
+                            <Sku>LU-01480</Sku>
+                            <Qty>2</Qty>
+                            <Price>17188</Price>
+                            <Sum>34376</Sum>
+                            <MeasureUnit>уп.</MeasureUnit>
+                        </Item>
+                    </Items>
+                </MessageOrders>
+            </Orders>
+        </CreateUpdateOrders>
+    </soap:Body>
+</soap:Envelope>
