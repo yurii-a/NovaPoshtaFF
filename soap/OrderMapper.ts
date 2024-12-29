@@ -1,14 +1,11 @@
 import type {
   FulfillmentOrder,
-  FulfillmentOrderLineItem,
   FulfillmentOrderLineItemEdge,
 } from "~/types/admin.types";
 import type {
-  IAddress,
   IBranchAddress,
   ICreateUpdateOrdersRequest,
   IDoorAddress,
-  IItem,
   IItems,
 } from "./types";
 

@@ -21,7 +21,7 @@ export interface IGetCurrentRemainsRequest {
     SKU?: string;
     Warehouse?: string;
     RemainDate?: string;
-    AdditionalParam: string;
+    AdditionalParam?: string;
     batchId?: string;
   };
 }

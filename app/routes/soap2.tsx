@@ -3,7 +3,7 @@ import type {
   CreateOrdersResponse,
   ICreateUpdateOrdersRequest,
 } from "soap/types";
-import { createOrders } from "soap/NovaPoshtaSoapService.server";
+import { createOrders, SoapService } from "soap/NovaPoshtaSoapService.server";
 
 const organization = process.env.NP_ORGANIZATION!;
 const orderData: ICreateUpdateOrdersRequest = {
@@ -51,5 +51,5 @@ const orderData: ICreateUpdateOrdersRequest = {
 };
 
 export async function loader() {
-  return await createOrders(orderData);
+  return await new SoapService().createOrders(orderData);
 }

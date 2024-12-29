@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:wms="http://npl-dev.omnic.solutions/wms">
+   <soap:Header/>
+   <soap:Body>
+      <wms:GetCurrentRemains>
+         <wms:Organization>NPL_A1</wms:Organization>
+         <wms:RemainDate>27.12.2024 00:00:00</wms:RemainDate>
+      </wms:GetCurrentRemains>
+   </soap:Body>
+</soap:Envelope>

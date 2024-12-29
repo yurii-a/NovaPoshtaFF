@@ -8,125 +8,134 @@ import {
   type MessageOrder,
   ResponseStatus,
 } from "soap/types";
-import { getAuthToken, postProcessXml } from "./utils";
+import { getAuthToken, postProcessXml } from "./SoapUtils";
 import { mapCreateOrdersRequest } from "./OrderMapper";
 import type { FulfillmentOrder } from "~/types/admin.types";
 import { json } from "@remix-run/node";
 
-let soapClient: any | null = null; // Cache the client instance
+export class SoapService {
+  private soapClient: any | null = null; // Cache the client instance
+  private readonly username: string;
+  private readonly password: string;
+  private readonly url: string;
 
-async function getSoapClient(): Promise<any> {
-  if (!soapClient) {
-    soapClient = await createSoapClient(); // Create the client only if it doesn't exist
+  constructor() {
+    this.username = process.env.NP_USERNAME!;
+    this.password = process.env.NP_PASSWORD!;
+    this.url = process.env.SANDBOX_URL!;
   }
-  return soapClient;
-}
 
-async function createSoapClient() {
-  const username = process.env.NP_USERNAME!;
-  const password = process.env.NP_PASSWORD!;
-  const url = process.env.SANDBOX_URL;
-  const wsdlUrl = `${url}?wsdl`;
-
-  const options: soap.IOptions = {
-    wsdl_headers: {
-      Authorization: getAuthToken(username, password),
-    },
-    wsdl_options: {
-      rejectUnauthorized: false, // Only for testing purposes if SSL issues arise
-    },
-    endpoint: url,
-  };
-
-  const client = await soap.createClientAsync(wsdlUrl, options);
-  // Set security options if needed
-  client.setSecurity(new soap.BasicAuthSecurity(username, password));
-  return client;
-}
-
-function renderError(error: String) {
-  console.error(error);
-  return json({ errors: error }, { status: 500 });
-}
-
-export async function createOrders(orders: ICreateUpdateOrdersRequest): Promise<UpdateOrdersResult> {
-  try {
-    const client = await getSoapClient();
-    try {
-      const [result] = (await client.CreateUpdateOrdersAsync(orders, {
-        postProcess: (xml: string) => postProcessXml(xml),
-      })) as [CreateUpdateOrdersResponse];
-
-      const soapMessage = result.return.MessageOrdersER[0];
-      return mapCreateOrdersResponseToShopify(soapMessage);
-    } catch (err) {
-      throw new Error("SOAP request error:" + err);
+  async getSoapClient(): Promise<any> {
+    if (!this.soapClient) {
+      this.soapClient = this.createSoapClient(); // Create the client only if it doesn't exist
     }
-  } catch (clientErr) {
-    throw new Error("Error creating client:" + clientErr);
+    return this.soapClient;
   }
-}
 
-export async function cancelOrders(body: IUndoOrderRequest): Promise<UpdateOrdersResult> {
-  try {
-    const client = await getSoapClient();
+  async createSoapClient() {
+    const wsdlUrl = `${this.url}?wsdl`;
+
+    const options: soap.IOptions = {
+      wsdl_headers: {
+        Authorization: getAuthToken(this.username, this.password),
+      },
+      wsdl_options: {
+        rejectUnauthorized: false, // Only for testing purposes if SSL issues arise
+      },
+      endpoint: this.url,
+    };
+
+    const client = await soap.createClientAsync(wsdlUrl, options);
+    // Set security options if needed
+    client.setSecurity(
+      new soap.BasicAuthSecurity(this.username, this.password),
+    );
+    return client;
+  }
+
+  async createOrders(
+    orders: ICreateUpdateOrdersRequest,
+  ): Promise<UpdateOrdersResult> {
     try {
-      const [result] = (await client.CreateUpdateOrdersAsync(body, {
-        postProcess: (xml: string) => postProcessXml(xml),
-      })) as [CreateUpdateOrdersResponse];
+      const client = await this.getSoapClient();
+      try {
+        const [result] = (await client.CreateUpdateOrdersAsync(orders, {
+          postProcess: (xml: string) => postProcessXml(xml),
+        })) as [CreateUpdateOrdersResponse];
 
-      const soapMessage = result.return.MessageOrdersER[0];
-      return mapCreateOrdersResponseToShopify(soapMessage);
-    } catch (err) {
-      throw new Error("SOAP request error:" + err);
+        const soapMessage = result.return.MessageOrdersER[0];
+        return this.mapCreateOrdersResult(soapMessage);
+      } catch (err) {
+        throw new Error("SOAP request error:" + err);
+      }
+    } catch (clientErr) {
+      throw new Error("Error creating client:" + clientErr);
     }
-  } catch (clientErr) {
-    throw new Error("Error creating client:" + clientErr);
   }
-}
 
-export async function getCurrentRemains(orders: IGetCurrentRemainsRequest) {
-  try {
-    const client = await createSoapClient();
+  async cancelOrders(body: IUndoOrderRequest): Promise<UpdateOrdersResult> {
     try {
-      const [result] = (await client.GetCurrentRemainsAsync(orders, {
-        postProcess: (xml: string) => postProcessXml(xml),
-      })) as [CreateUpdateOrdersResponse];
+      const client = await this.getSoapClient();
+      try {
+        const [result] = (await client.CreateUpdateOrdersAsync(body, {
+          postProcess: (xml: string) => postProcessXml(xml),
+        })) as [CreateUpdateOrdersResponse];
 
-      const soapMessage = result.return.MessageOrdersER[0];
-      return mapCreateOrdersResponseToShopify(soapMessage);
-    } catch (err) {
-      throw new Error("SOAP error:" + err);
+        const soapMessage = result.return.MessageOrdersER[0];
+        return this.mapCreateOrdersResult(soapMessage);
+      } catch (err) {
+        throw new Error("SOAP request error:" + err);
+      }
+    } catch (clientErr) {
+      throw new Error("Error creating client:" + clientErr);
     }
-  } catch (clientErr) {
-    throw new Error("SOAP client error:" + clientErr);
   }
-}
 
-function mapCreateOrdersResponseToShopify(
-  message: MessageOrder,
-): UpdateOrdersResult {
-  // You can further process the responseMessage here
-  if (message.Errors != null) {
+  async getCurrentRemains(body: IGetCurrentRemainsRequest) {
+    try {
+      const client = await this.getSoapClient();
+      try {
+        const [result] = (await client.GetCurrentRemainsAsync(body, {
+          postProcess: (xml: string) => postProcessXml(xml),
+        })) as [CreateUpdateOrdersResponse];
+        const soapMessage = result.return.MessageOrdersER[0];
+        return this.mapCreateOrdersResult(soapMessage);
+      } catch (err) {
+        throw new Error("SOAP error:" + err);
+      }
+    } catch (clientErr) {
+      throw new Error("SOAP client error:" + clientErr);
+    }
+  }
+
+  private mapCreateOrdersResult(
+    message: MessageOrder,
+  ): UpdateOrdersResult {
+    // You can further process the responseMessage here
+    if (message.Errors != null) {
+      return {
+        status: ResponseStatus.FAILURE,
+        waybill: null,
+        orderNumber: message.ExternalNumber,
+        errors: [JSON.stringify(message.Errors)],
+      };
+    }
+
+    console.log(
+      "Info:",
+      message.ExternalNumber + message.Info.Descr.join(", "),
+    );
     return {
-      status: ResponseStatus.FAILURE,
-      waybill: null,
+      status: ResponseStatus.OK,
+      waybill: message.WaybilNumber,
       orderNumber: message.ExternalNumber,
-      errors: [JSON.stringify(message.Errors)],
+      errors: [],
     };
   }
 
-  console.log("Info:", message.ExternalNumber + message.Info.Descr.join(", "));
-  return {
-    status: ResponseStatus.OK,
-    waybill: message.WaybilNumber,
-    orderNumber: message.ExternalNumber,
-    errors: [],
-  };
-}
-
-export async function fullfillWithNovaPoshta(order: FulfillmentOrder) {
-  // console.log("Map Shopify orders: " + JSON.stringify(order, null, 2));
-  const ordersRequest = mapCreateOrdersRequest(order);
-  return await createOrders(ordersRequest);
+  async fulfill(order: FulfillmentOrder) {
+    // console.log("Map Shopify orders: " + JSON.stringify(order, null, 2));
+    const ordersRequest = mapCreateOrdersRequest(order);
+    return await this.createOrders(ordersRequest);
+  }
 }

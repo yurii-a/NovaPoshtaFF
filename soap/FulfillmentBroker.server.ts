@@ -1,18 +1,24 @@
-import {
-  cancelOrders as cancelFulfillment,
-  fullfillWithNovaPoshta,
-} from "./NovaPoshtaSoapService.server";
 import type { FulfillmentOrder } from "~/types/admin.types";
 import type { ShopifyAdminClient } from "./ShopifyAdminClient";
-import type { IUndoOrderRequest} from "./types";
+import type {
+  IGetCurrentRemainsRequest as IGetStockRequest,
+  IUndoOrderRequest,
+} from "./types";
 import { ResponseStatus as SoapStatus } from "./types";
+import type { SoapService } from "./NovaPoshtaSoapService.server";
 
 export class FulfillmentBroker {
   private adminClient: ShopifyAdminClient;
+  private soapService: SoapService;
   private organization: string;
 
-  constructor(adminClient: ShopifyAdminClient, organization: string) {
+  constructor(
+    adminClient: ShopifyAdminClient,
+    soapService: SoapService,
+    organization: string,
+  ) {
     this.adminClient = adminClient;
+    this.soapService = soapService;
     this.organization = organization;
   }
 
@@ -32,13 +38,11 @@ export class FulfillmentBroker {
     });
   }
 
-  async fulfill(
-    fulfillmentOrder: FulfillmentOrder,
-  ) {
+  async fulfill(fulfillmentOrder: FulfillmentOrder) {
     // Create a fulfillment request to Nova Poshta SOAP
     // If Nova Poshta accepts the request, then mark the fulfillment as accepted or rejected otherwise
     try {
-      const result = await fullfillWithNovaPoshta(fulfillmentOrder);
+      const result = await this.soapService.fulfill(fulfillmentOrder);
       console.log(result);
 
       if (result.status == SoapStatus.OK) {
@@ -46,7 +50,10 @@ export class FulfillmentBroker {
           fulfillmentOrder.id,
         );
         console.log(acceptResponse);
-        await this.adminClient.createFulfillment(fulfillmentOrder, result.waybill!);
+        await this.adminClient.createFulfillment(
+          fulfillmentOrder,
+          result.waybill!,
+        );
       }
     } catch (error) {
       console.error(
@@ -70,7 +77,7 @@ export class FulfillmentBroker {
           },
         },
       };
-      const cancelResult = await cancelFulfillment(body);
+      const cancelResult = await this.soapService.cancelOrders(body);
       console.log(cancelResult);
 
       if (cancelResult.status == SoapStatus.OK) {
@@ -86,6 +93,27 @@ export class FulfillmentBroker {
       }
     } catch (error) {
       console.error("Cancel fulfillment error: ", error);
+    }
+  }
+
+  async fetchStock() { // fulfillmentOrder: FulfillmentOrder,
+    // const orderName = fulfillmentOrder.orderName;
+    // const id = fulfillmentOrder.id;
+    try {
+      const body: IGetStockRequest = {
+        GetCurrentRemains: {
+          Organization: this.organization,
+          // SKU?: string;
+          // Warehouse?: string;
+          // RemainDate?: string;
+          // AdditionalParam?: string;
+          // batchId?: string;
+        },
+      };
+      const cancelResult = await this.soapService.getCurrentRemains(body);
+      console.log(cancelResult);
+    } catch (error) {
+      console.error("Fetch stock error: ", error);
     }
   }
 }
